@@ -1,0 +1,12 @@
+(define (problem infant-movement-toward) 
+
+(:domain infant-mobility)
+
+(:requirements ) 
+
+(:objects robot infant)
+
+(:init (probabilistic 1 (at-location1 robot) 1 (at-location2 infant)))
+	
+(:goal ( child_moving_toward ))) 
+

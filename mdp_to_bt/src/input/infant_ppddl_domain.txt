@@ -1,0 +1,13 @@
+(define (domain infant-mobility)
+
+(:requirements :conditional-effects :probabilistic-effects :negative-preconditions)
+
+(:predicates (child-moving-toward) (child-moving-away) (child-stationary)  (direct-social-interaction) (social-interation) (solitary-play) (occluded))
+
+(action move-toward
+:parameters ()
+:effect (when (social-interaction) (probabilistic 0.7 (child-moving-toward) (social-interaction) 0.3 (not (child-moving-toward)) (not (social-interaction))) ) )
+
+TBC
+
+) 
