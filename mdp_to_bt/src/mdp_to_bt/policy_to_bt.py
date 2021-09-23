@@ -63,8 +63,6 @@ class PolicyToBT:
         # Add a subtree for each action
         for bool_state in list(product([True,False],repeat=len(self.conditions))):
             
-            #print(bool_state)
-            
             # Add subtree sequence root
             sequence = Sequence()
             root.children.append(sequence)
@@ -81,10 +79,7 @@ class PolicyToBT:
                     decorator.add_child(condition)
                     root.children[-1].children.append(decorator)
             
-            # Add action after state conditions, per policy 
-            #??? Need to map correct action order in policy to the way we loop through states here
-            #(presumably having ppddl setup instead of hand-designing matrices for an mdp will automate this and prevent confusion)  
-            #action_num = self.get_action_from_policy(bool_state)
+            # Add action associated with each state
             action_num = self.policy[count]
             action_label = self.actions[action_num]
             action = Action(action_label)
@@ -94,18 +89,6 @@ class PolicyToBT:
 
         return root
             
-            
-    def get_action_from_policy(self, bool_state):
-        # The order of actions in the mdp matrix setup and the order we loop here do not match
-        # Either need to use this function to fix, or redo the matrices
-        pass
-
-    def simplifyBT(self, bt):
-        for i in range(len(bt.root.children)):
-            subtree_root = bt.root.children[i] #sequence
-            if node == Sequence(): # fix this
-                pass # TODO
-            
 
 if __name__ == "__main__":
     # Vacuum example
@@ -114,4 +97,4 @@ if __name__ == "__main__":
     policy = (0,0,1,1,0,0,0,0)
     goal = (('left_dirty',False),('right_dirty',False))
     p2bt = PolicyToBT(actions, conditions, policy, goal)
-    #p2bt.run()
+
