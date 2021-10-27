@@ -51,6 +51,7 @@
 			( clear ?x )
 			( handempty )
 			( on ?x ?y )
+			( increase reward 1.0 )
 		)
 	)
 
