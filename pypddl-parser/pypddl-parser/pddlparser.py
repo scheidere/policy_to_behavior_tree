@@ -20,6 +20,7 @@ from ply import yacc
 from term      import Term
 from literal   import Literal
 from predicate import Predicate
+from reward    import Reward
 from action    import Action
 from domain    import Domain
 from problem   import Problem
@@ -28,8 +29,9 @@ import traceback
 
 
 tokens = (
-    'INCREASE',
-    'REWARD',
+    'INCREASE',##
+    'REWARD',##
+    'REWARD_VALUE',##
     'NAME',
     'VARIABLE',
     'PROBABILITY',
@@ -57,9 +59,6 @@ tokens = (
     'OBJECTS_KEY',
     'INIT_KEY',
     'GOAL_KEY'#,
-    #'INCREASE',
-    #'REWARD'
-    #'REWARD_KEY' # Emily
 )
 
 
@@ -92,9 +91,8 @@ reserved = {
     ':objects'                  : 'OBJECTS_KEY',
     ':init'                     : 'INIT_KEY',
     ':goal'                     : 'GOAL_KEY',
-    'increase'                  : 'INCREASE',
-    'reward'                    : 'REWARD'
-    #'reward'                    : 'REWARD_KEY' # Emily Change
+    'increase'                  : 'INCREASE', ##
+    'reward'                    : 'REWARD' ##
 }
 
 
@@ -124,6 +122,13 @@ def t_PROBABILITY(t):
     r'[0-1]\.\d+'
     t.value = float(t.value)
     return t
+
+def t_REWARD_VALUE(t):
+    #print('t_REWARD_VALUE')
+    r'[0-1]\.\d+' #need to change this so be + or - and not just btwn 0 and 1 #TODO
+    t.value = float(t.value)
+    return t
+
 '''
 def t_INCREASE(t):
     #print('t_NAME')
@@ -146,7 +151,7 @@ def t_newline(t):
 
 def t_error(t):
     print("Error: illegal character '{0}'".format(t.value[0]))
-    traceback.print_stack() 
+    #traceback.print_stack() 
     t.lexer.skip(1)
 
 
@@ -244,6 +249,12 @@ def p_predicates_def(p):
     p[0] = p[3]
 
 
+# def p_reward_def(p):
+#     '''reward_def : LPAREN INCREASE REWARD PROBABILITY RPAREN'''
+
+#     print('p_reward_def')
+#     p[0] = p[3]
+
 def p_predicate_def_lst(p):
     '''predicate_def_lst : predicate_def predicate_def_lst
                          | predicate_def'''
@@ -274,7 +285,24 @@ def p_predicate_def(p):
         print(p[0],p[1],p[2],p[3],p[4])
         p[0] = Predicate(p[2], p[3])
 
+# def p_reward_def(p):
+#     '''reward_def : LPAREN INCREASE REWARD PROBABILITY RPAREN'''
 
+#     print("p_reward_def")                
+#     print(p[0],p[1],p[2],p[3])
+#     if p[2] == 'increase':
+#         print("increase founds")
+#         print(p[2])
+
+#     print(p)
+#     if len(p) == 4:
+#         print("Length 4")
+#         print(p[0],p[1],p[2],p[3])
+#         p[0] = Reward(p[2])
+#     elif len(p) == 5:
+#         print("Length 5")
+#         print(p[0],p[1],p[2],p[3],p[4])
+#         p[0] = Reward(p[2], p[3])
 
 
 
@@ -388,7 +416,7 @@ def p_predicate(p):
     '''predicate : LPAREN NAME variables_lst RPAREN
                  | LPAREN EQUALS VARIABLE VARIABLE RPAREN
                  | LPAREN NAME RPAREN
-                 | LPAREN INCREASE REWARD PROBABILITY RPAREN''' # TODO
+                 | LPAREN INCREASE REWARD PROBABILITY RPAREN'''
 
     print("p_predicate")
     print(p[0],p[1],p[2],p[3])
@@ -404,11 +432,26 @@ def p_predicate(p):
     elif len(p) == 6:
         if p[2] == "increase":
             print("Whatever I want")
-            p[0] = Predicate('hello') #??? # create own class called reward TODO, using predicate for now ???
+            #p[0] = Predicate('hello')   
+            p[0] = Reward(p[4])
         else:
             print("Whatever I want pt 2")
             p[0] = Predicate('=', [p[3], p[4]])
 
+
+# def p_reward(p):
+#     '''reward : LPAREN INCREASE REWARD PROBABILITY RPAREN'''
+
+#     # p[0] : p[1] p[2] p[3] p[4] p[5]
+#     # (increase reward 0.5)
+#     #p[0] = Reward('hello')
+
+#     print("p_reward")
+#     print(p[0],p[1],p[2],p[3])
+    
+#     p[0] = Reward(1) #??? # create own class called reward TODO, using predicate for now ???
+
+    
 
 def p_ground_predicate(p):
     '''ground_predicate : LPAREN NAME constants_lst RPAREN
