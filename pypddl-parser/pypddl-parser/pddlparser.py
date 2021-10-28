@@ -125,23 +125,9 @@ def t_PROBABILITY(t):
 
 def t_REWARD_VALUE(t):
     #print('t_REWARD_VALUE')
-    r'[0-1]\.\d+' #need to change this so be + or - and not just btwn 0 and 1 #TODO
+    r'(-?[\d]+)' #need to change this so be + or - and not just btwn 0 and 1 #TODO
     t.value = float(t.value)
     return t
-
-'''
-def t_INCREASE(t):
-    #print('t_NAME')
-    r'increase'
-    #r'[a-zA-Z_0-9\-][a-zA-Z_0-9\-]*'
-    return t
-
-def t_REWARD(t):
-    #print('t_NAME')
-    r'reward'
-    #r'[a-zA-Z_0-9\-][a-zA-Z_0-9\-]*'
-    return t
-'''
 
 def t_newline(t):
     #print('t_newline')
@@ -285,27 +271,6 @@ def p_predicate_def(p):
         print(p[0],p[1],p[2],p[3],p[4])
         p[0] = Predicate(p[2], p[3])
 
-# def p_reward_def(p):
-#     '''reward_def : LPAREN INCREASE REWARD PROBABILITY RPAREN'''
-
-#     print("p_reward_def")                
-#     print(p[0],p[1],p[2],p[3])
-#     if p[2] == 'increase':
-#         print("increase founds")
-#         print(p[2])
-
-#     print(p)
-#     if len(p) == 4:
-#         print("Length 4")
-#         print(p[0],p[1],p[2],p[3])
-#         p[0] = Reward(p[2])
-#     elif len(p) == 5:
-#         print("Length 5")
-#         print(p[0],p[1],p[2],p[3],p[4])
-#         p[0] = Reward(p[2], p[3])
-
-
-
 
 def p_action_def_lst(p):
     '''action_def_lst : action_def action_def_lst
@@ -371,12 +336,15 @@ def p_effects_lst(p):
 
 def p_effect(p):
     '''effect : literal
-              | LPAREN PROBABILISTIC_KEY PROBABILITY literal RPAREN'''
+              | LPAREN PROBABILISTIC_KEY PROBABILITY literal RPAREN
+              | LPAREN INCREASE REWARD REWARD_VALUE RPAREN'''
     print('p_effect')
     print(len(p))
     if len(p) == 2:
         print(p[1])
-        p[0] = (1.0, p[1])
+        p[0] = (1.0, p[1]) # 1.0 represents 100% probability, since a prob isn't specified 
+    elif len(p) == 5: # Prints reward, value instead of 1.0, value
+        p[0] = ('reward',p[4]) # Does this need a probability term too?
     elif len(p) == 6:
         p[0] = (p[3], p[4])
     print('p_effect finished')
@@ -415,8 +383,7 @@ def p_ground_predicates_lst(p):
 def p_predicate(p):
     '''predicate : LPAREN NAME variables_lst RPAREN
                  | LPAREN EQUALS VARIABLE VARIABLE RPAREN
-                 | LPAREN NAME RPAREN
-                 | LPAREN INCREASE REWARD PROBABILITY RPAREN'''
+                 | LPAREN NAME RPAREN'''
 
     print("p_predicate")
     print(p[0],p[1],p[2],p[3])
@@ -430,26 +397,15 @@ def p_predicate(p):
         p[0] = Predicate(p[2], p[3])
 
     elif len(p) == 6:
-        if p[2] == "increase":
-            print("Whatever I want")
-            #p[0] = Predicate('hello')   
-            p[0] = Reward(p[4])
-        else:
-            print("Whatever I want pt 2")
-            p[0] = Predicate('=', [p[3], p[4]])
+        print("Whatever I want pt 2")
+        p[0] = Predicate('=', [p[3], p[4]])
 
 
-# def p_reward(p):
-#     '''reward : LPAREN INCREASE REWARD PROBABILITY RPAREN'''
+def p_reward(p):
+    '''reward : LPAREN INCREASE REWARD REWARD_VALUE RPAREN'''
 
-#     # p[0] : p[1] p[2] p[3] p[4] p[5]
-#     # (increase reward 0.5)
-#     #p[0] = Reward('hello')
-
-#     print("p_reward")
-#     print(p[0],p[1],p[2],p[3])
-    
-#     p[0] = Reward(1) #??? # create own class called reward TODO, using predicate for now ???
+    print("p_reward")    
+    p[0] = Reward(p[4]) 
 
     
 
