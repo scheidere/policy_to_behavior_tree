@@ -37,5 +37,5 @@ if __name__ == '__main__':
     print(problem)
 
     print("++++++++++++++++++++++++++++++")
-
+    print(domain.requirements)
 
