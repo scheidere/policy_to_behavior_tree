@@ -4,9 +4,10 @@
 
 (:requirements :negative-preconditions)
 
-(:init ( and (left-dirty) (right-dirty) (at-left) ))
+(:init ( and ( left-dirty ) ( right-dirty ) ( at-left ) ))
 
-(:goal ( and (not (left-dirty) (not (right-dirty)) ) )
+(:goal ( and (not ( left-dirty ) (not ( right-dirty )) ) )
 
+)
 )
 
