@@ -1,9 +1,9 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Testing to find parser gaps
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(define (problem box01)
+(define (problem testproblem)
 	
-	(:domain robot)
+	(:domain testdomain)
 	
 	(:objects
 		left-cell right-cell - cell
