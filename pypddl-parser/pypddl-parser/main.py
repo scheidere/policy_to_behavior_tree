@@ -33,10 +33,10 @@ def parse():
 if __name__ == '__main__':
     args = parse()
 
-    #domain  = PDDLParser.parse(args.domain)
+    domain  = PDDLParser.parse(args.domain)
     problem = PDDLParser.parse(args.problem)
 
-    #print(domain)
+    print(domain)
     print(problem)
 
     #print("++++++++++++++++++++++++++++++")

@@ -1,13 +1,11 @@
-(define (problem vacuum-all)
+( define ( problem vacuum-all )
 
-(:domain simple-vacuum-mdp)
+( :domain simple-vacuum-mdp )
 
-(:requirements :negative-preconditions)
+( :requirements :negative-preconditions )
 
-(:init ( and ( left-dirty ) ( right-dirty ) ( at-left ) ))
+( :init ( and ( left-dirty ) ( right-dirty ) ( at-left ) ) )
 
-(:goal ( and (not ( left-dirty ) (not ( right-dirty )) ) )
-
-)
+( :goal ( and ( not ( left-dirty ) ( not ( right-dirty ) ) ) ) )
 )
 
