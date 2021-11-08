@@ -1,0 +1,28 @@
+(define (domain testdomain2)
+
+	(:requirements :strips :equality :typing :probabilistic-effects)
+
+	(:types cell)
+
+	(:predicates
+		(robot-at ?x - cell)
+		(dirty-at ?x - cell)
+	)
+
+	(:action move
+		:parameters (?x ?y - cell)
+		:precondition (and (robot-at ?x) (not (= ?x ?y)))
+		:effect (and (robot-at ?y) (not (robot-at ?x)))
+	)
+
+	(:action clean
+		:parameters (?x - cell)
+		:precondition (and (robot-at ?x) (dirty-at ?x))
+		:effect (probabilistic 0.9 (not (dirty-at ?x)))
+		;(and (not (dirty-at ?x)) (probabilistic 0.5 (not (dirty-at ?x))))
+		;(not (dirty-at ?x))
+		;(probabilistic 0.9 (and (not (dirty-at ?x)) ( increase reward 2 ) )
+							   ;0.1 ( increase (reward) -1 ))
+	)
+
+)
