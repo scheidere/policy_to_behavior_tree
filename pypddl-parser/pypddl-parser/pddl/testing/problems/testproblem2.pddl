@@ -8,11 +8,15 @@
 
 	(:init
 		(robot-at left-cell)
+		(dirty-at left-cell)
+		(dirty-at right-cell)
 	)
 
 	(:goal
 		(and
-			(robot-at right-cell)
+		    (robot-at right-cell)
+			;(not (dirty-at left-cell))
+			;(not (dirty-at right-cell))
 		)
 	)
 )
