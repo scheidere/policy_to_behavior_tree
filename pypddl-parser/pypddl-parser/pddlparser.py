@@ -58,7 +58,8 @@ tokens = (
     'PROBLEM_KEY',
     'OBJECTS_KEY',
     'INIT_KEY',
-    'GOAL_KEY'#,
+    'GOAL_KEY',
+    'NEGATIVE_PRECONDITIONS_KEY' ##
 )
 
 
@@ -408,6 +409,7 @@ def p_reward(p):
     p[0] = Reward(p[4]) 
 
     
+#                        #| LPAREN NOT_KEY predicate RPAREN''' ???
 
 def p_ground_predicate(p):
     '''ground_predicate : LPAREN NAME constants_lst RPAREN

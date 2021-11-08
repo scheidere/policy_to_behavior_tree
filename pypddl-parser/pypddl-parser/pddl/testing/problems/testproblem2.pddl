@@ -14,8 +14,8 @@
 
 	(:goal
 		(and
-		    (robot-at right-cell)
-			;(not (dirty-at left-cell))
+		    (robot-at right-cell) ;dummy goal, will not be used
+			;(not (dirty-at left-cell)) ;(not (dirty-at ?x))
 			;(not (dirty-at right-cell))
 		)
 	)
