@@ -334,10 +334,11 @@ def p_effects_lst(p):
     elif len(p) == 3:
         p[0] = [p[1]] + p[2]
 
-
+#See 341 for attempt a probabilistic (and ...) fix
 def p_effect(p):
     '''effect : literal
               | LPAREN PROBABILISTIC_KEY PROBABILITY literal RPAREN
+              | LPAREN PROBABILISTIC_KEY PROBABILITY LPAREN AND_KEY literals_lst RPAREN RPAREN
               | LPAREN INCREASE REWARD REWARD_VALUE RPAREN'''
     print('p_effect')
     print(len(p))
@@ -348,6 +349,8 @@ def p_effect(p):
         p[0] = ('reward',p[4]) # Does this need a probability term too?
     elif len(p) == 6:
         p[0] = (p[3], p[4])
+    elif len(p) == 9: #???
+        p[0] = (p[3], p[6]) #???
     print('p_effect finished')
 
 def p_literals_lst(p):

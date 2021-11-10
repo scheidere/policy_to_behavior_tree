@@ -18,11 +18,11 @@
 	(:action clean
 		:parameters (?x - cell)
 		:precondition (and (robot-at ?x) (dirty-at ?x))
-		:effect (probabilistic 0.9 (not (dirty-at ?x)))
-		;(and (not (dirty-at ?x)) (probabilistic 0.5 (not (dirty-at ?x))))
-		;(not (dirty-at ?x))
-		;(probabilistic 0.9 (and (not (dirty-at ?x)) ( increase reward 2 ) )
-							   ;0.1 ( increase (reward) -1 ))
+		:effect (probabilistic (increase reward 2))
+		;:effect (probabilistic 0.9 (and (not (dirty-at ?x)) (increase reward 2))
+ 				       ;0.1 (increase reward -1)
+ 		;	)
+		;:effect (probabilistic 0.9 (not (dirty-at ?x))) ;this works
 	)
 
 )
