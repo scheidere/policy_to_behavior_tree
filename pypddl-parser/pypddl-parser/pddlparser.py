@@ -334,11 +334,27 @@ def p_effects_lst(p):
     elif len(p) == 3:
         p[0] = [p[1]] + p[2]
 
+# does this account for literals_lst with the AND???
+def p_probability_lst(p):
+    '''probability_lst : PROBABILITY literal
+                       | PROBABILITY literal probability_lst
+                       | PROBABILITY LPAREN AND_KEY literals_lst RPAREN
+                       | PROBABILITY LPAREN AND_KEY literals_lst RPAREN probability_lst'''
+    if len(p) == 3:
+        p[0] = (p[1], p[2])
+    elif len(p) == 4:
+        p[0] = (p[1], p[2]),p[3]
+    elif len(p) == 6:
+        p[0] = (p[1],p[4])
+    elif len(p) == 7:
+        p[0] = (p[1], p[4]),p[6]
+
 #See 341 for attempt a probabilistic (and ...) fix
 #  | LPAREN PROBABILISTIC_KEY PROBABILITY LPAREN AND_KEY literals_lst RPAREN RPAREN
 def p_effect(p):
     '''effect : literal
               | LPAREN PROBABILISTIC_KEY PROBABILITY literal RPAREN
+              | LPAREN PROBABILISTIC_KEY probability_lst RPAREN
               | LPAREN PROBABILISTIC_KEY PROBABILITY LPAREN AND_KEY literals_lst RPAREN RPAREN
               | LPAREN INCREASE REWARD REWARD_VALUE RPAREN'''
     print('p_effect')
@@ -347,9 +363,16 @@ def p_effect(p):
         print(p[1])
         p[0] = (1.0, p[1]) # 1.0 represents 100% probability, since a prob isn't specified 
     elif len(p) == 5: # Prints reward, value instead of 1.0, value
-        p[0] = ('reward',p[4]) # Does this need a probability term too?
+        #p[0] = ('reward',p[4]) # Does this need a probability term too?
+        p[0] = p[3]
     elif len(p) == 6:
-        p[0] = (p[3], p[4])
+        if p[2] == 'probabilistic':
+            p[0] = (p[3], p[4])
+        elif p[3] == 'reward':
+            p[0] = ('reward',p[4])
+        else:
+            print('p[3]: ' + str(p[3]))
+            raise Exception("Something is messed up in p_effect. Good luck.")
     elif len(p) == 9: #???
         p[0] = (p[3], p[6]) #???
     print('p_effect finished')
