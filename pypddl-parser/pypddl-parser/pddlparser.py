@@ -339,7 +339,8 @@ def p_probability_lst(p):
     '''probability_lst : PROBABILITY literal
                        | PROBABILITY literal probability_lst
                        | PROBABILITY LPAREN AND_KEY literals_lst RPAREN
-                       | PROBABILITY LPAREN AND_KEY literals_lst RPAREN probability_lst'''
+                       | PROBABILITY LPAREN AND_KEY literals_lst RPAREN probability_lst
+                       | '''
     if len(p) == 3:
         p[0] = (p[1], p[2])
     elif len(p) == 4:
@@ -355,8 +356,7 @@ def p_effect(p):
     '''effect : literal
               | LPAREN PROBABILISTIC_KEY PROBABILITY literal RPAREN
               | LPAREN PROBABILISTIC_KEY probability_lst RPAREN
-              | LPAREN PROBABILISTIC_KEY PROBABILITY LPAREN AND_KEY literals_lst RPAREN RPAREN
-              | LPAREN INCREASE REWARD REWARD_VALUE RPAREN'''
+              | LPAREN PROBABILISTIC_KEY PROBABILITY LPAREN AND_KEY literals_lst RPAREN RPAREN'''
     print('p_effect')
     print(len(p))
     if len(p) == 2:
@@ -366,13 +366,7 @@ def p_effect(p):
         #p[0] = ('reward',p[4]) # Does this need a probability term too?
         p[0] = p[3]
     elif len(p) == 6:
-        if p[2] == 'probabilistic':
-            p[0] = (p[3], p[4])
-        elif p[3] == 'reward':
-            p[0] = ('reward',p[4])
-        else:
-            print('p[3]: ' + str(p[3]))
-            raise Exception("Something is messed up in p_effect. Good luck.")
+        p[0] = (p[3], p[4])
     elif len(p) == 9: #???
         p[0] = (p[3], p[6]) #???
     print('p_effect finished')
@@ -389,13 +383,16 @@ def p_literals_lst(p):
 
 def p_literal(p):
     '''literal : LPAREN NOT_KEY predicate RPAREN
-               | predicate'''
+               | predicate
+               | LPAREN INCREASE REWARD REWARD_VALUE RPAREN'''
     print("In p literal")
     print(p[0],p[1])
     if len(p) == 2:
         p[0] = Literal.positive(p[1])
     elif len(p) == 5:
         p[0] = Literal.negative(p[3])
+    elif len(p) == 6:
+        p[0] = ('reward',p[4])
 
 
 def p_ground_predicates_lst(p):
