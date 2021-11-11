@@ -335,6 +335,7 @@ def p_effects_lst(p):
         p[0] = [p[1]] + p[2]
 
 #See 341 for attempt a probabilistic (and ...) fix
+#  | LPAREN PROBABILISTIC_KEY PROBABILITY LPAREN AND_KEY literals_lst RPAREN RPAREN
 def p_effect(p):
     '''effect : literal
               | LPAREN PROBABILISTIC_KEY PROBABILITY literal RPAREN
