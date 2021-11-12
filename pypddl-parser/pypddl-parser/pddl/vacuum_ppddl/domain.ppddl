@@ -1,6 +1,6 @@
 (define (domain vacuum-domain)
 
-	(:requirements :strips :equality :typing :probabilistic-effects)
+	(:requirements :equality :typing :probabilistic-effects)
 
 	(:types cell)
 
