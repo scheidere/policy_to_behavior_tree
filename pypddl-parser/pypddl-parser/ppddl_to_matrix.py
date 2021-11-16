@@ -24,6 +24,7 @@ import argparse
 
 from pddlparser import PDDLParser
 
+import itertools
 
 def parse():
     usage = 'python3 main.py <DOMAIN> <INSTANCE>'
@@ -48,7 +49,7 @@ def getStateList():
     #         state_list.append((str(domain.predicates[i]),problem.objects[j]))
     # print(state_list)
 
-    states = []
+    single_state = []
     for i in range(len(domain.predicates)):
         print('Predicate is %s' % str(domain.predicates[i]))
         for variable_type in domain.types:
@@ -58,9 +59,38 @@ def getStateList():
                 for value in problem.objects[variable_type]:
 
                     state_sub_list = [str(domain.predicates[i]),value,1]
-                    states.append(state_sub_list)
+                    single_state.append(state_sub_list)
 
-    print(states)
+    print(single_state)
+    print(single_state[0][-1])
+
+    states = []
+    for tup in list(itertools.product([0,1],repeat=len(single_state))):
+        # tup = (0,1,0,0) for example, representing (False, True, False, False)
+        print(tup)
+
+        for i in range(len(single_state)):
+            full_state = single_state.copy()
+            full_state[i][-1] = tup[i]
+        states.append(full_state)
+        print(full_state)
+
+    #print(states)
+    print(len(states))
+
+def removeInvalidStates():
+
+    # This function needs to remove states where predicates that can only have one True/False at a time, show up twice
+    # An example of this is robot-at, where it shows up twice, but sometimes is True True or False False (not possible)
+    # This is possible for dirty-at
+
+    # For now we assume this repitition is okay because the solver will learn these states are not possible
+
+    # However, if this poses an issue, I think I could rely on the init part of the problem file to determine 
+    # which predicates can be True OR False and which can be True and True, False and False, or either or
+    pass
+
+
 
 if __name__ == '__main__':
     args = parse()
