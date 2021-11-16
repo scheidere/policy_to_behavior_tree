@@ -37,10 +37,30 @@ def parse():
 
 def getStateList():
 
-    # Each element in the list will be a tuple?
+    # Each element in the list will be a tuple? ()
     # if there are two predicates each with one variable (with two options): 4 states?
     # e.g. tuple = ((robot-at cell1),(dirty-at cell2))
+    # state_list = []
+    # for i in range(len(domain.predicates)):
+    #     for j in range(len(problem.objects)):
+    #         print(i)
+    #         print(domain.predicates[i])
+    #         state_list.append((str(domain.predicates[i]),problem.objects[j]))
+    # print(state_list)
 
+    states = []
+    for i in range(len(domain.predicates)):
+        print('Predicate is %s' % str(domain.predicates[i]))
+        for variable_type in domain.types:
+            #print(variable_type)
+            if variable_type in str(domain.predicates[i]):
+                print('This predicate has variable type %s' % variable_type)
+                for value in problem.objects[variable_type]:
+
+                    state_sub_list = [str(domain.predicates[i]),value,1]
+                    states.append(state_sub_list)
+
+    print(states)
 
 if __name__ == '__main__':
     args = parse()
@@ -51,5 +71,9 @@ if __name__ == '__main__':
     print(domain)
     print(problem)
 
-    #print("++++++++++++++++++++++++++++++")
+    print("++++++++++++++++++++++++++++++")
     #print(domain.operators[0].effects)
+    #print(domain.predicates[1])
+    print("++++++++++++++++++++++++++++++")
+    print(problem.objects[domain.types[0]])
+    getStateList()
