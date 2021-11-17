@@ -62,6 +62,9 @@ class MDP:
             [0., 0., 0., 0., 0., 0., 0. , 1.],
             [0., 0., 0., 0., 0., 0., 1. , 0.]]])
 
+            print('P shape: ', P.shape)
+            print('R shape: ', R.shape)
+
             return P, R
 
         elif self.method == 'infant':

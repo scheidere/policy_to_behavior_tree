@@ -25,6 +25,7 @@ import argparse
 from pddlparser import PDDLParser
 
 import itertools
+import numpy as np
 
 def parse():
     usage = 'python3 main.py <DOMAIN> <INSTANCE>'
@@ -61,13 +62,13 @@ def getStateList():
                     state_sub_list = [str(domain.predicates[i]),value,1]
                     single_state.append(state_sub_list)
 
-    print(single_state)
-    print(single_state[0][-1])
+    #print(single_state)
+    #print(single_state[0][-1])
 
     states = []
     for tup in list(itertools.product([0,1],repeat=len(single_state))):
         # tup = (0,1,0,0) for example, representing (False, True, False, False)
-        print(tup)
+        #print(tup)
 
         for i in range(len(single_state)):
             full_state = single_state.copy()
@@ -76,7 +77,8 @@ def getStateList():
         print(full_state)
 
     #print(states)
-    print(len(states))
+    #print(len(states))
+    return states
 
 def removeInvalidStates():
 
@@ -90,6 +92,45 @@ def removeInvalidStates():
     # which predicates can be True OR False and which can be True and True, False and False, or either or
     pass
 
+def getProbabilityMatrix(action, states):
+
+    # returns a numpy array of shape (2,8,8)
+    # if there are 8 possible states
+    # and 2 possible actions
+
+    #Single action array
+    # Get number of states
+    N = len(states)
+    print('size',N)
+
+    # Create probability transition matrix for given action
+    single = np.zeros((N,N))
+    print(single.shape)
+
+    # Logically I know that state transitions generally
+    # in the vacuum problem are only valid if there is only one change
+    # i.e. dirty to not dirty at one single location
+
+    # we must look at the given action
+
+    # look at the effect, and translate that effect
+
+    # if the effect does not include probabilistic, it will be probaility 1
+
+    # for s in states:
+    #     for s_prime in states:
+
+
+
+    # if probability in domain.action:
+    #     then we have a non 1 or 0 probability
+
+    # return
+    todo
+
+
+def getPandR():
+    pass
 
 
 if __name__ == '__main__':
@@ -101,9 +142,11 @@ if __name__ == '__main__':
     print(domain)
     print(problem)
 
-    print("++++++++++++++++++++++++++++++")
+    #print("++++++++++++++++++++++++++++++")
     #print(domain.operators[0].effects)
     #print(domain.predicates[1])
-    print("++++++++++++++++++++++++++++++")
-    print(problem.objects[domain.types[0]])
-    getStateList()
+    #print("++++++++++++++++++++++++++++++")
+    #print(problem.objects[domain.types[0]])
+    states = getStateList()
+    getProbabilityMatrix('cell',states)
+
