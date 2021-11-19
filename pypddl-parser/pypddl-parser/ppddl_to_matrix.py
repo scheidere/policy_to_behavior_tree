@@ -26,6 +26,7 @@ from pddlparser import PDDLParser
 
 import itertools
 import numpy as np
+import copy
 
 def parse():
     usage = 'python3 main.py <DOMAIN> <INSTANCE>'
@@ -39,48 +40,91 @@ def parse():
 
 def getStateList():
 
-    # Each element in the list will be a tuple? ()
-    # if there are two predicates each with one variable (with two options): 4 states?
-    # e.g. tuple = ((robot-at cell1),(dirty-at cell2))
-    # state_list = []
-    # for i in range(len(domain.predicates)):
-    #     for j in range(len(problem.objects)):
-    #         print(i)
-    #         print(domain.predicates[i])
-    #         state_list.append((str(domain.predicates[i]),problem.objects[j]))
-    # print(state_list)
-
     single_state = []
     for i in range(len(domain.predicates)):
-        print('Predicate is %s' % str(domain.predicates[i]))
+        #print('Predicate is %s' % str(domain.predicates[i]))
         for variable_type in domain.types:
             #print(variable_type)
             if variable_type in str(domain.predicates[i]):
-                print('This predicate has variable type %s' % variable_type)
+                #print('This predicate has variable type %s' % variable_type)
                 for value in problem.objects[variable_type]:
 
                     state_sub_list = [str(domain.predicates[i]),value,1]
                     single_state.append(state_sub_list)
 
-    #print(single_state)
-    #print(single_state[0][-1])
+    # print(single_state)
+    # #print(single_state[0][-1])
 
+    # tup = (0,1,0,0)
+    # full_state = single_state.copy()
+    # for i in range(len(single_state)):
+    #     print(i)
+    #     full_state[i][-1] = tup[i]
+    # print(full_state)
+    # states = [full_state]
+    # print(states)
+
+    # states = []
+    # count = 0
+    # for tup in list(itertools.product([0,1],repeat=len(single_state))):
+    #     # tup = (0,1,0,0) for example, representing (False, True, False, False)
+    #     print(tup)
+
+    #     # Distribute True/False options for each condition (predicate) in a state
+
+    #     #full_state = single_state
+    #     #print('reset ', full_state)
+    #     full_state = single_state.copy()
+    #     for i in range(len(single_state)):
+    #         full_state[i][-1] = tup[i]
+
+    #     new_state = full_state.copy()
+    #     print('after ', full_state)
+    #     print('states b4', states)
+    #     states.append(new_state)
+    #     count +=1
+
+    #     print('states ', states)
+    #     if count > 1:
+    #         break
+
+    print('Example that does not work')
     states = []
-    for tup in list(itertools.product([0,1],repeat=len(single_state))):
-        # tup = (0,1,0,0) for example, representing (False, True, False, False)
-        #print(tup)
+    sing_state = [['bla',1],['bla2',1]]
+    for tup in [(0,1),(1,0)]:
+        print(tup)
+        full_state = copy.deepcopy(sing_state)
+        
+        print('1', states)
 
-        for i in range(len(single_state)):
-            full_state = single_state.copy()
+        for i in range(len(sing_state)):
             full_state[i][-1] = tup[i]
-        states.append(full_state)
-        print(full_state)
 
-    #print(states)
+        states.append(full_state)
+        #print('1.5', states)
+        #states = states.copy() + [full_state.copy()]
+        print('2', states)
+
+    # This works!
+    print('Example that works')
+    states = []
+    test_state = [1,1]
+    for i in range(2):
+
+        full_state = test_state.copy()
+
+        print('1', states)
+
+        full_state[i] = 3
+
+        states.append(full_state.copy())
+        print('2', states)
+
+
     #print(len(states))
     return states
 
-def removeInvalidStates():
+def removeInvalidStates(states):
 
     # This function needs to remove states where predicates that can only have one True/False at a time, show up twice
     # An example of this is robot-at, where it shows up twice, but sometimes is True True or False False (not possible)
@@ -90,9 +134,54 @@ def removeInvalidStates():
 
     # However, if this poses an issue, I think I could rely on the init part of the problem file to determine 
     # which predicates can be True OR False and which can be True and True, False and False, or either or
-    pass
 
-def getProbabilityMatrix(action, states):
+
+    # For now, we are doing a cheat way which is not generalizeable past the vacuum problem
+    new_states = states.copy()
+    for i in range(len(states)):
+        state = states[i]
+        print('state', state)
+        #print(state[0])
+        print(state[0][1],state[1][1])
+        print(state[0][2],state[1][2])
+        if state[0][1] == state[1][1]:
+            # if robot-at left and robot-at right
+            # this both cannot be true or both be false at the same time
+            # the robot must be somewhere, and only one cell at a time
+            if state[0][2] == state[1][2]:
+                print('Removing state...')
+                new_states.remove(state)
+        else:
+        # for term in state:
+        #     if str(term[0]) == 'robot-at(?x - cell)':
+        #         if str(term[0]) == str(term)
+        #         print('found!')
+            pass
+
+    return states
+    
+
+def getProbabilityMatrixforActionMove(states):
+
+    print('Creating NxN array for action %s...' % domain.operators[0].name)
+
+    # All possible values for first parameter
+    for p in domain.operators[0].params:
+        for t in domain.types:
+            if p.type == t:
+                print("Found parameter (%s) of type (%s) " % (p,t))
+                print('Possible values: ', problem.objects[t])
+                break
+
+
+
+
+    # All for second parameter
+
+    # Loop version
+
+
+def getProbabilityMatrix(states):
 
     # returns a numpy array of shape (2,8,8)
     # if there are 8 possible states
@@ -111,9 +200,38 @@ def getProbabilityMatrix(action, states):
     # in the vacuum problem are only valid if there is only one change
     # i.e. dirty to not dirty at one single location
 
-    # we must look at the given action
+    possible_param_value_sets = []
+
+    # we must look at a given action
+    for i in range(len(domain.operators)):
+        print('Creating NxN array for action %s...' % domain.operators[i].name)
+        #print('Parameters: ', domain.operators[i].params[0])
+
+        for p in range(len(domain.operators[i].params)):
+            print(domain.operators[i].params[p])
+
+        #print(domain.operators[i].effects)
+
+        # Get initial possible states based on preconditions
+        if domain.operators[i].precond:
+            #Get subset of starting states
+            print('yes precondition')
+            print('precondition: ' + str(domain.operators[i].precond))
+
+            # Get start states, s
+            for state in states:
+                pass
+
+            # Get end states, s'
+
+            #possible_states = ???
+
+        else:
+            print('No preconditions, action applicable in all states')
+            possible_states = states # redundant, just for now
 
     # look at the effect, and translate that effect
+
 
     # if the effect does not include probabilistic, it will be probaility 1
 
@@ -126,7 +244,7 @@ def getProbabilityMatrix(action, states):
     #     then we have a non 1 or 0 probability
 
     # return
-    todo
+    #todo
 
 
 def getPandR():
@@ -148,5 +266,8 @@ if __name__ == '__main__':
     #print("++++++++++++++++++++++++++++++")
     #print(problem.objects[domain.types[0]])
     states = getStateList()
-    getProbabilityMatrix('cell',states)
+    #print(states)
+    #getProbabilityMatrix(states)
+    #getProbabilityMatrixforActionMove(states)
+    #removeInvalidStates(states)
 
