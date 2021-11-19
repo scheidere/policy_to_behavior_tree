@@ -52,76 +52,20 @@ def getStateList():
                     state_sub_list = [str(domain.predicates[i]),value,1]
                     single_state.append(state_sub_list)
 
-    # print(single_state)
-    # #print(single_state[0][-1])
-
-    # tup = (0,1,0,0)
-    # full_state = single_state.copy()
-    # for i in range(len(single_state)):
-    #     print(i)
-    #     full_state[i][-1] = tup[i]
-    # print(full_state)
-    # states = [full_state]
-    # print(states)
-
-    # states = []
-    # count = 0
-    # for tup in list(itertools.product([0,1],repeat=len(single_state))):
-    #     # tup = (0,1,0,0) for example, representing (False, True, False, False)
-    #     print(tup)
-
-    #     # Distribute True/False options for each condition (predicate) in a state
-
-    #     #full_state = single_state
-    #     #print('reset ', full_state)
-    #     full_state = single_state.copy()
-    #     for i in range(len(single_state)):
-    #         full_state[i][-1] = tup[i]
-
-    #     new_state = full_state.copy()
-    #     print('after ', full_state)
-    #     print('states b4', states)
-    #     states.append(new_state)
-    #     count +=1
-
-    #     print('states ', states)
-    #     if count > 1:
-    #         break
-
-    print('Example that does not work')
     states = []
-    sing_state = [['bla',1],['bla2',1]]
-    for tup in [(0,1),(1,0)]:
-        print(tup)
-        full_state = copy.deepcopy(sing_state)
-        
-        print('1', states)
+    for tup in list(itertools.product([0,1],repeat=len(single_state))):
+        # tup = (0,1,0,0) for example, representing (False, True, False, False)
+        #print(tup)
 
-        for i in range(len(sing_state)):
+        # Distribute True/False options for each condition (predicate) in a state
+        full_state = copy.deepcopy(single_state)
+        for i in range(len(single_state)):
             full_state[i][-1] = tup[i]
 
         states.append(full_state)
-        #print('1.5', states)
-        #states = states.copy() + [full_state.copy()]
-        print('2', states)
 
-    # This works!
-    print('Example that works')
-    states = []
-    test_state = [1,1]
-    for i in range(2):
+    print('states ', states)
 
-        full_state = test_state.copy()
-
-        print('1', states)
-
-        full_state[i] = 3
-
-        states.append(full_state.copy())
-        print('2', states)
-
-
-    #print(len(states))
     return states
 
 def removeInvalidStates(states):
