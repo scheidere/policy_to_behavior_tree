@@ -49,7 +49,7 @@ def getStateList():
                 #print('This predicate has variable type %s' % variable_type)
                 for value in problem.objects[variable_type]:
 
-                    state_sub_list = [str(domain.predicates[i]),value,1]
+                    state_sub_list = [str(domain.predicates[i].name),value,1]
                     single_state.append(state_sub_list)
 
     states = []
@@ -70,6 +70,8 @@ def getStateList():
 
 def removeInvalidStates(states):
 
+    # ALERT! THIS IS NOT GENERALIZED YET. ONLY WORKS FOR VACUUM TOY PROBLEM
+
     # This function needs to remove states where predicates that can only have one True/False at a time, show up twice
     # An example of this is robot-at, where it shows up twice, but sometimes is True True or False False (not possible)
     # This is possible for dirty-at
@@ -81,41 +83,79 @@ def removeInvalidStates(states):
 
 
     # For now, we are doing a cheat way which is not generalizeable past the vacuum problem
-    new_states = states.copy()
+    new_states = copy.deepcopy(states)
     for i in range(len(states)):
         state = states[i]
-        print('state', state)
-        #print(state[0])
-        print(state[0][1],state[1][1])
-        print(state[0][2],state[1][2])
-        if state[0][1] == state[1][1]:
+        #print('state', state)
+        #print(state[0][1],state[0][2])
+        #print(state[1][1],state[1][2])
+        if state[0][2] == state[1][2]:
             # if robot-at left and robot-at right
             # this both cannot be true or both be false at the same time
             # the robot must be somewhere, and only one cell at a time
-            if state[0][2] == state[1][2]:
-                print('Removing state...')
-                new_states.remove(state)
+
+            #print('Removing state...')
+            new_states.remove(state)
         else:
-        # for term in state:
-        #     if str(term[0]) == 'robot-at(?x - cell)':
-        #         if str(term[0]) == str(term)
-        #         print('found!')
+            #print('State valid')
             pass
 
-    return states
-    
+    print('Valid states only: ', new_states)
+    print('Number of valid states: ', len(new_states))
+    return new_states
+
+def getPossibleParamValues(states):
+
+    # Currently only for action 0!
+
+    param_value_dict = {}
+
+    for p in domain.operators[0].params:
+        for t in domain.types:
+            if p.type == t:
+                #print("Found parameter (%s) of type (%s) " % (p,t))
+                #print('Possible values: ', problem.objects[t])
+                param_value_dict[p.name] = problem.objects[t]
+
+    print('Parameters/values for action move: ', param_value_dict)
+    return param_value_dict
+
+def getStartStates(states):
+
+    # Currently only for action 0!
+
+    print(domain.operators[0].params[0].name)
+
+    print(domain.operators[0].params[0].type)
+
+    #print(domain.operators[0].precond)
+    #for s in states:
+    state = states[0]
+    print('Consider this state: ', state)
+    for precond in domain.operators[0].precond:
+        print('1',precond._predicate.name)
+        for term in state:
+            if term[0] == precond._predicate.name:
+                pass
+                ???
+            #    print('bla')
+        #if domain.operators[0].params[0].name in precond.__str__():
+        #print(precond.__str__())
+
 
 def getProbabilityMatrixforActionMove(states):
 
     print('Creating NxN array for action %s...' % domain.operators[0].name)
 
-    # All possible values for first parameter
-    for p in domain.operators[0].params:
-        for t in domain.types:
-            if p.type == t:
-                print("Found parameter (%s) of type (%s) " % (p,t))
-                print('Possible values: ', problem.objects[t])
-                break
+    # All possible values for each parameter
+    param_value_dict = getPossibleParamValues(states)
+
+    # Get start states from action
+    getStartStates(states)
+
+    for s in states:
+        for new_s in states:
+            pass
 
 
 
@@ -210,8 +250,9 @@ if __name__ == '__main__':
     #print("++++++++++++++++++++++++++++++")
     #print(problem.objects[domain.types[0]])
     states = getStateList()
-    #print(states)
+    states = removeInvalidStates(states)
+
     #getProbabilityMatrix(states)
-    #getProbabilityMatrixforActionMove(states)
-    #removeInvalidStates(states)
+    getProbabilityMatrixforActionMove(states)
+    
 
