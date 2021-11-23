@@ -190,6 +190,47 @@ def checkTransition(start_state,end_state):
 
     return True
 
+def checkTransition2(start_state,end_state,action):
+
+    # action i in the form domain.operators[i]
+
+    print('===========')
+    print('start_state', start_state)
+
+    for precondition in action.precond:
+
+        # For preconditions like robot-at(?x)
+        if precondition._predicate.name != '=': # Probably needs to be updated for generalizability
+            for predicate in domain.predicates: #robot-at or dirty-at
+                if precondition._predicate.name == predicate.name:
+
+                    # Just x or y in our case, but could be multiple
+                    params = precondition._predicate.args # ['?x']          
+                    print('aha!', precondition._predicate.args)
+
+                    # So now we have a predicate such as robot-at
+                    # And we have an arg, i.e. ['?x']
+                    for term in start_state:
+                        if term[0] == predicate.name and term[2] == 1:
+                            param_value = term[1] # param value where robot-at is True (1)
+                            print('param_value', param_value)
+                            ???
+                            add a dict just in case there are multiple params to return from precondition
+                            use effects part of action and end_state to get y (potentially multiple again)
+                            Start with assuming just one, i.e. y and compare results to hardcoded version
+                            after that, test with other action
+
+
+        # For preconditions like x != y
+        elif precondition._predicate.name == '=':
+            pass
+            # need to get y from above code before can do this
+
+
+    
+    #elif precondition._predicate.name == '=':
+
+
 def getParams(start_state,end_state):
 
     # Harcoded for action move
@@ -241,6 +282,54 @@ def getProbabilityMatrixforActionMove(states):
     # All for second parameter
 
     # Loop version
+
+def getParams2(start_state,end_state):
+
+    # Harcoded for action move
+
+    for term in start_state:
+        if term[0] == 'robot-at':
+            if term[2] == 1:
+                # Then it is true the robot is at the location x
+                x = term[1]
+
+    for term in end_state:
+        if term[0] == 'robot-at':
+            if term[2] == 1:
+                # Then it is true the robot is at the location y
+                y = term[1]
+
+    return x,y
+
+def getProbabilityMatrixforActionMove2(states):
+
+    print('Creating NxN array for action %s...' % domain.operators[0].name)
+    num_states = len(states)
+    probability_transition_matrix = np.zeros((num_states,num_states))
+
+    # All possible values for each parameter
+    param_value_dict = getPossibleParamValues(states)
+
+    # Get start states from action
+    #getStartStates(states,param_value_dict) #ignoring this for now
+
+    for i in range(len(states)):
+        s = states[i]
+        for j in range(len(states)):
+            new_s = states[j]
+            print('Start: ', s)
+            print('End: ', new_s)
+            if checkTransition(s,new_s):
+                # Valid transition!
+                print('Valid transition for move action given')
+                probability_transition_matrix[i][j] = 1
+                print('P: ', 1)
+            else:
+                print('Not valid')
+
+
+    print("P: ", probability_transition_matrix)
+    return probability_transition_matrix
 
 
 def getProbabilityMatrix(states):
@@ -330,7 +419,15 @@ if __name__ == '__main__':
     states = getStateList()
     states = removeInvalidStates(states)
 
-    #getProbabilityMatrix(states)
-    getProbabilityMatrixforActionMove(states)
+
+    # Run this line below for hardcoded example for action move
+    #getProbabilityMatrixforActionMove(states)
+
+
+    # Testing generalization with 'move' action
+    checkTransition2(states[0],states[1],domain.operators[0])
+
+
+
     
 
