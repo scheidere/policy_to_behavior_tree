@@ -197,6 +197,36 @@ def checkTransition2(start_state,end_state,action):
     print('===========')
     print('start_state', start_state)
 
+
+    # Will we need this forbidden values concept or should I get rid of it?
+    # It was supposed to be for effects that include a (not (this)) type statement
+    # Not sure it has enough context to be used, might need to rely on preconditions
+
+    end_values_dict = {} # Values we want to see in end state
+    ##forbidden_values_dict = {} # Values stated with a 'not' in the action effect
+    print('end_state ', end_state)
+    for effect in action.effects:
+        # print(effect) # e.g. (1.0, robot-at(?y))
+        #literal = effect[1] # robot-at(?y)
+        predicate = effect[1]._predicate # bc effect[1] is a literal
+        # print(predicate.name)
+        # print(effect[1].is_positive()) # If false, means it is (not robot-at(?x)) for example
+        # print(predicate.args)
+        params = predicate.args # Get params from predicate term
+        for term in end_state:
+            if term[0] ==  predicate.name and term[2] == 1:
+                # e.g. robot-at, left-cell, 1 given predicate name robot-at
+                param_values = term[1:-1] # Need to ensure order always matches params here
+                for i in range(len(params)): # Get each param (i.e. key) from the list
+                    ##if effect[1].is_positive(): # We want this predicate/param pair to be True in end state
+                    end_values_dict[str(params[i])] = [param_values[i],effect[0]] # Include probability
+                    ##else:
+                    ##    forbidden_values_dict[str(params[i])] = [param_values[i],effect[0]]
+    #print('Goal ', end_values_dict)
+    ##print('Anti-goal: ', forbidden_values_dict)
+
+    start_values_dict = {}
+
     for precondition in action.precond:
 
         # For preconditions like robot-at(?x)
@@ -206,26 +236,54 @@ def checkTransition2(start_state,end_state,action):
 
                     # Just x or y in our case, but could be multiple
                     params = precondition._predicate.args # ['?x']          
-                    print('aha!', precondition._predicate.args)
+                    #print('aha!', precondition._predicate.args)
 
                     # So now we have a predicate such as robot-at
                     # And we have an arg, i.e. ['?x']
                     for term in start_state:
                         if term[0] == predicate.name and term[2] == 1:
-                            param_value = term[1] # param value where robot-at is True (1)
-                            print('param_value', param_value)
-                            ???
-                            add a dict just in case there are multiple params to return from precondition
-                            use effects part of action and end_state to get y (potentially multiple again)
-                            Start with assuming just one, i.e. y and compare results to hardcoded version
-                            after that, test with other action
+                            param_values = term[1:-1] # param value where robot-at is True (1)
+                            #print('param_value', param_values)
+
+                            for i in range(len(params)): # Get each param (i.e. key) from the list
+                                start_values_dict[str(params[i])] = param_values[i]
+    
+                            # ???
+                            # add a dict just in case there are multiple params to return from precondition
+                            # use effects part of action and end_state to get y (potentially multiple again)
+                            # Start with assuming just one, i.e. y and compare results to hardcoded version
+                            # after that, test with other action
 
 
-        # For preconditions like x != y
+        # For preconditions like x != y (how do you know where to get x/y from, start or end state???)
+        # (Check this: could it ever be robot-at(bla) == dirty-at(bla2) or something?)
+        # or is it always just a param like x
         elif precondition._predicate.name == '=':
-            pass
-            # need to get y from above code before can do this
+            params = precondition._predicate.args
+            #print(params)
+            if precondition.is_positive(): # =
+                #print('==')
 
+                # Transition is invalid if x and y are not equal
+                if start_values_dict[params[0]] != end_values_dict[params[1]]:
+                    print('Invalid transition!')
+                    return False
+
+
+            else: # !=
+                #print('!=')
+                # Transition is invalid if x and y are equal
+                print(params[0], start_values_dict[params[0]]) # start_values_dict has just bla form
+                print(params[1], end_values_dict[params[1]][0]) #NOTE: end_values_dict has [bla,1] form
+                if start_values_dict[params[0]] == end_values_dict[params[1]][0]:
+                    print('Invalid transition!')
+                    return False
+    
+
+    #print('Start ', start_values_dict)
+
+    print('Valid transition!')
+    return True
 
     
     #elif precondition._predicate.name == '=':
@@ -418,14 +476,16 @@ if __name__ == '__main__':
     #print(problem.objects[domain.types[0]])
     states = getStateList()
     states = removeInvalidStates(states)
-
+    for state in states:
+        print(state)
 
     # Run this line below for hardcoded example for action move
     #getProbabilityMatrixforActionMove(states)
 
 
     # Testing generalization with 'move' action
-    checkTransition2(states[0],states[1],domain.operators[0])
+    checkTransition2(states[0],states[1],domain.operators[0]) # Invalid state pair
+    checkTransition2(states[0],states[4],domain.operators[0]) # Valid state pair
 
 
 
