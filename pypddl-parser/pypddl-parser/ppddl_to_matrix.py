@@ -186,6 +186,11 @@ def checkTransition(start_state,end_state):
     x,y = getParams(start_state, end_state)
 
     if x == y:
+        print('Invalid transition due to robot not moving')
+        return False
+
+    if start_state[2][2] != end_state[2][2] or start_state[3][2] != end_state[3][2]:
+        print('Invalid transition due to dirtyness changing when robot only moved')
         return False
 
     return True
@@ -205,7 +210,11 @@ def checkTransition2(start_state,end_state,action):
     end_values_dict = {} # Values we want to see in end state
     ##forbidden_values_dict = {} # Values stated with a 'not' in the action effect
     print('end_state ', end_state)
+
+    print(action.effects.__str__())
+
     for effect in action.effects:
+        print('Effect: ', effect) # THIS CURRENT BREAKS IF EFFECT IS PROBABILISTIC
         # print(effect) # e.g. (1.0, robot-at(?y))
         #literal = effect[1] # robot-at(?y)
         predicate = effect[1]._predicate # bc effect[1] is a literal
@@ -278,7 +287,6 @@ def checkTransition2(start_state,end_state,action):
                 if start_values_dict[params[0]] == end_values_dict[params[1]][0]:
                     print('Invalid transition!')
                     return False
-    
 
     #print('Start ', start_values_dict)
 
@@ -327,7 +335,7 @@ def getProbabilityMatrixforActionMove(states):
             print('End: ', new_s)
             if checkTransition(s,new_s):
                 # Valid transition!
-                print('Valid transition for move action given')
+                print('Valid transition for move action!')
                 probability_transition_matrix[i][j] = 1
                 print('P: ', 1)
             else:
@@ -379,7 +387,7 @@ def getProbabilityMatrixforActionMove2(states):
             print('End: ', new_s)
             if checkTransition(s,new_s):
                 # Valid transition!
-                print('Valid transition for move action given')
+                print('Valid transition for move action!')
                 probability_transition_matrix[i][j] = 1
                 print('P: ', 1)
             else:
@@ -480,12 +488,15 @@ if __name__ == '__main__':
         print(state)
 
     # Run this line below for hardcoded example for action move
-    #getProbabilityMatrixforActionMove(states)
+    getProbabilityMatrixforActionMove(states)
 
 
     # Testing generalization with 'move' action
     checkTransition2(states[0],states[1],domain.operators[0]) # Invalid state pair
     checkTransition2(states[0],states[4],domain.operators[0]) # Valid state pair
+
+    # Testing generalization with 'clean' action
+    checkTransition2(states[0],states[1],domain.operators[1]) # Invalid state pair, due to start state not having robot-at and dirty-at x
 
 
 
