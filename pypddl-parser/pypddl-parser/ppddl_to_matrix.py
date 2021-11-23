@@ -120,7 +120,7 @@ def getPossibleParamValues(states):
     print('Parameters/values for action move: ', param_value_dict)
     return param_value_dict
 
-def getStartStates(states):
+def getStartStates(states,param_value_dict):
 
     # Currently only for action 0!
 
@@ -133,32 +133,110 @@ def getStartStates(states):
     state = states[0]
     print('Consider this state: ', state)
     for precond in domain.operators[0].precond:
-        print('1',precond._predicate.name)
+        #print('1',precond._predicate.name)
         for term in state:
-            if term[0] == precond._predicate.name:
-                pass
-                ???
-            #    print('bla')
+
+            # E.g. robot-at(?x)
+            if term[0] == precond._predicate.name and term[2] == 1:
+                current_arg_values = term[1:-1]
+                print('Current %s value: %s' % (precond._predicate._args, current_arg_values))
+
+            #elif precond._predicate
+                            #    print('bla')
         #if domain.operators[0].params[0].name in precond.__str__():
         #print(precond.__str__())
 
+    start_state_param_value_dict = copy.deepcopy(param_value_dict)
+
+    print('Testing new way...')
+    for param_value_1 in param_value_dict['?x']:
+        print('Param 1 value is: ', param_value_1)
+        for param_value_2 in param_value_dict['?y']:
+            print('Param 2 value is: ', param_value_2)
+            for precondition in domain.operators[0].precond:
+
+                print('Considering %s precondition...' %precondition)
+                print(precondition.is_positive())
+
+                if precondition._predicate.name == '=':
+
+                    # ==
+                    if precondition.is_positive():
+                        print('=')
+
+                    #!=
+                    else:
+                        print('!=')
+
+
+        # NOT DONE BUT LEAVING THIS FUNCTION FOR NOW
+        #elif 
+
+        #for param in precond._predicate._args:
+
+        #    print('Consider parameter %s' %param)
+
+
+def checkTransition(start_state,end_state):
+
+    # Only set up for action 0, i.e. move
+
+    # This function checks whether you can go from start to end state via action move
+
+    x,y = getParams(start_state, end_state)
+
+    if x == y:
+        return False
+
+    return True
+
+def getParams(start_state,end_state):
+
+    # Harcoded for action move
+
+    for term in start_state:
+        if term[0] == 'robot-at':
+            if term[2] == 1:
+                # Then it is true the robot is at the location x
+                x = term[1]
+
+    for term in end_state:
+        if term[0] == 'robot-at':
+            if term[2] == 1:
+                # Then it is true the robot is at the location y
+                y = term[1]
+
+    return x,y
 
 def getProbabilityMatrixforActionMove(states):
 
     print('Creating NxN array for action %s...' % domain.operators[0].name)
+    num_states = len(states)
+    probability_transition_matrix = np.zeros((num_states,num_states))
 
     # All possible values for each parameter
     param_value_dict = getPossibleParamValues(states)
 
     # Get start states from action
-    getStartStates(states)
+    #getStartStates(states,param_value_dict) #ignoring this for now
 
-    for s in states:
-        for new_s in states:
-            pass
+    for i in range(len(states)):
+        s = states[i]
+        for j in range(len(states)):
+            new_s = states[j]
+            print('Start: ', s)
+            print('End: ', new_s)
+            if checkTransition(s,new_s):
+                # Valid transition!
+                print('Valid transition for move action given')
+                probability_transition_matrix[i][j] = 1
+                print('P: ', 1)
+            else:
+                print('Not valid')
 
 
-
+    print("P: ", probability_transition_matrix)
+    return probability_transition_matrix
 
     # All for second parameter
 
