@@ -104,7 +104,25 @@ def getStateList():
 
     return states
 
-def preconditionSatisfied(action,combo):
+def preconditionSatisfied(action,combo,start_state):
+
+    print('==========')
+
+    print('start s', start_state)
+    print('combo', combo)
+
+    for p in action.params:
+        print(p.name) # ?x
+
+    for precond in action.precond:
+        print(precond)
+        print(precond._predicate.name)
+        print(precond._predicate.args)
+
+        # Get value for 
+
+    
+    print('==========')
 
 
 def getPandR():
@@ -122,27 +140,41 @@ def getPandR():
     # Loop through all actions in domain (first try with just action move)
     for action in domain.operators:
 
+        print('+++++++++++')
         print('Action: ', action)
 
         # Get all possible combos of action param values
         param_combos = getParamCombos(action)
+        print(param_combos)
+        print(len(param_combos))
 
-        # For combo in possible combos
-        for combo in param_combos:
+        preconditionSatisfied(action,param_combos[1],states[5])
 
-            # Init  two NxN arrays with zeros (one for P_a and one for R_a)
-            p, r = np.zeros((N,N)), np.zeros((N,N))
+        # # For combo in possible combos
+        # for combo in param_combos:
 
-            # if combo valid in precondition
-            if preconditionSatisfied(action, combo):
-                
-                # Loop through start states s, indexing with i
-                    # Loop through end states s', indexing with j
-                        # Consider start state s and action with current combo params to get expected outcome
-                        # If outcome matches s'
-                            # Valid transition, add probability (1 if not specified), add reward if any
-                        # Else not valid
-                            # Invalid transtion, probability remains 0 as initialized, add reward maybe (???)
+        #     # Init  two NxN arrays with zeros (one for P_a and one for R_a)
+        #     p, r = np.zeros((N,N)), np.zeros((N,N))
+
+        #     # if combo valid in precondition
+        #     #preconditionSatisfied(action,combo)
+        #     #if preconditionSatisfied(action, combo):
+
+        #         # Loop through start states s, indexing with i
+        #         for i in range(len(states)):
+        #             start_state = states[i]
+
+        #             # If precondition is satisfied for action(combo) in start state
+        #             if preconditionSatisfied(action, combo, start_state):
+
+        #                 # Loop through end states s', indexing with j
+        #                 for j in range(len(states)):
+        #                     end_state = states[j]
+        #                     # If outcome matches s'
+        #                         # Valid transition, add probability (1 if not specified), add reward if any
+        #                     # Else not valid
+                                # Invalid transtion, probability remains 0 as initialized, add reward maybe (???)
+        print('+++++++++++')
 
 if __name__ == '__main__':
     args = parse()
