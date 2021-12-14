@@ -43,22 +43,6 @@ def dictproduct(dct):
     for t in product(*dct.values()):
         yield dict(zip(dct.keys(), t))
 
-def getPossibleParamValues(action):
-
-    # Currently only for action 0!
-
-    param_value_dict = {}
-
-    for p in action.params:
-        for t in domain.types:
-            if p.type == t:
-                #print("Found parameter (%s) of type (%s) " % (p,t))
-                #print('Possible values: ', problem.objects[t])
-                param_value_dict[p.name] = problem.objects[t]
-
-    print('Parameters/values: ', param_value_dict)
-    return param_value_dict
-
 def getParamCombos(action):
 
     combo_list = []
@@ -128,28 +112,28 @@ def preconditionSatisfied(action,combo,start_state):
 
 def outcomeIsEndState(param_values,end_state,action):
 
-    print('In outcomeIsEndState...')
+    #print('In outcomeIsEndState...')
 
-    print(param_values)
+    #print(param_values)
 
     # robot
 
-    print(action.effects)
-    print(action.effects[0][1]) # robot-at(?y)
-    print(action.effects[0][1]._predicate._args) # ['?y']
-    params = action.effects[0][1]._predicate._args
-    for param in params:
-        print('param: ', param)
-        param_value = param_values[param]
-        print('param_value:', param_value)
+    # print(action.effects)
+    # print(action.effects[0][1]) # robot-at(?y)
+    # print(action.effects[0][1]._predicate._args) # ['?y']
+    # params = action.effects[0][1]._predicate._args
+    # for param in params:
+    #     #print('param: ', param)
+    #     param_value = param_values[param]
+    #     #print('param_value:', param_value)
         
 
     # Done for 'move', does not include reward or probs
     outcome = []
     for effect in action.effects:
-        print(effect[1])
-        print(effect[1].is_positive())
-        print(effect[1]._predicate)
+        # print(effect[1])
+        # print(effect[1].is_positive())
+        # print(effect[1]._predicate)
 
         outcome.append([effect[1]._predicate.name])
         params = effect[1]._predicate._args
@@ -162,19 +146,19 @@ def outcomeIsEndState(param_values,end_state,action):
         else:
             outcome[-1].append(0)
 
-    print(outcome)
+    print('Outcome: ', outcome)
 
     # Check if outcome is satisfied by end state
     ## BUT WHAT ABOUT THE DIRTY-AT PARTS, they can result in invalid transitons,
     ## but we have no info about that part of the state outcome if the action is 'move'
     for term in outcome:
         if term not in end_state:
-            print('Could not find %s' % term)
+            print('Could not find %s term\n' % term)
             return False
 
     return True
 
-    print('End outcomeIsEndState')
+    #print('End outcomeIsEndState')
 
 
 def getPandR():
@@ -190,7 +174,7 @@ def getPandR():
     print('N: ',N)
 
     # Loop through all actions in domain (first try with just action move)
-    for action in domain.operators:
+    for action in [domain.operators[0]]:
 
         print('+++++++++++')
         print('Action: ', action)
@@ -198,12 +182,12 @@ def getPandR():
         # Get all possible combos of action param values
         param_combos = getParamCombos(action)
         print('param combos', param_combos)
-        print(len(param_combos))
+        #print(len(param_combos))
 
         ##preconditionSatisfied(action,param_combos[1],states[5]) NOT DONE
 
         # For combo in possible combos (ASSUMING ALL PRECOND SATISFIED ALREADY FOR NOW)
-        for combo in param_combos:
+        for combo_dict in param_combos:
 
             # Init  two NxN arrays with zeros (one for P_a and one for R_a)
             p, r = np.zeros((N,N)), np.zeros((N,N))
@@ -223,9 +207,12 @@ def getPandR():
                 for j in range(len(states)):
                     end_state = states[j]
                     # If outcome matches s'
-                    if outcomeIsEndState(start_state,end_state,action):
+                    print('Start state: ', start_state)
+                    print('End state: ', end_state)
+                    if outcomeIsEndState(combo_dict,end_state,action):
                         # Valid transition, add probability (1 if not specified), add reward if any
-                        print('Valid transition')
+                        print('Valid transition\n')
+
                     # Else not valid
                     #    Invalid transtion, probability remains 0 as initialized, add reward maybe (???)
         print('+++++++++++')
@@ -267,6 +254,6 @@ if __name__ == '__main__':
     print(domain)
     print(problem)
 
-    #getPandR()
+    getPandR()
 
-    test()
+    #test()
