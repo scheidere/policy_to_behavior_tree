@@ -56,6 +56,11 @@ def getPossibleParamValues(action):
 
 def getParamCombos(action):
 
+    # Values should be in same order as params in state
+    # e.g. (left-cell, right-cell) combo means 
+    # and state [['robot-at', 'left-cell', 0], ['robot-at', 'right-cell', 1], ['dirty-at', 'left-cell', 0], ['dirty-at', 'right-cell', 1]]
+
+
     combo_list = []
 
     # List of lists, where each sublist is a param's possible values
@@ -124,6 +129,56 @@ def preconditionSatisfied(action,combo,start_state):
     
     print('==========')
 
+def outcomeIsEndState(param_values,end_state,action):
+
+    print('In outcomeIsEndState...')
+
+    print(param_values)
+
+    # robot
+
+    print(action.effects)
+    print(action.effects[0][1]) # robot-at(?y)
+    print(action.effects[0][1]._predicate._args) # ['?y']
+    params = action.effects[0][1]._predicate._args
+    for param in params:
+        print('param: ', param)
+        param_value = param_values[param]
+        print('param_value:', param_value)
+        
+
+    # Done for 'move', does not include reward or probs
+    outcome = []
+    for effect in action.effects:
+        print(effect[1])
+        print(effect[1].is_positive())
+        print(effect[1]._predicate)
+
+        outcome.append([effect[1]._predicate.name])
+        params = effect[1]._predicate._args
+        for param in params:
+            param_value = param_values[param]
+            outcome[-1].append(param_value)
+
+        if effect[1].is_positive():
+            outcome[-1].append(1)
+        else:
+            outcome[-1].append(0)
+
+    print(outcome)
+
+    # Check if outcome is satisfied by end state
+    ## BUT WHAT ABOUT THE DIRTY-AT PARTS, they can result in invalid transitons,
+    ## but we have no info about that part of the state outcome if the action is 'move'
+    for term in outcome:
+        if term not in end_state:
+            print('Could not find %s' % term)
+            return False
+
+    return True
+
+    print('End outcomeIsEndState')
+
 
 def getPandR():
 
@@ -145,36 +200,65 @@ def getPandR():
 
         # Get all possible combos of action param values
         param_combos = getParamCombos(action)
-        print(param_combos)
+        print('param combos', param_combos)
         print(len(param_combos))
 
-        preconditionSatisfied(action,param_combos[1],states[5])
+        ##preconditionSatisfied(action,param_combos[1],states[5]) NOT DONE
 
-        # # For combo in possible combos
-        # for combo in param_combos:
+        # For combo in possible combos (ASSUMING ALL PRECOND SATISFIED ALREADY FOR NOW)
+        for combo in param_combos:
 
-        #     # Init  two NxN arrays with zeros (one for P_a and one for R_a)
-        #     p, r = np.zeros((N,N)), np.zeros((N,N))
+            # Init  two NxN arrays with zeros (one for P_a and one for R_a)
+            p, r = np.zeros((N,N)), np.zeros((N,N))
 
-        #     # if combo valid in precondition
-        #     #preconditionSatisfied(action,combo)
-        #     #if preconditionSatisfied(action, combo):
+            # if combo valid in precondition
+            #preconditionSatisfied(action,combo)
+            #if preconditionSatisfied(action, combo):
 
-        #         # Loop through start states s, indexing with i
-        #         for i in range(len(states)):
-        #             start_state = states[i]
+            # Loop through start states s, indexing with i
+            for i in range(len(states)):
+                start_state = states[i]
 
-        #             # If precondition is satisfied for action(combo) in start state
-        #             if preconditionSatisfied(action, combo, start_state):
+                # If precondition is satisfied for action(combo) in start state
+                ##if preconditionSatisfied(action, combo, start_state): ASSUMING PRECOND SATISFIED FOR TESTING
 
-        #                 # Loop through end states s', indexing with j
-        #                 for j in range(len(states)):
-        #                     end_state = states[j]
-        #                     # If outcome matches s'
-        #                         # Valid transition, add probability (1 if not specified), add reward if any
-        #                     # Else not valid
-                                # Invalid transtion, probability remains 0 as initialized, add reward maybe (???)
+                # Loop through end states s', indexing with j
+                for j in range(len(states)):
+                    end_state = states[j]
+                    # If outcome matches s'
+                    if outcomeIsEndState(start_state,end_state,action):
+                        # Valid transition, add probability (1 if not specified), add reward if any
+                        print('Valid transition')
+                    # Else not valid
+                    #    Invalid transtion, probability remains 0 as initialized, add reward maybe (???)
         print('+++++++++++')
+
+def test():
+
+    states = getStateList()
+
+    start_state = states[5]
+    print(start_state)
+    end_state = states[10]
+    print(end_state)
+
+    action = domain.operators[0]
+    print(action)
+
+    
+
+    combos = getParamCombos(action)
+    #print(combos[2])
+
+    combo_dict = {}
+    combo_dict['?x'] = combos[2][0]
+    combo_dict['?y'] = combos[2][1]
+
+    outcomeIsEndState(combo_dict,end_state,action)
+
+
+
+
 
 if __name__ == '__main__':
     args = parse()
@@ -185,4 +269,6 @@ if __name__ == '__main__':
     print(domain)
     print(problem)
 
-    getPandR()
+    #getPandR()
+
+    test()
