@@ -25,6 +25,7 @@ import argparse
 from pddlparser import PDDLParser
 
 import itertools
+from itertools import product
 import numpy as np
 import copy
 
@@ -37,6 +38,10 @@ def parse():
     parser.add_argument('problem', type=str, help='path to PDDL problem file')
 
     return parser.parse_args()
+
+def dictproduct(dct):
+    for t in product(*dct.values()):
+        yield dict(zip(dct.keys(), t))
 
 def getPossibleParamValues(action):
 
@@ -56,26 +61,18 @@ def getPossibleParamValues(action):
 
 def getParamCombos(action):
 
-    # Values should be in same order as params in state
-    # e.g. (left-cell, right-cell) combo means 
-    # and state [['robot-at', 'left-cell', 0], ['robot-at', 'right-cell', 1], ['dirty-at', 'left-cell', 0], ['dirty-at', 'right-cell', 1]]
-
-
     combo_list = []
 
-    # List of lists, where each sublist is a param's possible values
-    param_values_lists = []
+    # Dict of param name keys, with possible value list as arg for each
+    param_values_dict = {}
     for param in action.params:
 
-        param_values_lists.append(problem.objects[param.type])
+        param_values_dict[param._name] = problem.objects[param.type]
 
-    #print(param_values_lists)
+    print('param val dict', param_values_dict)
 
-    # Get all combos with one elment from each list 
-    # (so 3 element combos if 3 lists, i.e. 3 parameters)
-    combo_list = list(itertools.product(*param_values_lists))
-
-    #print(combo_list)
+    # Get all combinations of param values in dictionaries, congregate in list
+    combo_list = list(dictproduct(param_values_dict))
 
     return combo_list
 
@@ -248,13 +245,14 @@ def test():
     
 
     combos = getParamCombos(action)
+    print(combos)
     #print(combos[2])
 
-    combo_dict = {}
-    combo_dict['?x'] = combos[2][0]
-    combo_dict['?y'] = combos[2][1]
+    # combo_dict = {}
+    # combo_dict['?x'] = combos[2][0]
+    # combo_dict['?y'] = combos[2][1]
 
-    outcomeIsEndState(combo_dict,end_state,action)
+    # outcomeIsEndState(combo_dict,end_state,action)
 
 
 
