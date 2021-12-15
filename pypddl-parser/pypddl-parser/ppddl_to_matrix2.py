@@ -90,7 +90,9 @@ def getStateList():
 
     return states
 
-def preconditionSatisfied(action,combo,start_state):
+def preconditionSatisfied(combo,start_state,action):
+
+    # combo is combo dict
 
     print('==========')
 
@@ -110,35 +112,22 @@ def preconditionSatisfied(action,combo,start_state):
     
     print('==========')
 
-def outcomeIsEndState(param_values,end_state,action):
+def outcomeIsEndState(param_values,start_state, end_state,action):
 
     #print('In outcomeIsEndState...')
 
-    #print(param_values)
-
-    # robot
-
-    # print(action.effects)
-    # print(action.effects[0][1]) # robot-at(?y)
-    # print(action.effects[0][1]._predicate._args) # ['?y']
-    # params = action.effects[0][1]._predicate._args
-    # for param in params:
-    #     #print('param: ', param)
-    #     param_value = param_values[param]
-    #     #print('param_value:', param_value)
-        
+    #print('combo_dict', param_values)
 
     # Done for 'move', does not include reward or probs
     outcome = []
     for effect in action.effects:
-        # print(effect[1])
-        # print(effect[1].is_positive())
-        # print(effect[1]._predicate)
 
         outcome.append([effect[1]._predicate.name])
         params = effect[1]._predicate._args
         for param in params:
+            #print(param)
             param_value = param_values[param]
+            #print(param_value)
             outcome[-1].append(param_value)
 
         if effect[1].is_positive():
@@ -146,15 +135,26 @@ def outcomeIsEndState(param_values,end_state,action):
         else:
             outcome[-1].append(0)
 
-    print('Outcome: ', outcome)
+    #print('Outcome: ', outcome)
 
     # Check if outcome is satisfied by end state
-    ## BUT WHAT ABOUT THE DIRTY-AT PARTS, they can result in invalid transitons,
-    ## but we have no info about that part of the state outcome if the action is 'move'
+    non_outcome_term_indices = list(range(len(end_state))) # will denote parts of state that should remain same
     for term in outcome:
         if term not in end_state:
             print('Could not find %s term\n' % term)
             return False
+        else: # term is in end_state
+            term_index = end_state.index(term)
+            non_outcome_term_indices.remove(term_index)
+
+    # At this point, the outcome is satisfied in the end state
+    # However, the rest of the start state unaffected by the action, must remain the same
+    # So now, check that non-outcome portion is the same in start and end states
+    for index in non_outcome_term_indices:
+        if start_state[index] != end_state[index]:
+            print('State changed more than just from the action outcome\n')
+            return False
+
 
     return True
 
@@ -208,8 +208,9 @@ def getPandR():
                     end_state = states[j]
                     # If outcome matches s'
                     print('Start state: ', start_state)
+                    print('Action: ', action.name)
                     print('End state: ', end_state)
-                    if outcomeIsEndState(combo_dict,end_state,action):
+                    if outcomeIsEndState(combo_dict,start_state,end_state,action):
                         # Valid transition, add probability (1 if not specified), add reward if any
                         print('Valid transition\n')
 
@@ -220,10 +221,11 @@ def getPandR():
 def test():
 
     states = getStateList()
+    #  print(state)
 
     start_state = states[5]
     print(start_state)
-    end_state = states[10]
+    end_state = states[9]
     print(end_state)
 
     action = domain.operators[0]
@@ -235,11 +237,11 @@ def test():
     print(combos)
     #print(combos[2])
 
-    # combo_dict = {}
-    # combo_dict['?x'] = combos[2][0]
-    # combo_dict['?y'] = combos[2][1]
+    combo_dict = combos[2]
 
-    # outcomeIsEndState(combo_dict,end_state,action)
+    outcomeIsEndState(combo_dict,start_state,end_state,action)
+
+    #preconditionSatisfied(combo_dict,)
 
 
 
