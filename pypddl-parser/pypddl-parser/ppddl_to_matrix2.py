@@ -248,30 +248,56 @@ def getPandR():
                     #    Invalid transtion, probability remains 0 as initialized, add reward maybe (???)
         print('+++++++++++')
 
-def test():
+def outcomeIsEndStateTest():
 
     states = getStateList()
-    #  print(state)
 
+    # Success
+    print('Success Scenario: ')
     start_state = states[5]
     print(start_state)
     end_state = states[9]
     print(end_state)
 
     action = domain.operators[0]
-    print(action)
-
-    
+    print('Action: ', action)
 
     combos = getParamCombos(action)
-    print(combos)
-    #print(combos[2])
-
     combo_dict = combos[2]
+    print('Combo: ', combo_dict)
 
-    #outcomeIsEndState(combo_dict,start_state,end_state,action)
+    print('Outcome: %s\n' % outcomeIsEndState(combo_dict,start_state,end_state,action))
 
-    print('Precond satisfied? ', preconditionSatisfied(combo_dict,start_state,action))
+    # Failure
+    print('Failure Scenario 1: End state too different, not just changes from taking action in start state')
+    start_state = states[5]
+    print(start_state)
+    end_state = states[8]
+    print(end_state)
+
+    action = domain.operators[0]
+    print('Action: ', action)
+
+    combos = getParamCombos(action)
+    combo_dict = combos[2]
+    print('Combo: ', combo_dict)
+
+    print('Outcome: %s\n' % outcomeIsEndState(combo_dict,start_state,end_state,action))
+
+    print('Failure Scenario 2: End state is not what happens when taking action in start state given')
+    start_state = states[5]
+    print(start_state)
+    end_state = states[5]
+    print(end_state)
+
+    action = domain.operators[0]
+    print('Action: ', action)
+
+    combos = getParamCombos(action)
+    combo_dict = combos[2]
+    print('Combo: ', combo_dict)
+
+    print('Outcome: %s\n' % outcomeIsEndState(combo_dict,start_state,end_state,action))
 
 
 def precondSatisfiedTest():
@@ -297,7 +323,7 @@ def precondSatisfiedTest():
     # Not satisfied test (two ways to fail)
 
     # Combo matches start state but action preconditions are not satisfied (robot-at(?x) fails)
-    print('Failure Scenario 2: Preconditions not satisfied (robot-at(?x) fails)')
+    print('Failure Scenario 1: Preconditions not satisfied (robot-at(?x) fails)')
     start_state = states[5]
     print('Start: ', start_state)
 
@@ -311,7 +337,7 @@ def precondSatisfiedTest():
     print('Precond satisfied? %s\n' % preconditionSatisfied(combo_dict,start_state,action))
 
     # Combo matches start state but action preconditions are not satisfied (?x != ?y fails)
-    print('Failure Scenario 3: Preconditions not satisfied (?x != ?y fails)')
+    print('Failure Scenario 2: Preconditions not satisfied (?x != ?y fails)')
     start_state = states[5]
     print('Start: ', start_state)
     end_state = states[9]
@@ -343,6 +369,6 @@ if __name__ == '__main__':
 
     #??? Next step, do preconditionSatisfied function!!
 
-    #test()
+    outcomeIsEndStateTest()
 
-    precondSatisfiedTest()
+    #precondSatisfiedTest()
