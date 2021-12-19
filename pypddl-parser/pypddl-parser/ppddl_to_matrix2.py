@@ -23,6 +23,7 @@
 import argparse
 
 from pddlparser import PDDLParser
+#from literal import Literal #used for isinstance()
 
 import itertools
 from itertools import product
@@ -53,7 +54,7 @@ def getParamCombos(action):
 
         param_values_dict[param._name] = problem.objects[param.type]
 
-    print('param val dict', param_values_dict)
+    #print('param val dict', param_values_dict)
 
     # Get all combinations of param values in dictionaries, congregate in list
     combo_list = list(dictproduct(param_values_dict))
@@ -90,27 +91,56 @@ def getStateList():
 
     return states
 
-def preconditionSatisfied(combo,start_state,action):
+def preconditionSatisfied(combo_dict,start_state,action):
 
     # combo is combo dict
 
-    print('==========')
+    #print('==========')
 
-    print('start s', start_state)
-    print('combo', combo)
+    #print('start state %s\n' % start_state)
+    #print('combo %s\n' % combo_dict)
 
-    for p in action.params:
-        print(p.name) # ?x
-
+    # Check that parameter values in combo match start state per action precondition 
     for precond in action.precond:
-        print(precond)
-        print(precond._predicate.name)
-        print(precond._predicate.args)
+        #print(precond)
+        #print(precond._predicate.args)
+        if precond._predicate.name != '=':
+            #print('Precond name: %s' % precond._predicate.name)
+            # Search state for name, e.g. 'robot-at'
+            for term in start_state:
+                if term[0] == precond._predicate.name and term[-1] == 1: # Check robot-at is True
+                    #print(term)
+                    # Determine if True for correct arg(s), e.g. ?x or ?x,?y
+                    arg_terms = term[1:-1]
+                    #print('arg_terms',arg_terms)
+                    for i in range(len(precond._predicate.args)):
+                        arg = precond._predicate.args[i]
+                        #print(i,arg,combo_dict[arg],arg_terms[i])
+                        if arg_terms[i] != combo_dict[arg]: 
+                            print('Failure due to combo not matching start state given action preconditions')
+                            return False
 
-        # Get value for 
+        # Check equation preconditions with combo parameter values
+        elif precond._predicate.name == '=':
+            args = precond._predicate.args
+            #print('args: ', args)
+            if precond.is_positive(): # =
+                #print('pos')
+                if combo_dict[args[0]] != combo_dict[args[1]]:
+                    print('Failure due to params not being equal...')
+                    return False
+            else: # !=
+                #print('neg')
+                #print(args[0],args[1])
+                if combo_dict[args[0]] == combo_dict[args[1]]:
+                    print('Failure due to params being equal...')
+                    return False
+
+
+    return True
 
     
-    print('==========')
+    #print('==========')
 
 def outcomeIsEndState(param_values,start_state, end_state,action):
 
@@ -239,9 +269,62 @@ def test():
 
     combo_dict = combos[2]
 
-    outcomeIsEndState(combo_dict,start_state,end_state,action)
+    #outcomeIsEndState(combo_dict,start_state,end_state,action)
 
-    #preconditionSatisfied(combo_dict,)
+    print('Precond satisfied? ', preconditionSatisfied(combo_dict,start_state,action))
+
+
+def precondSatisfiedTest():
+
+    states = getStateList()
+
+    # Satisfied test
+    print('Success Scenario: ')
+    start_state = states[5]
+    print('Start: ', start_state)
+    # end_state = states[9]
+    # print('End: ', end_state)
+
+    action = domain.operators[0]
+    print('Action: ', action)
+
+    combos = getParamCombos(action)
+    combo_dict = combos[2]
+    print('Param combo: ', combo_dict)
+
+    print('Precond satisfied? %s\n' % preconditionSatisfied(combo_dict,start_state,action))
+
+    # Not satisfied test (two ways to fail)
+
+    # Combo matches start state but action preconditions are not satisfied (robot-at(?x) fails)
+    print('Failure Scenario 2: Preconditions not satisfied (robot-at(?x) fails)')
+    start_state = states[5]
+    print('Start: ', start_state)
+
+    action = domain.operators[0]
+    print('Action: ', action)
+
+    combos = getParamCombos(action)
+    combo_dict = combos[1]
+    print('Param combo: ', combo_dict)
+
+    print('Precond satisfied? %s\n' % preconditionSatisfied(combo_dict,start_state,action))
+
+    # Combo matches start state but action preconditions are not satisfied (?x != ?y fails)
+    print('Failure Scenario 3: Preconditions not satisfied (?x != ?y fails)')
+    start_state = states[5]
+    print('Start: ', start_state)
+    end_state = states[9]
+    print('End: ', end_state)
+
+    action = domain.operators[0]
+    print('Action: ', action)
+
+    combos = getParamCombos(action)
+    combo_dict = combos[3]
+    print('Param combo: ', combo_dict)
+
+    print('Precond satisfied? %s\n' % preconditionSatisfied(combo_dict,start_state,action))
 
 
 
@@ -256,6 +339,10 @@ if __name__ == '__main__':
     print(domain)
     print(problem)
 
-    getPandR()
+    #getPandR()
+
+    #??? Next step, do preconditionSatisfied function!!
 
     #test()
+
+    precondSatisfiedTest()
