@@ -365,9 +365,10 @@ if __name__ == '__main__':
     print(domain)
     print(problem)
 
-    #getPandR()
+    ??? add preconditionSatisfied calls back into main getPandR function
+    then add actual calls to functions that pull correct probabilities and rewards to add to matrices
 
-    #??? Next step, do preconditionSatisfied function!!
+    #getPandR()
 
     outcomeIsEndStateTest()
 
