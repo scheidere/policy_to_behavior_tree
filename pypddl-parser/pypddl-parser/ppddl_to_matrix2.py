@@ -222,13 +222,10 @@ def getPandR():
             # Init  two NxN arrays with zeros (one for P_a and one for R_a)
             p, r = np.zeros((N,N)), np.zeros((N,N))
 
-            # if combo valid in precondition
-            #preconditionSatisfied(action,combo)
-            #if preconditionSatisfied(action, combo):
-
             # Loop through start states s, indexing with i
             for i in range(len(states)):
                 start_state = states[i]
+                if preconditionSatisfied(combo_dict,start_state,action):
 
                 # If precondition is satisfied for action(combo) in start state
                 ##if preconditionSatisfied(action, combo, start_state): ASSUMING PRECOND SATISFIED FOR TESTING
