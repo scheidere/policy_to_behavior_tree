@@ -105,74 +105,62 @@ def getComboArgValues(args,combo_dict):
 
 def preconditionSatisfied(combo_dict,start_state,action,test=False):
 
-    # combo is combo dict
-
-    #print('==========')
-
-    #print('start state %s\n' % start_state)
-    #print('combo %s\n' % combo_dict)
-
     # Check that parameter values in combo match start state per action precondition 
     for precond in action.precond:
-        #print(precond)
-        #print(precond._predicate.args)
+
         if precond._predicate.name != '=':
             match_found = False
             
             precond_args = precond._predicate.args
-            print(precond._predicate.name, precond_args)
+            if test:
+                print(precond._predicate.name, precond_args)
 
+            # Search start state for precondition predicate name where true
             for term in start_state:
+                # True is defined by term[-1] == 1
                 if term[0] == precond._predicate.name and term[-1] == 1: # Check robot-at is True
-                    print('1 term', term)
 
-                    # Determine if True for correct arg(s), e.g. ?x or ?x,?y
+                    # Get param values in start state for current term (associated with given predicate)
                     term_arg_vals = term[1:-1]
-                    print('term arg vals', term_arg_vals)
+                    if test:
+                        print('term arg vals', term_arg_vals)
 
+                    # Get parameter values to compare with from the param_combo given
                     combo_arg_vals = getComboArgValues(precond_args,combo_dict)
 
-                    print('Comparing %s to %s' % (term_arg_vals,combo_arg_vals))
+                    if test:
+                        print('Comparing %s to %s' % (term_arg_vals,combo_arg_vals))
+
+                    # Compare start state term with combo
                     if term_arg_vals != combo_arg_vals:
-                        # Term does not match arg vals in give combo, so precondition failed
-                        print('Discrepancy found')
-                        #print('Failure due to combo not matching start state given action preconditions')
+                        # Term does not match arg vals in give combo
+                        if test:
+                            print('Discrepancy found')
+                        else:
+                            pass
                     else:
-                        print('Match found')
+                        if test:
+                            print('Match found') # precondition is satisfied
                         match_found = True
                         continue
-                        #return False
 
-                    # for i in range(len(precond._predicate.args)):
-                    #     arg = precond._predicate.args[i]
-                    #     print('arg', arg)
-                    #     #print(i,arg,combo_dict[arg],arg_terms[i])
-                    #     print('arg val', arg_val_terms[i])
-                    #     print('combo val', combo_dict[arg])
-                    #     if arg_val_terms[i] != combo_dict[arg]: 
-                    #         if test:
-                    #             print('Failure due to combo not matching start state given action preconditions')
-                    #         return False
-
-            #print('after: ', predicate_true)
-            if not match_found: # This would mean robot-at was never True (1), so start state is false
-                #print('Failure due to all 0s')
-                print('Failure because no match found between state and param combo')
+            if not match_found: # Precondition fails for given state and param combo
+                if test:
+                    print('Failure because no match found between state and param combo')
                 return False
 
         # Check equation preconditions with combo parameter values
         elif precond._predicate.name == '=':
             args = precond._predicate.args
-            #print('args: ', args)
+
             if precond.is_positive(): # =
-                #print('pos')
+
                 if combo_dict[args[0]] != combo_dict[args[1]]:
                     if test:
                         print('Failure due to params not being equal...')
                     return False
             else: # !=
-                #print('neg')
-                #print(args[0],args[1])
+
                 if combo_dict[args[0]] == combo_dict[args[1]]:
                     if test:
                         print('Failure due to params being equal...')
@@ -180,9 +168,6 @@ def preconditionSatisfied(combo_dict,start_state,action,test=False):
 
 
     return True
-
-    
-    #print('==========')
 
 def outcomeIsEndState(param_values,start_state, end_state,action,test=False):
 
@@ -349,6 +334,44 @@ def outcomeIsEndStateTest():
 
     print('Outcome: %s\n' % outcomeIsEndState(combo_dict,start_state,end_state,action))
 
+def outcomeIsEndStateTest2():
+
+    states = getStateList()
+
+    action = domain.operators[0]
+    print('Action: ', action)
+
+    param_combos = getParamCombos(action)
+
+    count = 0
+    for i in range(len(states)):
+        start_state = states[i]
+        #print('Start: ', start_state)
+
+        for combo_dict in param_combos:
+
+            #print('Param combo: ', combo_dict)
+
+            for j in range(len(states)):
+                end_state = states[j]
+                #print('Precond satisfied? %s\n' % preconditionSatisfied(combo_dict,start_state,action,test=False))
+                if preconditionSatisfied(combo_dict,start_state,action,test=False):
+                    count += 1
+                    outcome = outcomeIsEndState(combo_dict,start_state,end_state,action,test=False)
+
+                    if outcome:
+                        print('Combo dict: ', combo_dict)
+                        print('Start: ', start_state)
+                        print('End: ', end_state)
+                        print('Outcome: %s\n' % outcomeIsEndState(combo_dict,start_state,end_state,action,test=True))
+
+                    # print('Combo dict: ', combo_dict)
+                    # print('Start: ', start_state)
+                    # print('End: ', end_state)
+                    # print('Outcome: %s\n' % outcomeIsEndState(combo_dict,start_state,end_state,action,test=True))
+
+    print('Count: ', count)
+
 
 def precondSatisfiedTest():
 
@@ -421,11 +444,7 @@ def precondSatisfiedTest2():
             print('Param combo: ', combo_dict)
 
             print('Precond satisfied? %s\n' % preconditionSatisfied(combo_dict,start_state,action,test=True))
-            # preconditons_satisfied = False
-
-            # if preconditionSatisfied(combo_dict,start_state,action):
-
-            #     preconditons_satisfied = True
+            
 
 
 
@@ -441,12 +460,10 @@ if __name__ == '__main__':
     print(domain)
     print(problem)
 
-    #??? add preconditionSatisfied calls back into main getPandR function
-    #then add actual calls to functions that pull correct probabilities and rewards to add to matrices
-
-    #getPandR()
+    getPandR() ??? fix this, prints valid transition when end state is wrong
 
     #outcomeIsEndStateTest()
+    #outcomeIsEndStateTest2()
 
     #precondSatisfiedTest()
-    precondSatisfiedTest2()
+    #precondSatisfiedTest2()
