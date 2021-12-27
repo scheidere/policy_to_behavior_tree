@@ -91,6 +91,18 @@ def getStateList():
 
     return states
 
+def getComboArgValues(args,combo_dict):
+
+    # E.g. args = ['?x','?a','?b']
+
+    values = []
+    for arg in args:
+        values.append(combo_dict[arg])
+
+    return values
+
+
+
 def preconditionSatisfied(combo_dict,start_state,action,test=False):
 
     # combo is combo dict
@@ -105,29 +117,47 @@ def preconditionSatisfied(combo_dict,start_state,action,test=False):
         #print(precond)
         #print(precond._predicate.args)
         if precond._predicate.name != '=':
-            predicate_true = False
-            #print('Precond name: %s' % precond._predicate.name)
-            # Search state for name, e.g. 'robot-at'
-            #print('init: ', predicate_true)
+            match_found = False
+            
+            precond_args = precond._predicate.args
+            print(precond._predicate.name, precond_args)
+
             for term in start_state:
                 if term[0] == precond._predicate.name and term[-1] == 1: # Check robot-at is True
-                    #print('bla', term)
-                    predicate_true = True
-                    #print(term)
+                    print('1 term', term)
+
                     # Determine if True for correct arg(s), e.g. ?x or ?x,?y
-                    arg_terms = term[1:-1]
-                    #print('arg_terms',arg_terms)
-                    for i in range(len(precond._predicate.args)):
-                        arg = precond._predicate.args[i]
-                        #print(i,arg,combo_dict[arg],arg_terms[i])
-                        if arg_terms[i] != combo_dict[arg]: 
-                            if test:
-                                print('Failure due to combo not matching start state given action preconditions')
-                            return False
+                    term_arg_vals = term[1:-1]
+                    print('term arg vals', term_arg_vals)
+
+                    combo_arg_vals = getComboArgValues(precond_args,combo_dict)
+
+                    print('Comparing %s to %s' % (term_arg_vals,combo_arg_vals))
+                    if term_arg_vals != combo_arg_vals:
+                        # Term does not match arg vals in give combo, so precondition failed
+                        print('Discrepancy found')
+                        #print('Failure due to combo not matching start state given action preconditions')
+                    else:
+                        print('Match found')
+                        match_found = True
+                        continue
+                        #return False
+
+                    # for i in range(len(precond._predicate.args)):
+                    #     arg = precond._predicate.args[i]
+                    #     print('arg', arg)
+                    #     #print(i,arg,combo_dict[arg],arg_terms[i])
+                    #     print('arg val', arg_val_terms[i])
+                    #     print('combo val', combo_dict[arg])
+                    #     if arg_val_terms[i] != combo_dict[arg]: 
+                    #         if test:
+                    #             print('Failure due to combo not matching start state given action preconditions')
+                    #         return False
 
             #print('after: ', predicate_true)
-            if not predicate_true: # This would mean robot-at was never True (1), so start state is false
-                print('Failure due to all 0s')
+            if not match_found: # This would mean robot-at was never True (1), so start state is false
+                #print('Failure due to all 0s')
+                print('Failure because no match found between state and param combo')
                 return False
 
         # Check equation preconditions with combo parameter values
