@@ -179,6 +179,10 @@ def outcomeIsEndState(param_values,start_state, end_state,action,test=False):
     outcome = []
     for effect in action.effects:
 
+        print(effect)
+        ??? need to deal with probability which makes clean function different from move function handling
+        tuple issue on 186
+
         outcome.append([effect[1]._predicate.name])
         params = effect[1]._predicate._args
         for param in params:
@@ -233,7 +237,7 @@ def getPandR():
     print('N: ',N)
 
     # Loop through all actions in domain (first try with just action move)
-    for action in [domain.operators[0]]:
+    for action in [domain.operators[1]]:
 
         #print('+++++++++++')
         #print('Action: ', action)
