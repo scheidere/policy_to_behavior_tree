@@ -255,11 +255,7 @@ def getPandR():
             for i in range(len(states)):
                 start_state = states[i]
 
-                preconditons_satisfied = False
-
                 if preconditionSatisfied(combo_dict,start_state,action):
-
-                    preconditons_satisfied = True
 
                     valid_transition = False
 
@@ -267,17 +263,25 @@ def getPandR():
                     for j in range(len(states)):
                         end_state = states[j]
                         # If outcome matches s'
+
                         if outcomeIsEndState(combo_dict,start_state,end_state,action):
-                            # Valid transition, add probability (1 if not specified), add reward if any
-                            valid_transition = True
+                        # Valid transition, add probability (1 if not specified), add reward if any
+
+                            print('Start state: ', start_state)
+                            print('Combo dict: ', combo_dict)
+                            print('Action: ', action.name)
+                            print('End state: ', end_state,'\n')
+
+
+
+
 
                     # Else not valid
-                    print('Start state: ', start_state)
-                    print('Combo dict: ', combo_dict)
-                    print('Preconditions satisfied: ', preconditons_satisfied)
-                    print('Action: ', action.name)
-                    print('End state: ', end_state)
-                    print('Valid transtion: %s\n' % valid_transition)
+                    # print('Start state: ', start_state)
+                    # print('Combo dict: ', combo_dict)
+                    # print('Action: ', action.name)
+                    # print('End state: ', end_state)
+                    # print('Valid transtion: %s\n' % valid_transition)
 
                     #    Invalid transtion, probability remains 0 as initialized, add reward maybe (???)
 
@@ -460,7 +464,7 @@ if __name__ == '__main__':
     print(domain)
     print(problem)
 
-    getPandR() ??? fix this, prints valid transition when end state is wrong
+    getPandR() #??? fix this, prints valid transition when end state is wrong
 
     #outcomeIsEndStateTest()
     #outcomeIsEndStateTest2()
