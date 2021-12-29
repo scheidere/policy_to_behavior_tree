@@ -169,6 +169,79 @@ def preconditionSatisfied(combo_dict,start_state,action,test=False):
 
     return True
 
+def outcome(param_values, start_state, action, test=False):
+
+    # param_values is a dict that represents some of the info in the start state
+    # This function should only be called when param_values and start_state pass preconditionSatisified
+
+    # List of lists
+    # Each sub list includes an outcome state with probability p and reward r, [state,p,r]
+    outcome_list = []
+
+    # Initialize state terms left over after given action is taken in the start state
+    unchanged_state_terms = copy.deepcopy(start_state)
+
+    replacement_state_terms = [] # [state,p,r]
+    for effect in action.effects:
+
+        if effect[0] == 1.0: # Non-probabilistic effect
+            predicate = effect[1]._predicate
+            predicate_name = predicate.name
+            params = predicate._args
+            values = []
+            for param in params:
+                values.append(param_values[param])
+            
+            # Search for relevant terms in start state, those that will be affected
+            for i in range(len(start_state)):
+                term = start_state[i]
+
+                # Find term that will change due to effect of taking action in start state
+                if term[0] == predicate_name and term[1:-1] == values:
+
+                    unchanged_state_terms.remove(term)
+
+                    # Initialize term for end state, state that results from action occurance
+                    new_term = copy.deepcopy(term[0:-1])
+
+                    if effect[1].is_positive():
+                        new_term.append(1)
+                    else:
+                        new_term.append(0)
+
+                    replacement_state_terms.append(new_term)
+
+    print('replacement_state_terms ', replacement_state_terms)
+    print('unchanged_state_terms ', unchanged_state_terms)
+
+    end_state = replacement_state_terms + unchanged_state_terms
+    outcome_sublist = [end_state,1.0,0]
+    print('outcome_sublist ', outcome_sublist)
+
+
+
+
+
+    return outcome_list
+
+def test_outcome():
+
+    states = getStateList()
+
+    start_state = states[5]
+    print('start state ', start_state)
+    end_state = states[9]
+    print('expected end state ', end_state)
+
+    action = domain.operators[0]
+    print('Action: ', action)
+
+    combos = getParamCombos(action)
+    combo_dict = combos[2]
+    print('Combo: ', combo_dict)
+
+    outcome(combo_dict,start_state,action)
+
 def outcomeIsEndState(param_values,start_state, end_state,action,test=False):
 
     #print('In outcomeIsEndState...')
@@ -176,45 +249,35 @@ def outcomeIsEndState(param_values,start_state, end_state,action,test=False):
     #print('combo_dict', param_values)
 
     # Done for 'move', does not include reward or probs
-    outcome = []
+    state_terms_changed = []
     for effect in action.effects:
 
-        print(effect)
-        print('len ', len(effect))
-        print('tot len ', len(action.effects))
-        #??? need to deal with probability which makes clean function different from move function handling
-        #tuple issue on 186
-
-        prob = effect[0]
-        print('prob ', prob)
-        print('1 ', effect[1])
-
         if effect[0] == 1.0: # Non-probabilistic effect
-            print('Non-probabilistic effect')
-            outcome.append([effect[1]._predicate.name])
+            #print('Non-probabilistic effect')
+            state_terms_changed.append([effect[1]._predicate.name])
             params = effect[1]._predicate._args
             for param in params:
                 #print(param)
                 param_value = param_values[param]
                 #print(param_value)
-                outcome[-1].append(param_value)
+                state_terms_changed[-1].append(param_value)
 
             if effect[1].is_positive():
-                outcome[-1].append(1)
+                state_terms_changed[-1].append(1)
             else:
-                outcome[-1].append(0)
+                state_terms_changed[-1].append(0)
         else:
             print('Probabilistic effect')
 
             effect[5]
 
         
-
+    print('state_terms_changed: ', state_terms_changed)
     #print('Outcome: ', outcome)
 
     # Check if outcome is satisfied by end state
     non_outcome_term_indices = list(range(len(end_state))) # will denote parts of state that should remain same
-    for term in outcome:
+    for term in state_terms_changed:
         if term not in end_state:
             if test:
                 print('Could not find %s term\n' % term)
@@ -482,10 +545,12 @@ if __name__ == '__main__':
     print(domain)
     print(problem)
 
-    getPandR() #??? fix this, prints valid transition when end state is wrong
+    #getPandR() #??? fix this, prints valid transition when end state is wrong
 
     #outcomeIsEndStateTest()
     #outcomeIsEndStateTest2()
 
     #precondSatisfiedTest()
     #precondSatisfiedTest2()
+
+    test_outcome()
