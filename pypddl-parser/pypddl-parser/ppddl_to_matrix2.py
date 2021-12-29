@@ -180,21 +180,35 @@ def outcomeIsEndState(param_values,start_state, end_state,action,test=False):
     for effect in action.effects:
 
         print(effect)
-        ??? need to deal with probability which makes clean function different from move function handling
-        tuple issue on 186
+        print('len ', len(effect))
+        print('tot len ', len(action.effects))
+        #??? need to deal with probability which makes clean function different from move function handling
+        #tuple issue on 186
 
-        outcome.append([effect[1]._predicate.name])
-        params = effect[1]._predicate._args
-        for param in params:
-            #print(param)
-            param_value = param_values[param]
-            #print(param_value)
-            outcome[-1].append(param_value)
+        prob = effect[0]
+        print('prob ', prob)
+        print('1 ', effect[1])
 
-        if effect[1].is_positive():
-            outcome[-1].append(1)
+        if effect[0] == 1.0: # Non-probabilistic effect
+            print('Non-probabilistic effect')
+            outcome.append([effect[1]._predicate.name])
+            params = effect[1]._predicate._args
+            for param in params:
+                #print(param)
+                param_value = param_values[param]
+                #print(param_value)
+                outcome[-1].append(param_value)
+
+            if effect[1].is_positive():
+                outcome[-1].append(1)
+            else:
+                outcome[-1].append(0)
         else:
-            outcome[-1].append(0)
+            print('Probabilistic effect')
+
+            effect[5]
+
+        
 
     #print('Outcome: ', outcome)
 
@@ -237,7 +251,7 @@ def getPandR():
     print('N: ',N)
 
     # Loop through all actions in domain (first try with just action move)
-    for action in [domain.operators[1]]:
+    for action in [domain.operators[0]]:
 
         #print('+++++++++++')
         #print('Action: ', action)
