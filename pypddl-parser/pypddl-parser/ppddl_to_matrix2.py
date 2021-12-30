@@ -23,7 +23,7 @@
 import argparse
 
 from pddlparser import PDDLParser
-#from literal import Literal #used for isinstance()
+from literal import Literal #used for isinstance()
 
 import itertools
 from itertools import product
@@ -169,6 +169,23 @@ def preconditionSatisfied(combo_dict,start_state,action,test=False):
 
     return True
 
+def equal(state1, state2):
+
+    #need to check if states have all the same terms
+    #even if the terms are not in the same order
+
+    #returns True or False
+
+    pass
+
+def getStateIndex(state, states):
+
+    for i in range(len(states)):
+
+        if equal(states[i],state):
+
+            return i
+
 def outcome(param_values, start_state, action, test=False):
 
     # param_values is a dict that represents some of the info in the start state
@@ -182,6 +199,9 @@ def outcome(param_values, start_state, action, test=False):
     unchanged_state_terms = copy.deepcopy(start_state)
 
     replacement_state_terms = [] # [state,p,r]
+
+    reward = 0
+    prob = 0
     for effect in action.effects:
 
         if effect[0] == 1.0: # Non-probabilistic effect
@@ -211,8 +231,38 @@ def outcome(param_values, start_state, action, test=False):
 
                     replacement_state_terms.append(new_term)
 
-    print('replacement_state_terms ', replacement_state_terms)
-    print('unchanged_state_terms ', unchanged_state_terms)
+        else: # Probabilistic effect
+
+            for term in effect:
+                print(term)
+                prob = term[0]
+                print('prob: ', prob)
+                for t1 in term[1:]:
+                    print('t1 ', t1)
+                    if len(t1) > 1:
+
+                        # in case t1 = ('reward', 2) for e.g.
+                        if t1[0] == 'reward':
+                            reward = t1[1]
+                            print('reward t1', reward)
+
+                        else:
+                            for t2 in t1:
+                                if isinstance(t2,Literal):
+                                    print('literal t2 ', t2)
+                                elif t2:
+                                    if t2[0] == 'reward':
+                                        reward = t2[1]
+                                        print('reward t2', reward)
+                    else:
+                        if t1[0] == 'reward':
+                            reward = t2[1]
+                            print('reward ', reward)
+
+
+
+    #print('replacement_state_terms ', replacement_state_terms)
+    #print('unchanged_state_terms ', unchanged_state_terms)
 
     end_state = replacement_state_terms + unchanged_state_terms
     outcome_sublist = [end_state,1.0,0]
@@ -228,19 +278,42 @@ def test_outcome():
 
     states = getStateList()
 
-    start_state = states[5]
-    print('start state ', start_state)
-    end_state = states[9]
-    print('expected end state ', end_state)
+    # print('Scenario 1:')
+    # start_state = states[5]
+    # print('start state ', start_state)
+    # end_state = states[9]
+    # print('expected end state ', end_state)
 
+    # action = domain.operators[0]
+    # print('Action: ', action)
+
+    # combos = getParamCombos(action)
+    # combo_dict = combos[2]
+    # print('Combo: ', combo_dict)
+
+    # outcome(combo_dict,start_state,action)
+
+    print('Scenario 2:')
     action = domain.operators[0]
     print('Action: ', action)
-
     combos = getParamCombos(action)
-    combo_dict = combos[2]
-    print('Combo: ', combo_dict)
+    for start_state in states:
 
-    outcome(combo_dict,start_state,action)
+        for combo_dict in combos:
+
+            if preconditionSatisfied(combo_dict,start_state,action):
+
+                print('\n')
+                print('Start state: ', start_state)
+                print('Combo dict: ', combo_dict)
+                print('Action: ', action.name)
+                #??? add more prints, combo, action, etc?
+                outcome(combo_dict,start_state,action)
+
+                print('\n')
+
+
+    #outcome(combo_dict,start_state,action)
 
 def outcomeIsEndState(param_values,start_state, end_state,action,test=False):
 
@@ -553,4 +626,22 @@ if __name__ == '__main__':
     #precondSatisfiedTest()
     #precondSatisfiedTest2()
 
-    test_outcome()
+    #test_outcome()
+    states = getStateList()
+    print('Scenario 1:')
+    start_state = states[5]
+    print('start state ', start_state)
+    end_state = states[9]
+    print('expected end state ', end_state)
+
+    action = domain.operators[1] #[0] = move
+    print('Action: ', action)
+
+    combos = getParamCombos(action)
+    combo_dict = combos[1] #[2] is correct for states[5] and action 0
+    print('Combo: ', combo_dict)
+
+    outcome(combo_dict,start_state,action)
+
+    print('=======================')
+    print(isinstance('reward',Literal))
