@@ -200,10 +200,9 @@ def outcome(param_values, start_state, action, test=False):
 
     replacement_state_terms = [] # [state,p,r]
 
-    non_probabilistic = False
+    probabilistic = True
 
-    reward = 0
-    prob = 0
+    literals = []
     for effect in action.effects:
 
         if effect[0] == 1.0: # Non-probabilistic effect
@@ -211,8 +210,11 @@ def outcome(param_values, start_state, action, test=False):
             #unchanged_state_terms = copy.deepcopy(start_state)
 
             #replacement_state_terms = [] # [state,p,r]
+            prob = 1.0
+            reward = 0
+            #literals.append(effect[1])
 
-            non_probabilistic = True
+            probabilistic = False
 
             predicate = effect[1]._predicate
             predicate_name = predicate.name
@@ -280,41 +282,44 @@ def outcome(param_values, start_state, action, test=False):
                             literal = t1
                             literals.append(literal)
 
-                print('PROB', prob)
-                print('REWARD ', reward)
-                print('literals ', literals)
+                # print('PROB', prob)
+                # print('REWARD ', reward)
+                # print('literals ', literals)
 
                 
-                getOutcomeSublist(literals,prob,reward,start_state,param_values)
+                outcome_sublist = getOutcomeSublist(literals,prob,reward,start_state,param_values,is_probabilistic=True)
+                #print(outcome_sublist)
+                outcome_list.append(outcome_sublist)
 
-
-    if non_probabilistic:
-        end_state = replacement_state_terms + unchanged_state_terms
-        outcome_sublist = [end_state,1.0,0]
-        print('outcome_sublist 1', outcome_sublist)
+    if not probabilistic:
+        end_state = unchanged_state_terms + replacement_state_terms
+        outcome_sublist = [end_state,prob,reward]
+        #print(outcome_sublist)
+        #print('non probabilitistic outcome', outcome_sublist)
+        ##getOutcomeSublist(literals, prob, reward, start_state, param_values,is_probabilistic=False)
+        outcome_list.append(outcome_sublist)
 
     
-
-
-
+    print('Outcome list: ', outcome_list)
 
 
     return outcome_list
 
-def getOutcomeSublist(literals, prob, reward, start_state, param_values):
+def getOutcomeSublist(literals, prob, reward, start_state, param_values, is_probabilistic=False):
 
-    print('agh lit', literals)
+    #print('agh lit', literals)
 
     if not literals: # No state changes, just prob and reward
         end_state = copy.deepcopy(start_state)
         outcome_sublist = [end_state,prob,reward]
-        print('outcome_sublist 1', outcome_sublist)
+        #print('outcome_sublist 1', outcome_sublist)
         return outcome_sublist
 
-    # Initialize state terms left over after given action is taken in the start state
-    unchanged_state_terms = copy.deepcopy(start_state)
+    if is_probabilistic:
+        # Initialize state terms left over after given action is taken in the start state
+        unchanged_state_terms = copy.deepcopy(start_state)
 
-    replacement_state_terms = [] # [state,p,r]
+        replacement_state_terms = [] # [state,p,r]
 
     # [outcome_state, prob, reward]
     for literal in literals:
@@ -353,7 +358,7 @@ def getOutcomeSublist(literals, prob, reward, start_state, param_values):
 
         end_state = replacement_state_terms + unchanged_state_terms
         outcome_sublist = [end_state,prob,reward]
-        print('outcome_sublist 2', outcome_sublist)
+        #print('outcome_sublist 2', outcome_sublist)
 
     return outcome_sublist
 
@@ -714,8 +719,8 @@ if __name__ == '__main__':
     print('Scenario 1:')
     start_state = states[5]
     print('start state ', start_state)
-    end_state = states[9]
-    print('expected end state ', end_state)
+    #end_state = states[9]
+    #print('expected end state ', end_state)
 
     action = domain.operators[1] #[0] = move // [1] = clean
     print('Action: ', action)
@@ -726,5 +731,5 @@ if __name__ == '__main__':
 
     outcome(combo_dict,start_state,action)
 
-    print('=======================')
-    print(isinstance('reward',Literal))
+    #print('=======================')
+    #print(isinstance('reward',Literal))
