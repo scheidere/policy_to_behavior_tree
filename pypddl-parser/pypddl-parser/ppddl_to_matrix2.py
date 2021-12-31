@@ -245,87 +245,48 @@ def outcome(param_values, start_state, action, test=False):
 
             for term in effect:
 
-                # Initialize state terms left over after given action is taken in the start state
-                unchanged_state_terms = copy.deepcopy(start_state)
-
-                replacement_state_terms = [] # [state,p,r]
-                print('term',term)
+                #print('term',term)
                 prob = term[0]
-                print('prob: ', prob)
+                #print('prob: ', prob)
+                literals = []
                 for t1 in term[1:]:
-                    print('t1 ', t1)
-                    if len(term) > 2:
+                    #print('t1 ', t1)
+                    if len(term) > 1:
 
                         # in case t1 = ('reward', 2) for e.g.
                         if t1[0] == 'reward':
                             reward = t1[1]
-                            print('reward t1 len > 1', reward)
+                            #print('reward t1 len > 1', reward)
 
                         else:
                             for t2 in t1:
                                 if isinstance(t2,Literal):
-                                    print('literal t2 ', t2)
+                                    #print('literal t2 ', t2)
                                     literal = t2
+                                    literals.append(literal)
                                 elif t2:
                                     if t2[0] == 'reward':
                                         reward = t2[1]
-                                        print('reward t2', reward)
+                                        #print('reward t2', reward)
                     else:
                         if t1[0] == 'reward': #only contains a reward term, no state changes
                             reward = t1[1]
-                            print('reward t1 len = 1', reward)
-                            end_state = unchanged_state_terms # full start state
-                            outcome_sublist = outcome_sublist = [end_state,prob,reward]
-                            print('outcome_sublist 2', outcome_sublist)
+                            #print('reward t1 len = 1', reward)
+                            #end_state = unchanged_state_terms # full start state
+                            #outcome_sublist = outcome_sublist = [end_state,prob,reward]
+                            #print('outcome_sublist 2', outcome_sublist)
                         else: # literals
-                            print('literal t1 ', t1)
+                            #print('literal t1 ', t1)
                             literal = t1
+                            literals.append(literal)
 
                 print('PROB', prob)
                 print('REWARD ', reward)
+                print('literals ', literals)
 
-                ??? to be continued, need to make the meat of this a function 
-                and call it appropriately above in places where literal found
-            #     predicate = literal._predicate
-            #     print('predicate', predicate)
-            #     #print('test', isinstance(literal,Literal))
-            #     predicate_name = predicate.name
-            #     params = predicate._args
-            #     values = []
-            #     for param in params:
-            #         values.append(param_values[param])
                 
-            #     print('values', values)
-            #     # Search for relevant terms in start state, those that will be affected
-            #     for i in range(len(start_state)):
-            #         term = start_state[i]
-            #         print('start state term', term)
+                getOutcomeSublist(literals,prob,reward,start_state,param_values)
 
-            #         # Find term that will change due to effect of taking action in start state
-            #         if term[0] == predicate_name and term[1:-1] == values:
-
-            #             print('match')
-            #             print('unchanged_state_terms',unchanged_state_terms)
-
-            #             unchanged_state_terms.remove(term)
-
-            #             # Initialize term for end state, state that results from action occurance
-            #             new_term = copy.deepcopy(term[0:-1])
-
-            #             if literal.is_positive():
-            #                 new_term.append(1)
-            #             else:
-            #                 new_term.append(0)
-
-            #             replacement_state_terms.append(new_term)
-            #             print('replacement_state_terms', replacement_state_terms)
-
-            # end_state = replacement_state_terms + unchanged_state_terms
-            # outcome_sublist = [end_state,prob,reward]
-            # print('outcome_sublist 2', outcome_sublist)
-
-    #print('replacement_state_terms ', replacement_state_terms)
-    #print('unchanged_state_terms ', unchanged_state_terms)
 
     if non_probabilistic:
         end_state = replacement_state_terms + unchanged_state_terms
@@ -339,6 +300,62 @@ def outcome(param_values, start_state, action, test=False):
 
 
     return outcome_list
+
+def getOutcomeSublist(literals, prob, reward, start_state, param_values):
+
+    print('agh lit', literals)
+
+    if not literals: # No state changes, just prob and reward
+        end_state = copy.deepcopy(start_state)
+        outcome_sublist = [end_state,prob,reward]
+        print('outcome_sublist 1', outcome_sublist)
+        return outcome_sublist
+
+    # Initialize state terms left over after given action is taken in the start state
+    unchanged_state_terms = copy.deepcopy(start_state)
+
+    replacement_state_terms = [] # [state,p,r]
+
+    # [outcome_state, prob, reward]
+    for literal in literals:
+        predicate = literal._predicate
+        #print('predicate', predicate)
+        predicate_name = predicate.name
+        params = predicate._args
+        values = []
+        for param in params:
+            values.append(param_values[param])
+    
+        #print('values', values)
+        # Search for relevant terms in start state, those that will be affected
+        for i in range(len(start_state)):
+            term = start_state[i]
+            #print('start state term', term)
+
+            # Find term that will change due to effect of taking action in start state
+            if term[0] == predicate_name and term[1:-1] == values:
+
+                #print('match')
+                #print('unchanged_state_terms',unchanged_state_terms)
+
+                unchanged_state_terms.remove(term)
+
+                # Initialize term for end state, state that results from action occurance
+                new_term = copy.deepcopy(term[0:-1])
+
+                if literal.is_positive():
+                    new_term.append(1)
+                else:
+                    new_term.append(0)
+
+                replacement_state_terms.append(new_term)
+                #print('replacement_state_terms', replacement_state_terms)
+
+        end_state = replacement_state_terms + unchanged_state_terms
+        outcome_sublist = [end_state,prob,reward]
+        print('outcome_sublist 2', outcome_sublist)
+
+    return outcome_sublist
 
 def test_outcome():
 
