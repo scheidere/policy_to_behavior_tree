@@ -29,6 +29,8 @@ import itertools
 from itertools import product
 import numpy as np
 import copy
+import sys
+np.set_printoptions(threshold=sys.maxsize)
 
 def parse():
     usage = 'python3 main.py <DOMAIN> <INSTANCE>'
@@ -176,7 +178,35 @@ def equal(state1, state2):
 
     #returns True or False
 
-    pass
+    for i in range(len(state1)):
+
+        term1 = state1[i]
+
+        if term1 not in state2:
+            #print(term1)
+            #print(state2)
+            return False
+
+    return True
+
+
+def testEqual():
+
+    # State 1 and state 2 are actually the same, same terms and same order (Should return TRUE)
+    state1 = [['robot-at', 'left-cell', 1], ['robot-at', 'right-cell', 1], ['dirty-at', 'left-cell', 1], ['dirty-at', 'right-cell', 1]]
+    state2 = [['robot-at', 'left-cell', 1], ['robot-at', 'right-cell', 1], ['dirty-at', 'left-cell', 1], ['dirty-at', 'right-cell', 1]]
+    print(equal(state1,state2))
+
+    # States 3 and 4 are equal but the terms are in different orders (should return TRUE)
+    state3 = [['robot-at', 'left-cell', 0], ['robot-at', 'right-cell', 1], ['dirty-at', 'left-cell', 1], ['dirty-at', 'right-cell', 0]]
+    state4 = [['robot-at', 'right-cell', 1], ['dirty-at', 'right-cell', 0], ['dirty-at', 'left-cell', 1], ['robot-at', 'left-cell', 0]]
+    print(equal(state3,state4))
+
+    # States 5 and 6 are not equal, one term does not match (should return FALSE)
+    state5 = [['robot-at', 'left-cell', 1], ['robot-at', 'right-cell', 1], ['dirty-at', 'left-cell', 1], ['dirty-at', 'right-cell', 1]]
+    state6 = [['robot-at', 'left-cell', 1], ['robot-at', 'right-cell', 0], ['dirty-at', 'left-cell', 1], ['dirty-at', 'right-cell', 1]]
+    print(equal(state5,state6))
+
 
 def getStateIndex(state, states):
 
@@ -184,7 +214,19 @@ def getStateIndex(state, states):
 
         if equal(states[i],state):
 
+            #print("match")
+            #print(states[i])
+            #print(state)
+
             return i
+
+def testGetStateIndex():
+
+    states = getStateList()
+
+    state = [['robot-at', 'right-cell', 1], ['dirty-at', 'right-cell', 0], ['dirty-at', 'left-cell', 1], ['robot-at', 'left-cell', 0]]
+
+    print(getStateIndex(state,states))
 
 def outcome(param_values, start_state, action, test=False):
 
@@ -299,8 +341,8 @@ def outcome(param_values, start_state, action, test=False):
         ##getOutcomeSublist(literals, prob, reward, start_state, param_values,is_probabilistic=False)
         outcome_list.append(outcome_sublist)
 
-    
-    print('Outcome list: ', outcome_list)
+    if test:
+        print('Outcome list: ', outcome_list)
 
 
     return outcome_list
@@ -367,13 +409,17 @@ def updatePandR(outcome_list):
     # outcome_list, i.e. output of outcome()
     # each element is an outcome_sublist
 
-    for outcome_sublist in outcome_list:
+    #for outcome_sublist in outcome_list:
 
         # [outcome_state,prob,reward]
 
-        ??? might not want this, harder to update
-        actually should work on get index from state with terms in different order
-        so equal function and getStateIndex
+        #??? might not want this, harder to update
+        #actually should work on get index from state with terms in different order
+        #so equal function and getStateIndex
+
+    pass
+
+
 
 def getPandR():
 
@@ -388,25 +434,18 @@ def getPandR():
     print('N: ',N)
 
     # Loop through all actions in domain (first try with just action move)
-    for action in [domain.operators[0]]:
+    for action in domain.operators:
 
-        #print('+++++++++++')
-        #print('Action: ', action)
-
-        # Get all possible combos of action param values
+        # Get all possible combos of action parameter values
         param_combos = getParamCombos(action)
         #print('param combos', param_combos)
-        #print(len(param_combos))
+        
 
-        ##preconditionSatisfied(action,param_combos[1],states[5]) NOT DONE
-
-        # For combo in possible combos (ASSUMING ALL PRECOND SATISFIED ALREADY FOR NOW)
+        # For combo in possible combos, update P and R with NxN matrix for given action/param combo
         for combo_dict in param_combos:
 
-            # Init  two NxN arrays with zeros (one for P_a and one for R_a)
+            # Init two NxN arrays with zeros (one for P_a and one for R_a)
             p, r = np.zeros((N,N)), np.zeros((N,N))
-            print('P:\n',p)
-            print('R:\n',r)
 
             # Loop through start states s, indexing with i
             for i in range(len(states)):
@@ -414,15 +453,56 @@ def getPandR():
 
                 if preconditionSatisfied(combo_dict,start_state,action):
 
-                    valid_transition = False
-
-                    print('Start state: ', start_state)
-                    print('Combo dict: ', combo_dict)
-                    print('Action: ', action.name)
+                    #print('Start state: ', start_state)
+                    #print('Combo dict: ', combo_dict)
+                    #print('Action: ', action.name)
                     outcome_list = outcome(combo_dict,start_state,action)
+                    #print('Outcome list: ', outcome_list)
 
-                    updatePandR(outcome_list)
+                    # Update NxN matrices, p and r according to outcome
+                    for outcome_sublist in outcome_list:
 
+                        #print('outcome_sublist', outcome_sublist)
+
+                        # Get index of end state where outcome_sublist = [end state, prob, reward]
+                        #print(outcome_sublist[0])
+                        j = getStateIndex(outcome_sublist[0],states)
+                        #print('j', j)
+
+                        p[i,j] = outcome_sublist[1]
+                        r[i,j] = outcome_sublist[2]
+                        
+
+
+
+            # Add NxN matrices to lists P and R
+            P.append(p)
+            R.append(r)
+
+    # Convert list of matrices to 3d numpy array
+    P = np.dstack(P)
+    R = np.dstack(R)
+    actions = []
+    for action in domain.operators:
+        actions.append(action.name)
+    print('Actions: ', actions)
+    print('Param combos: ', param_combos)
+    print('Probability transition matrix P:')
+    print2DArraysFrom3DArray(P)
+    print('Reward matrix R:')
+    print2DArraysFrom3DArray(R)
+    # print(P.shape)
+    # print('R:\n',R)
+    # print(R.shape)
+
+    return P, R, states, actions, param_combos
+
+
+def print2DArraysFrom3DArray(array):
+
+    for i in range(array.shape[2]):
+        N = array.shape[0] # should be same for 0 or 1
+        print(array[:N,:N,i])
 
 
 def test_outcome():
@@ -476,30 +556,9 @@ if __name__ == '__main__':
     print(domain)
     print(problem)
 
-    #getPandR() #??? fix this, prints valid transition when end state is wrong
+    getPandR() 
 
-    #outcomeIsEndStateTest()
-    #outcomeIsEndStateTest2()
-
-    #precondSatisfiedTest()
-    #precondSatisfiedTest2()
-
-    test_outcome()
-    # states = getStateList()
-    # print('Scenario 1:')
-    # start_state = states[5]
-    # print('start state ', start_state)
-    # #end_state = states[9]
-    # #print('expected end state ', end_state)
-
-    # action = domain.operators[1] #[0] = move // [1] = clean
-    # print('Action: ', action)
-
-    # combos = getParamCombos(action)
-    # combo_dict = combos[1] #[2] is correct for states[5] and action 0 // [1] for action 1
-    # print('Combo: ', combo_dict)
-
-    # outcome(combo_dict,start_state,action)
-
-    #print('=======================')
-    #print(isinstance('reward',Literal))
+    #test_outcome()
+    #testEqual()
+    #testGetStateIndex()
+  
