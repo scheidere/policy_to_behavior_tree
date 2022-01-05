@@ -88,8 +88,8 @@ def main(method, solver):
     mdp = MDP(method)
     P = mdp.transition_probs
     R = mdp.rewards
-    print("Transition probs: ", P)
-    print("Rewards: ", R)
+    print("Transition probs: ", P, P.shape, type(P))
+    print("Rewards: ", R, R.shape)
 
     if solver == 'v':
         val_it = mdptoolbox.mdp.ValueIteration(P, R, 0.96)

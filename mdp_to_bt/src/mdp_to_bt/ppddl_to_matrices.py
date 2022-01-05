@@ -19,6 +19,9 @@
 
 # This file uses the parser, but is not a part of it
 
+import mdptoolbox
+import numpy as np
+import mdptoolbox.example
 
 import argparse
 import sys
@@ -30,8 +33,8 @@ import itertools
 from itertools import product
 import numpy as np
 import copy
-import sys
-np.set_printoptions(threshold=sys.maxsize)
+
+np.set_printoptions(threshold=sys.maxsize) # So you can see matrices without truncation
 
 def parse():
     usage = 'python3 main.py <DOMAIN> <INSTANCE>'
@@ -255,6 +258,7 @@ def outcome(param_values, start_state, action, test=False):
             #replacement_state_terms = [] # [state,p,r]
             prob = 1.0
             reward = 0
+            print('not probabilistic')
             #literals.append(effect[1])
 
             probabilistic = False
@@ -336,6 +340,8 @@ def outcome(param_values, start_state, action, test=False):
 
     if not probabilistic:
         end_state = unchanged_state_terms + replacement_state_terms
+        if equal(end_state,start_state):
+            print('end is same as start state')
         outcome_sublist = [end_state,prob,reward]
         #print(outcome_sublist)
         #print('non probabilitistic outcome', outcome_sublist)
@@ -481,17 +487,17 @@ def getPandR():
             R.append(r)
 
     # Convert list of matrices to 3d numpy array
-    P = np.dstack(P)
-    R = np.dstack(R)
+    P = np.dstack(P).transpose()
+    R = np.dstack(R).transpose()
     actions = []
     for action in domain.operators:
         actions.append(action.name)
-    print('Actions: ', actions)
-    print('Param combos: ', param_combos)
-    print('Probability transition matrix P:')
-    print2DArraysFrom3DArray(P)
-    print('Reward matrix R:')
-    print2DArraysFrom3DArray(R)
+    #print('Actions: ', actions)
+    #print('Param combos: ', param_combos)
+    #print('Probability transition matrix P:')
+    #print2DArraysFrom3DArray(P)
+    # print('Reward matrix R:')
+    #print2DArraysFrom3DArray(R)
     # print(P.shape)
     # print('R:\n',R)
     # print(R.shape)
@@ -518,13 +524,18 @@ def test_outcome():
 
             for combo_dict in combos:
 
-                if preconditionSatisfied(combo_dict,start_state,action):
+                if preconditionSatisfied(combo_dict,start_state,action): 
+                    ??? move precond satisfied to inside outcome function
+                    when precond not satisfied for certain action/param combo/state 
+                    you still want to add a 1 at i,j where i=j for the unchanged start state
 
                     print('\n')
                     print('Start state: ', start_state)
                     print('Combo dict: ', combo_dict)
                     print('Action: ', action.name)
-                    outcome(combo_dict,start_state,action)
+                    outcome_list = outcome(combo_dict,start_state,action)
+                    for o in outcome_list:
+                        print(o)
 
                     print('\n')
 
@@ -546,9 +557,29 @@ def precondSatisfiedTest():
             print('Param combo: ', combo_dict)
 
             print('Precond satisfied? %s\n' % preconditionSatisfied(combo_dict,start_state,action,test=True))
-            
+
+
+def solve(solver,P,R):
+
+    # Get transition probabality and reward matrices from PPDDL
+
+
+    if solver == 'v':
+        val_it = mdptoolbox.mdp.ValueIteration(P, R, 0.96)
+        val_it.run()
+        print('Policy: ', val_it.policy)
+    elif solver == 'q':
+        q_learn = mdptoolbox.mdp.QLearning(P, R, 0.96)
+        q_learn.run()
+        print('Policy: ', q_learn.policy)
+    else:
+        print("That is not a valid solver...")   
+        
 
 if __name__ == '__main__':
+
+    # Define domain and problem to consider (they represent an MDP)
+    print('For the following domain and problem: ')
     args = parse()
 
     domain  = PDDLParser.parse(args.domain)
@@ -557,9 +588,21 @@ if __name__ == '__main__':
     print(domain)
     print(problem)
 
-    getPandR() 
+    # # Convert to MDP, i.e. generate transition probability matrix P and reward matrix R
+    # print('The follow matrices represent the transition probabilities\n and rewards for all state transitions: ')
+    # P, R, states, actions, param_combos = getPandR()
 
-    #test_outcome()
-    #testEqual()
-    #testGetStateIndex()
+    # print('P:\n', P, '\n',P.shape)
+    # print('R:\n', R, '\n',R.shape)
+
+    # # Choose method of solving for a policy given P and R
+    # solver = input("Enter value iteration (v) or Q-learning (q): ") 
+
+    # # Solve for a policy
+    # solve(solver,P,R)
+
+
+    test_outcome()
+
+
   
