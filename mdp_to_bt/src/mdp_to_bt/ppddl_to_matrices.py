@@ -440,6 +440,9 @@ def getPandR():
     # Get states
     states = getStateList()
 
+    # Initialize actions with parameters list (used for reading policy)
+    actions_with_params = []
+
     # Number of states
     N = len(states)
     print('N: ',N)
@@ -453,6 +456,9 @@ def getPandR():
 
         # For combo in possible combos, update P and R with NxN matrix for given action/param combo
         for combo_dict in param_combos:
+
+            # Add info to readbility list
+            actions_with_params.append([action.name,combo_dict])
 
             # Init two NxN arrays with zeros (one for P_a and one for R_a)
             p, r = np.zeros((N,N)), np.zeros((N,N))
@@ -496,7 +502,7 @@ def getPandR():
     # print('R:\n',R)
     # print(R.shape)
 
-    return P, R, states, actions, param_combos
+    return P, R, states, actions_with_params
 
 def test_outcome():
 
@@ -550,17 +556,29 @@ def solve(solver,P,R):
 
     # Get transition probabality and reward matrices from PPDDL
 
-
     if solver == 'v':
         val_it = mdptoolbox.mdp.ValueIteration(P, R, 0.96)
         val_it.run()
+        policy = val_it.policy
         print('Policy: ', val_it.policy)
     elif solver == 'q':
         q_learn = mdptoolbox.mdp.QLearning(P, R, 0.96)
         q_learn.run()
+        policy = q_learn.policy
         print('Policy: ', q_learn.policy)
     else:
-        print("That is not a valid solver...")   
+        print("That is not a valid solver...")
+
+    return policy
+
+def readPolicy(policy,states,actions_with_params):
+
+    for i in range(len(policy)):
+
+        print(states[i])
+        print(actions_with_params[policy[i]],'\n')
+
+
         
 
 if __name__ == '__main__':
@@ -577,7 +595,7 @@ if __name__ == '__main__':
 
     # Convert to MDP, i.e. generate transition probability matrix P and reward matrix R
     print('The follow matrices represent the transition probabilities\n and rewards for all state transitions: ')
-    P, R, states, actions, param_combos = getPandR()
+    P, R, states, actions_with_params = getPandR()
 
     print('P:\n', P, '\n',P.shape)
     print('R:\n', R, '\n',R.shape)
@@ -586,7 +604,18 @@ if __name__ == '__main__':
     solver = input("Enter value iteration (v) or Q-learning (q): ") 
 
     # Solve for a policy
-    solve(solver,P,R)
+    policy = solve(solver,P,R)
+
+    # States and action/param combos for understanding policy numbers
+    print('States:')
+    for state in states:
+        print(state)
+    print('Actions with params:') 
+    for el in actions_with_params:
+        print(el)
+
+    # Translate policy to readable form
+    readPolicy(policy,states,actions_with_params)
 
 
     #test_outcome()
