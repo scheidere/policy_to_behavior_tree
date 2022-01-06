@@ -234,9 +234,6 @@ def testGetStateIndex():
 
 def outcome(param_values, start_state, action, test=False):
 
-    # param_values is a dict that represents some of the info in the start state
-    # This function should only be called when param_values and start_state pass preconditionSatisified
-
     # List of lists
     # Each sub list includes an outcome state with probability p and reward r, [state,p,r]
     outcome_list = []
@@ -244,112 +241,119 @@ def outcome(param_values, start_state, action, test=False):
     # Initialize state terms left over after given action is taken in the start state
     unchanged_state_terms = copy.deepcopy(start_state)
 
-    replacement_state_terms = [] # [state,p,r]
+    if not preconditionSatisfied(param_values,start_state,action):
 
-    probabilistic = True
-
-    literals = []
-    for effect in action.effects:
-
-        if effect[0] == 1.0: # Non-probabilistic effect
-            # Initialize state terms left over after given action is taken in the start state
-            #unchanged_state_terms = copy.deepcopy(start_state)
-
-            #replacement_state_terms = [] # [state,p,r]
-            prob = 1.0
-            reward = 0
-            print('not probabilistic')
-            #literals.append(effect[1])
-
-            probabilistic = False
-
-            predicate = effect[1]._predicate
-            predicate_name = predicate.name
-            params = predicate._args
-            values = []
-            for param in params:
-                values.append(param_values[param])
-            
-            # Search for relevant terms in start state, those that will be affected
-            for i in range(len(start_state)):
-                term = start_state[i]
-
-                # Find term that will change due to effect of taking action in start state
-                if term[0] == predicate_name and term[1:-1] == values:
-
-                    unchanged_state_terms.remove(term)
-
-                    # Initialize term for end state, state that results from action occurance
-                    new_term = copy.deepcopy(term[0:-1])
-
-                    if effect[1].is_positive():
-                        new_term.append(1)
-                    else:
-                        new_term.append(0)
-
-                    replacement_state_terms.append(new_term)
-
-
-        else: # Probabilistic effect
-
-            for term in effect:
-
-                #print('term',term)
-                prob = term[0]
-                #print('prob: ', prob)
-                literals = []
-                for t1 in term[1:]:
-                    #print('t1 ', t1)
-                    if len(term) > 1:
-
-                        # in case t1 = ('reward', 2) for e.g.
-                        if t1[0] == 'reward':
-                            reward = t1[1]
-                            #print('reward t1 len > 1', reward)
-
-                        else:
-                            for t2 in t1:
-                                if isinstance(t2,Literal):
-                                    #print('literal t2 ', t2)
-                                    literal = t2
-                                    literals.append(literal)
-                                elif t2:
-                                    if t2[0] == 'reward':
-                                        reward = t2[1]
-                                        #print('reward t2', reward)
-                    else:
-                        if t1[0] == 'reward': #only contains a reward term, no state changes
-                            reward = t1[1]
-                            #print('reward t1 len = 1', reward)
-                            #end_state = unchanged_state_terms # full start state
-                            #outcome_sublist = outcome_sublist = [end_state,prob,reward]
-                            #print('outcome_sublist 2', outcome_sublist)
-                        else: # literals
-                            #print('literal t1 ', t1)
-                            literal = t1
-                            literals.append(literal)
-
-                # print('PROB', prob)
-                # print('REWARD ', reward)
-                # print('literals ', literals)
-
-                
-                outcome_sublist = getOutcomeSublist(literals,prob,reward,start_state,param_values,is_probabilistic=True)
-                #print(outcome_sublist)
-                outcome_list.append(outcome_sublist)
-
-    if not probabilistic:
-        end_state = unchanged_state_terms + replacement_state_terms
-        if equal(end_state,start_state):
-            print('end is same as start state')
-        outcome_sublist = [end_state,prob,reward]
-        #print(outcome_sublist)
-        #print('non probabilitistic outcome', outcome_sublist)
-        ##getOutcomeSublist(literals, prob, reward, start_state, param_values,is_probabilistic=False)
+        outcome_sublist = [unchanged_state_terms,1.0,0]
         outcome_list.append(outcome_sublist)
 
-    if test:
-        print('Outcome list: ', outcome_list)
+    else:
+
+        replacement_state_terms = [] # [state,p,r]
+
+        probabilistic = True
+
+        literals = []
+        for effect in action.effects:
+
+            if effect[0] == 1.0: # Non-probabilistic effect
+                # Initialize state terms left over after given action is taken in the start state
+                #unchanged_state_terms = copy.deepcopy(start_state)
+
+                #replacement_state_terms = [] # [state,p,r]
+                prob = 1.0
+                reward = 0
+                print('not probabilistic')
+                #literals.append(effect[1])
+
+                probabilistic = False
+
+                predicate = effect[1]._predicate
+                predicate_name = predicate.name
+                params = predicate._args
+                values = []
+                for param in params:
+                    values.append(param_values[param])
+                
+                # Search for relevant terms in start state, those that will be affected
+                for i in range(len(start_state)):
+                    term = start_state[i]
+
+                    # Find term that will change due to effect of taking action in start state
+                    if term[0] == predicate_name and term[1:-1] == values:
+
+                        unchanged_state_terms.remove(term)
+
+                        # Initialize term for end state, state that results from action occurance
+                        new_term = copy.deepcopy(term[0:-1])
+
+                        if effect[1].is_positive():
+                            new_term.append(1)
+                        else:
+                            new_term.append(0)
+
+                        replacement_state_terms.append(new_term)
+
+
+            else: # Probabilistic effect
+
+                for term in effect:
+
+                    #print('term',term)
+                    prob = term[0]
+                    #print('prob: ', prob)
+                    literals = []
+                    for t1 in term[1:]:
+                        #print('t1 ', t1)
+                        if len(term) > 1:
+
+                            # in case t1 = ('reward', 2) for e.g.
+                            if t1[0] == 'reward':
+                                reward = t1[1]
+                                #print('reward t1 len > 1', reward)
+
+                            else:
+                                for t2 in t1:
+                                    if isinstance(t2,Literal):
+                                        #print('literal t2 ', t2)
+                                        literal = t2
+                                        literals.append(literal)
+                                    elif t2:
+                                        if t2[0] == 'reward':
+                                            reward = t2[1]
+                                            #print('reward t2', reward)
+                        else:
+                            if t1[0] == 'reward': #only contains a reward term, no state changes
+                                reward = t1[1]
+                                #print('reward t1 len = 1', reward)
+                                #end_state = unchanged_state_terms # full start state
+                                #outcome_sublist = outcome_sublist = [end_state,prob,reward]
+                                #print('outcome_sublist 2', outcome_sublist)
+                            else: # literals
+                                #print('literal t1 ', t1)
+                                literal = t1
+                                literals.append(literal)
+
+                    # print('PROB', prob)
+                    # print('REWARD ', reward)
+                    # print('literals ', literals)
+
+                    
+                    outcome_sublist = getOutcomeSublist(literals,prob,reward,start_state,param_values,is_probabilistic=True)
+                    #print(outcome_sublist)
+                    outcome_list.append(outcome_sublist)
+
+        if not probabilistic:
+            end_state = unchanged_state_terms + replacement_state_terms
+            if equal(end_state,start_state):
+                print('end is same as start state')
+            outcome_sublist = [end_state,prob,reward]
+            #print(outcome_sublist)
+            #print('non probabilitistic outcome', outcome_sublist)
+            ##getOutcomeSublist(literals, prob, reward, start_state, param_values,is_probabilistic=False)
+            outcome_list.append(outcome_sublist)
+
+        if test:
+            print('Outcome list: ', outcome_list)
 
 
     return outcome_list
@@ -446,7 +450,6 @@ def getPandR():
         # Get all possible combos of action parameter values
         param_combos = getParamCombos(action)
         #print('param combos', param_combos)
-        
 
         # For combo in possible combos, update P and R with NxN matrix for given action/param combo
         for combo_dict in param_combos:
@@ -458,30 +461,21 @@ def getPandR():
             for i in range(len(states)):
                 start_state = states[i]
 
-                if preconditionSatisfied(combo_dict,start_state,action):
+                outcome_list = outcome(combo_dict,start_state,action)
 
-                    #print('Start state: ', start_state)
-                    #print('Combo dict: ', combo_dict)
-                    #print('Action: ', action.name)
-                    outcome_list = outcome(combo_dict,start_state,action)
-                    #print('Outcome list: ', outcome_list)
+                # Update NxN matrices, p and r according to outcome
+                for outcome_sublist in outcome_list:
 
-                    # Update NxN matrices, p and r according to outcome
-                    for outcome_sublist in outcome_list:
+                    #print('outcome_sublist', outcome_sublist)
 
-                        #print('outcome_sublist', outcome_sublist)
+                    # Get index of end state where outcome_sublist = [end state, prob, reward]
+                    #print(outcome_sublist[0])
+                    j = getStateIndex(outcome_sublist[0],states)
+                    #print('j', j)
 
-                        # Get index of end state where outcome_sublist = [end state, prob, reward]
-                        #print(outcome_sublist[0])
-                        j = getStateIndex(outcome_sublist[0],states)
-                        #print('j', j)
-
-                        p[i,j] = outcome_sublist[1]
-                        r[i,j] = outcome_sublist[2]
-                        
-
-
-
+                    p[j,i] = outcome_sublist[1]
+                    r[j,i] = outcome_sublist[2]
+                    
             # Add NxN matrices to lists P and R
             P.append(p)
             R.append(r)
@@ -504,14 +498,6 @@ def getPandR():
 
     return P, R, states, actions, param_combos
 
-
-def print2DArraysFrom3DArray(array):
-
-    for i in range(array.shape[2]):
-        N = array.shape[0] # should be same for 0 or 1
-        print(array[:N,:N,i])
-
-
 def test_outcome():
 
     states = getStateList()
@@ -524,20 +510,21 @@ def test_outcome():
 
             for combo_dict in combos:
 
-                if preconditionSatisfied(combo_dict,start_state,action): 
-                    ??? move precond satisfied to inside outcome function
-                    when precond not satisfied for certain action/param combo/state 
-                    you still want to add a 1 at i,j where i=j for the unchanged start state
+                #if preconditionSatisfied(combo_dict,start_state,action): 
+                    # ??? move precond satisfied to inside outcome function
+                    # when precond not satisfied for certain action/param combo/state 
+                    # you still want to add a 1 at i,j where i=j for the unchanged start state
 
-                    print('\n')
-                    print('Start state: ', start_state)
-                    print('Combo dict: ', combo_dict)
-                    print('Action: ', action.name)
-                    outcome_list = outcome(combo_dict,start_state,action)
-                    for o in outcome_list:
-                        print(o)
+                print('\n')
+                print('Start state: ', start_state)
+                print('Combo dict: ', combo_dict)
+                print('Precondition satisfied? ', preconditionSatisfied(combo_dict,start_state,action))
+                print('Action: ', action.name)
+                outcome_list = outcome(combo_dict,start_state,action)
+                for o in outcome_list:
+                    print(o)
 
-                    print('\n')
+                print('\n')
 
 def precondSatisfiedTest():
 
@@ -588,21 +575,21 @@ if __name__ == '__main__':
     print(domain)
     print(problem)
 
-    # # Convert to MDP, i.e. generate transition probability matrix P and reward matrix R
-    # print('The follow matrices represent the transition probabilities\n and rewards for all state transitions: ')
-    # P, R, states, actions, param_combos = getPandR()
+    # Convert to MDP, i.e. generate transition probability matrix P and reward matrix R
+    print('The follow matrices represent the transition probabilities\n and rewards for all state transitions: ')
+    P, R, states, actions, param_combos = getPandR()
 
-    # print('P:\n', P, '\n',P.shape)
-    # print('R:\n', R, '\n',R.shape)
+    print('P:\n', P, '\n',P.shape)
+    print('R:\n', R, '\n',R.shape)
 
-    # # Choose method of solving for a policy given P and R
-    # solver = input("Enter value iteration (v) or Q-learning (q): ") 
+    # Choose method of solving for a policy given P and R
+    solver = input("Enter value iteration (v) or Q-learning (q): ") 
 
-    # # Solve for a policy
-    # solve(solver,P,R)
+    # Solve for a policy
+    solve(solver,P,R)
 
 
-    test_outcome()
+    #test_outcome()
 
 
   
