@@ -19,6 +19,8 @@
 
 # This file uses the parser, but is not a part of it
 
+from policy_to_bt import *
+
 import mdptoolbox
 import numpy as np
 import mdptoolbox.example
@@ -96,6 +98,8 @@ def getStateList():
     #print('states ', states)
 
     return states
+
+
 
 def getComboArgValues(args,combo_dict):
 
@@ -262,7 +266,7 @@ def outcome(param_values, start_state, action, test=False):
                 #replacement_state_terms = [] # [state,p,r]
                 prob = 1.0
                 reward = 0
-                print('not probabilistic')
+                #print('not probabilistic')
                 #literals.append(effect[1])
 
                 probabilistic = False
@@ -573,13 +577,12 @@ def solve(solver,P,R):
 
 def readPolicy(policy,states,actions_with_params):
 
+    print('Policy in readable form: ')
+
     for i in range(len(policy)):
 
         print(states[i])
         print(actions_with_params[policy[i]],'\n')
-
-
-        
 
 if __name__ == '__main__':
 
@@ -606,17 +609,14 @@ if __name__ == '__main__':
     # Solve for a policy
     policy = solve(solver,P,R)
 
-    # States and action/param combos for understanding policy numbers
-    print('States:')
-    for state in states:
-        print(state)
-    print('Actions with params:') 
-    for el in actions_with_params:
-        print(el)
-
     # Translate policy to readable form
     readPolicy(policy,states,actions_with_params)
 
+    # Convert policy to behavior tree
+    p2bt = PolicyToBT(states, actions_with_params, policy)
+
+    # Save behavior tree in a file
+    p2bt.behavior_tree.write_config('output_config/output_bt.tree') # need to copy output_bt.tree to behavior_tree/src/behavior_tree/config/
 
     #test_outcome()
 

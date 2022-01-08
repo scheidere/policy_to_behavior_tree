@@ -5,13 +5,11 @@ from behavior_tree.behavior_tree import *
 from itertools import product
 
 class PolicyToBT:
-    def __init__(self, actions, conditions, policy, goal=None):
+    def __init__(self, states, actions, policy, goal=None):
 
+        self.states = states
         self.actions = actions
-        self.conditions = conditions # e.g. at_left, left_dirty, right_dirty
-
         self.policy = policy # e.g. (0,0,1,1,0,0,0,0)
-        self.goal = goal # e.g. Both cells clean, states 7 or 8
 
         self.run()
 
@@ -21,10 +19,6 @@ class PolicyToBT:
 
         # Add root '?'
         self.behavior_tree.root = Fallback()
-
-        # Add goal condition at left-most position in tree, beneath root
-        if self.goal:
-            self.add_goal_subtree()
 
         # Add subtree for each action in policy
         self.behavior_tree.root = self.convert_policy_to_subtrees(self.behavior_tree.root)
@@ -37,64 +31,112 @@ class PolicyToBT:
             print(node.label)
         print(len(bt.root.children))
 
-    def add_goal_subtree(self):
-        # Call this first after root is defined so it is left-most subtree
-        
-        # Add a sequence as a subtree root
-        sequence = Sequence()
-        self.behavior_tree.root.children.append(sequence)
-        
-        # Add goal condition(s) beneath the newest sequence
-        for goal in self.goal:
-            goal_condition_label, goal_status = goal[0], goal[1]
-            goal_condition = Condition(goal_condition_label)
-            if goal_status:
-                self.behavior_tree.root.children[-1].children.append(goal_condition)
-            elif not goal_status:
-                decorator = NotDecorator()
-                decorator.add_child(goal_condition)
-                self.behavior_tree.root.children[-1].children.append(decorator)
-        
-
     def convert_policy_to_subtrees(self, root):
-        
-        count = 0
 
         # Add a subtree for each action
-        for bool_state in list(product([True,False],repeat=len(self.conditions))):
+        for i in range(len(self.states)):
+
+            state = self.states[i]
             
             # Add subtree sequence root
             sequence = Sequence()
             root.children.append(sequence)
 
             # Add conditions to describe each state
-            for i in range(len(bool_state)):
-                status = bool_state[i]
-                condition_label = self.conditions[i]
+            for j in range(len(state)):
+                term = state[j] # e.g. ['robot-at', 'left-cell', 1]
+                condition_label = term[0] + '(' + term[1] + ')'
                 condition = Condition(condition_label)
-                if status: # True
+                if term[2]: # condition True
                     root.children[-1].children.append(condition)
-                elif not status: # False
+                else: # False
                     decorator = NotDecorator()
                     decorator.add_child(condition)
                     root.children[-1].children.append(decorator)
             
             # Add action associated with each state
-            action_num = self.policy[count]
-            action_label = self.actions[action_num]
+            action_num = self.policy[i]
+            action_with_params_term = self.actions[action_num]
+            action_name = action_with_params_term[0]
+            params = action_with_params_term[1] # dictionary
+            print('params ', params.keys)
+            action_label = action_name + '('
+            for key in params.keys():
+                variable = key[1:]
+                value = params[key]
+                action_label = action_label + variable + ': ' + value + ', '
+            action_label = action_label[:-2] # remove extra comma and space
+            action_label = action_label + ')'
             action = Action(action_label)
             root.children[-1].children.append(action)
 
-            count += 1
-
         return root
-            
+
+    def exportBT(bt, include_nodes=None):  
+        # Create a Word that represents this BT  
+        # But only include nodes that include_nodes[node_idx]==True
+
+        # Setup a stack data structure (similar to nodes_worklist)
+        # Do this for both keeping track of nodes and for number of tabs
+        nodes_stack = []
+        level_stack = []
+        nodes_stack.append(bt.root) #push
+        level_stack.append(0)
+
+        char_list = []
+
+        prev_level = 0
+
+        num_include_nodes = 0
+        for i in include_nodes:
+            if i:
+                num_include_nodes += 1
+        # print("exportBT num_include_nodes", num_include_nodes)
+        # print("exportBT len(include_nodes)", len(include_nodes))
+
+        # Do the traversal, using the stack to help
+        while len(nodes_stack) != 0:
+
+            # Pop a node off the stack
+            current_node = nodes_stack.pop() #pop
+            level = level_stack.pop()
+            # print(current_node.__class__.__name__)
+
+            if include_nodes == None:
+                include_node = True
+            else:
+                node_index = bt.nodes.index(current_node)
+                include_node = include_nodes[node_index]
+
+            if include_node:
+                if level > prev_level:
+                    char_list.append(Character('('))
+                elif level < prev_level:
+                    for i in xrange(prev_level-level):
+                        char_list.append(Character(')'))
+                
+                label = bt.get_node_text(current_node)
+                char_list.append(Character(label))
+
+                # Add all children to the stack
+                for child_idx in reversed(range(len(current_node.children))):
+                    nodes_stack.append(current_node.children[child_idx]) #push
+                    level_stack.append(level+1)
+
+                prev_level = level
+
+        while prev_level > 0:
+            char_list.append(Character(')'))
+            prev_level -= 1
+
+        # Close the file
+        new_word = Word(char_list)
+        return new_word
 
 if __name__ == "__main__":
     # Vacuum example
-    actions = ['clean','move']
-    conditions = ['at_left','left_dirty','right_dirty']
-    policy = (0,0,1,1,0,0,0,0)
-    goal = (('left_dirty',False),('right_dirty',False))
-    p2bt = PolicyToBT(actions, conditions, policy, goal)
+
+    #??? call this this main file
+    p2bt = PolicyToBT(states, actions, policy)
+
 
