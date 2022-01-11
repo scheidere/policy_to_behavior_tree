@@ -201,6 +201,9 @@ class Condition(ExecutionNode):
     def get_subscriber_name(self):
         #sub_name = self.label.lower().replace(' ', '_') + '_success'
         sub_name = get_condition_topic_name(self.label)
+        #illegal_list = ['(',')',':','-','_']
+        #for illegal_char in illegal_list:
+        #    sub_name = sub_name.replace(illegal_char,'')
         return sub_name
     
     def init_subscriber(self):
@@ -241,6 +244,9 @@ class Action(ExecutionNode):
 
     def get_publisher_name(self):
         pub_name = self.label.lower().replace(' ', '_') + '_active'
+        illegal_list = ['(',')',':','-']
+        for illegal_char in illegal_list:
+            pub_name = pub_name.replace(illegal_char,'')
         return pub_name
     
     def init_publisher(self):
@@ -249,6 +255,9 @@ class Action(ExecutionNode):
     
     def get_subscriber_name(self):
         sub_name = self.label.lower().replace(' ', '_') + '_status'
+        illegal_list = ['(',')',':','-']
+        for illegal_char in illegal_list:
+            sub_name = sub_name.replace(illegal_char,'')
         return sub_name
     
     def init_subscriber(self):

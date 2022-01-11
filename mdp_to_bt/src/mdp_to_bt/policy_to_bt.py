@@ -45,7 +45,7 @@ class PolicyToBT:
             # Add conditions to describe each state
             for j in range(len(state)):
                 term = state[j] # e.g. ['robot-at', 'left-cell', 1]
-                condition_label = term[0] + '(' + term[1] + ')'
+                condition_label = term[0] + '{' + term[1] + '}'
                 condition = Condition(condition_label)
                 if term[2]: # condition True
                     root.children[-1].children.append(condition)
