@@ -16,165 +16,181 @@ class SimplifyBT:
 
     def initSimplifiedBT(self):
 
-    	simplified_bt = BehaviorTree('')
-    	simplified_bt.root = Fallback()
-    	self.simplified_bt = simplified_bt
+        simplified_bt = BehaviorTree('')
+        simplified_bt.root = Fallback()
+        self.simplified_bt = simplified_bt
 
     def run(self):
 
-    	# Group subtrees by the action in them
-    	subtree_groups = self.groupSubtreesByAction()
+        # Group subtrees by the action in them
+        subtree_groups = self.groupSubtreesByAction()
 
-    	# Find conflicting conditions/decorators, resolve conflicts, return new behavior tree
-    	self.simplifyViaConflict(subtree_groups)
+        # Find conflicting conditions/decorators, resolve conflicts, return new behavior tree
+        self.simplifyViaConflict(subtree_groups)
 
 
     def groupSubtreesByAction(self):
 
-    	# Returns a dict with action names as the keys
-    	# and a list of subtrees (each a behavior tree instance)
-    	# that all have that action
+        # Returns a dict with action names as the keys
+        # and a list of subtrees (each a behavior tree instance)
+        # that all have that action
 
-    	#actions_already_considered = [] # Used to keep track of which actions have already been used to define a group
+        #actions_already_considered = [] # Used to keep track of which actions have already been used to define a group
 
-    	subtree_groups = {} # Dict of lists, where each list is a group of subtrees with the same action
+        subtree_groups = {} # Dict of lists, where each list is a group of subtrees with the same action
 
-    	# for action_name in self.action_names:
+        # for action_name in self.action_names:
 
-    	# 	# First check that action is in tree (might not have been learned as a part of the policy)
-    	# 	if action_name in subtree_groups.keys():
+        #   # First check that action is in tree (might not have been learned as a part of the policy)
+        #   if action_name in subtree_groups.keys():
 
-	    # 		subtree_groups[action_name] = []
+        #       subtree_groups[action_name] = []
 
-	    # 		for subtree in self.tree.root.children:
+        #       for subtree in self.tree.root.children:
 
-	    # 			subtree_action = self.getSubtreeActionName(subtree)
+        #           subtree_action = self.getSubtreeActionName(subtree)
 
-	    # 			if subtree_action_name == action_name:
+        #           if subtree_action_name == action_name:
 
-	    # 				subtree_groups[action_name].append(subtree)
+        #               subtree_groups[action_name].append(subtree)
 
-    	# return subtree_groups
+        # return subtree_groups
 
-    	for i in range(len(self.tree.root.children)):
+        for i in range(len(self.tree.root.children)):
 
-    		subtree_1 = self.tree.root.children[i]
+            subtree_1 = self.tree.root.children[i]
 
-    		#num_children = len(subtree.children)
+            #num_children = len(subtree.children)
 
-    		# Action is always last
-    		#action_num = num_children-1
-    		action_1 = subtree_1.children[-1] # Does -1 work?, if not use num_children and action_num commented above
+            # Action is always last
+            #action_num = num_children-1
+            action_1 = subtree_1.children[-1] # Does -1 work?, if not use num_children and action_num commented above
+            print('action 1 ' + action_1.label)
 
-    		if action_1 not in subtree_groups.keys(): # Ensure action not already considered
-    			subtree_groups[action_1] = [subtree_1]
+            already_seen = False
+            print('keys are ' + str(subtree_groups.keys()))
+            for action in subtree_groups.keys():
+                if action.label == action_1.label: # already done
+                    already_seen = True
+                    ???
 
-    			for j in range(len(self.tree.root.children)):
+            if not already_seen: # Ensure action not already considered
+                subtree_groups[action_1] = [subtree_1]
 
-    				if j != i: # Don't compare a subtree to itself
-	    				subtree_2 = self.tree.root.children[j]
+                for j in range(len(self.tree.root.children)):
 
-	    				action_2 = subtree_2.children[-1]
+                    if j != i: # Don't compare a subtree to itself
+                        subtree_2 = self.tree.root.children[j]
 
-	    				if action_2 == action_1:
-	    					subtree_groups[action_1].append(subtree_2)
+                        action_2 = subtree_2.children[-1]
+                        print('action 2 ' + action_2.label)
 
+                        if action_2 == action_1:
+                            subtree_groups[action_1].append(subtree_2)
 
-    	return subtree_groups
+        print(subtree_groups)
+
+        return subtree_groups
 
 
     # def getSubtreeActionName(self,subtree):
 
-    # 	for child in subtree.root.children: # issue? subtree might be just a node rather than full bt, get rid of root?
-    # 		if isinstance(child, Action):
-    # 			return child.label
+    #   for child in subtree.root.children: # issue? subtree might be just a node rather than full bt, get rid of root?
+    #       if isinstance(child, Action):
+    #           return child.label
 
     def getSubtreeAction(self,subtree): # don't actually use this, maybe delete
 
-    	for child in subtree.children:
-    		if isinstance(child, Action):
-    			return child
+        for child in subtree.children:
+            if isinstance(child, Action):
+                return child
 
     def combineSameActionSubtrees(self,subtree_group):
 
-    	# Consolidate subtrees with the same action via comparison of contitions and decorators between them
+        # Consolidate subtrees with the same action via comparison of contitions and decorators between them
 
-    	# Initialize consolidated subtree to return after simplification
-    	output_subtree = Sequence()
+        # Initialize consolidated subtree to return after simplification
+        output_subtree = Sequence()
 
-    	# Rows are for each subtree
-    	# Cols are for each condition (always same number and order in each subtree)
-    	# Difference is which are alone or beneath decorator nodes
-    	conditions_vs_decorators = np.zeros((len(subtree_group),len(subtree_group[0].children)))
+        # Rows are for each subtree
+        # Cols are for each condition (always same number and order in each subtree)
+        # Difference is which are alone or beneath decorator nodes
+        conditions_vs_decorators = np.zeros((len(subtree_group),len(subtree_group[0].children)))
 
-    	for i in range(len(subtree_group)):
+        for i in range(len(subtree_group)):
 
-    		subtree = subtree_group[i]
+            subtree = subtree_group[i] # sequence node and child conditions, decorators, and action
 
-    		for j in range(len(subtree.children)):
+            for j in range(len(subtree.children)):
 
-    			child = subtree.children[j]
+                child = subtree.children[j] # a condition, decorator or action
 
-    			if isinstance(child, Condition):
+                if isinstance(child, Condition):
 
-    				conditions_vs_decorators[i,j] = 1
+                    print(child.label + ' is condition')
 
-    			elif isinstance(child, Decorator):
+                    conditions_vs_decorators[i,j] = 1
 
-    				conditions_vs_decorators[i,j] = 0
+                elif isinstance(child, Decorator):
 
+                    print(child.label + child.children[0].label + ' is decorator')
 
-    	# Look for conflicts in condition/decorator appearance between subtrees in group
-    	for k in range(conditions_vs_decorators.shape[1]):
+                    conditions_vs_decorators[i,j] = 0
 
-    		row = conditions_vs_decorators[:,k]
-
-    		if len(np.unique(row)) == 1: # All same node type if len = 1
-
-    			# This means the condition or decorator/condition remains the same for all subtrees in group
-    			# Therefore, it is relevance and it should be retained
-
-    			# Keep condition/decorator for simplified/consolidated subtree
-    			output_subtree.children.append(subtree_group[0].children[k])
-
-    		else:
-
-    			# This means that there is a condition in one subtree 
-    			# and a decorator above that condition in another
-    			# Thus, this condition should not determine whether the action
-    			# the subtrees have in common should happen
-    			pass
-
-    	# Append action that defines this group (all subtrees in group have same action)
-    	# k will be last child, which should be the action
-    	output_subtree.children.append(subtree_group[0].children[k]) 
+        print(conditions_vs_decorators)
 
 
-    	return output_subtree
+        # Look for conflicts in condition/decorator appearance between subtrees in group
+        for k in range(conditions_vs_decorators.shape[1]):
+
+            row = conditions_vs_decorators[:,k]
+
+            if len(np.unique(row)) == 1: # All same node type if len = 1
+
+                # This means the condition or decorator/condition remains the same for all subtrees in group
+                # Therefore, it is relevance and it should be retained
+
+                # Keep condition/decorator for simplified/consolidated subtree
+                output_subtree.children.append(subtree_group[0].children[k])
+
+            else:
+
+                # This means that there is a condition in one subtree 
+                # and a decorator above that condition in another
+                # Thus, this condition should not determine whether the action
+                # the subtrees have in common should happen
+                pass
+
+        # Append action that defines this group (all subtrees in group have same action)
+        # k will be last child, which should be the action
+        output_subtree.children.append(subtree_group[0].children[k]) 
+
+
+        return output_subtree
 
     def simplifyViaConflict(self, subtree_groups):
 
-    	# Simplify behavior tree by comparing subtrees pertaining to the same action
-    	# Combine simplified/consolidated subtrees into a single simplified behavior tree
+        # Simplify behavior tree by comparing subtrees pertaining to the same action
+        # Combine simplified/consolidated subtrees into a single simplified behavior tree
 
-    	for action in subtree_groups:
+        for action in subtree_groups:
 
-    		subtree_group = subtree_groups[action]
+            subtree_group = subtree_groups[action]
 
-    		# Compare and consolidate subtrees in same group (grouped by action)
-    		group_subtree = self.combineSameActionSubtrees(subtree_group)
+            # Compare and consolidate subtrees in same group (grouped by action)
+            group_subtree = self.combineSameActionSubtrees(subtree_group)
 
-    		# Add output group subtree to final simplified behavior tree
-    		self.simplified_bt.root.children.append(group_subtree)
+            # Add output group subtree to final simplified behavior tree
+            self.simplified_bt.root.children.append(group_subtree)
 
 
 
 if __name__ == '__main__':
 
-	bt = get from config file
+    bt = BehaviorTree('simplify_input_test.tree')
 
-	simplify_bt = SimplifyBT(bt)
+    simplify_bt = SimplifyBT(bt)
 
-	final_bt = simplify_bt.simplified_bt
+    final_bt = simplify_bt.simplified_bt
 
-	final_bt.write_config('output_config/test.tree')
+    final_bt.write_config('output_config/simplify_output_test.tree')
