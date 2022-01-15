@@ -39,71 +39,48 @@ class SimplifyBT:
 
         subtree_groups = {} # Dict of lists, where each list is a group of subtrees with the same action
 
-        # for action_name in self.action_names:
-
-        #   # First check that action is in tree (might not have been learned as a part of the policy)
-        #   if action_name in subtree_groups.keys():
-
-        #       subtree_groups[action_name] = []
-
-        #       for subtree in self.tree.root.children:
-
-        #           subtree_action = self.getSubtreeActionName(subtree)
-
-        #           if subtree_action_name == action_name:
-
-        #               subtree_groups[action_name].append(subtree)
-
-        # return subtree_groups
-
         for i in range(len(self.tree.root.children)):
 
+            #print('i ', i)
+
+            # Look at a subtree in the behavior tree
             subtree_1 = self.tree.root.children[i]
+            #print('sub1 ', subtree_1)
 
-            #num_children = len(subtree.children)
-
-            # Action is always last
-            #action_num = num_children-1
+            # Get the action from that subtree, the last child node on the right
             action_1 = subtree_1.children[-1] # Does -1 work?, if not use num_children and action_num commented above
-            print('action 1 ' + action_1.label)
+            #print('action 1 ' + action_1.label)
 
+            # Check whether that action has already been used to group subtrees 
             already_seen = False
-            print('keys are ' + str(subtree_groups.keys()))
+            #print('keys are ' + str(subtree_groups.keys()))
             for action in subtree_groups.keys():
                 if action.label == action_1.label: # already done
                     already_seen = True
-                    ???
+                    #print('already seen')
 
             if not already_seen: # Ensure action not already considered
                 subtree_groups[action_1] = [subtree_1]
 
                 for j in range(len(self.tree.root.children)):
 
+                    #print('j ', j)
+
                     if j != i: # Don't compare a subtree to itself
                         subtree_2 = self.tree.root.children[j]
+                        #print('sub2 ', subtree_2)
 
                         action_2 = subtree_2.children[-1]
-                        print('action 2 ' + action_2.label)
+                        #print('action 2 ' + action_2.label)
 
-                        if action_2 == action_1:
+                        if action_2.label == action_1.label:
+                            #print('match found')
                             subtree_groups[action_1].append(subtree_2)
 
         print(subtree_groups)
 
         return subtree_groups
 
-
-    # def getSubtreeActionName(self,subtree):
-
-    #   for child in subtree.root.children: # issue? subtree might be just a node rather than full bt, get rid of root?
-    #       if isinstance(child, Action):
-    #           return child.label
-
-    def getSubtreeAction(self,subtree): # don't actually use this, maybe delete
-
-        for child in subtree.children:
-            if isinstance(child, Action):
-                return child
 
     def combineSameActionSubtrees(self,subtree_group):
 
@@ -115,13 +92,13 @@ class SimplifyBT:
         # Rows are for each subtree
         # Cols are for each condition (always same number and order in each subtree)
         # Difference is which are alone or beneath decorator nodes
-        conditions_vs_decorators = np.zeros((len(subtree_group),len(subtree_group[0].children)))
+        conditions_vs_decorators = np.zeros((len(subtree_group),len(subtree_group[0].children)-1))
 
         for i in range(len(subtree_group)):
 
             subtree = subtree_group[i] # sequence node and child conditions, decorators, and action
 
-            for j in range(len(subtree.children)):
+            for j in range(len(subtree.children)-1):
 
                 child = subtree.children[j] # a condition, decorator or action
 
@@ -163,7 +140,7 @@ class SimplifyBT:
 
         # Append action that defines this group (all subtrees in group have same action)
         # k will be last child, which should be the action
-        output_subtree.children.append(subtree_group[0].children[k]) 
+        output_subtree.children.append(subtree_group[0].children[k+1]) 
 
 
         return output_subtree
