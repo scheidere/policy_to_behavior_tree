@@ -1,0 +1,121 @@
+(define (domain infant-mobility-domain)
+
+	(:requirements :equality :typing :probabilistic-effects :conditional-effects)
+
+	(:types location)
+
+	(:predicates
+		(has-bubble-juice)
+		; Only one of the following three can be true at a time
+		(child-moving-away) ;?? should all these have robot and child location params
+		(child-moving-toward)
+		(child-stationary)
+		; Only one of the following three can be true at a time
+		(direct-social-interaction)
+		(social-interaction)
+		(solitary-play)
+	)
+
+	(:action spin
+		;:parameters () ;(?robot-loc ?child-loc - location)
+		;:precondition ()
+		:effect (
+			(when
+				;Antecedent
+    			(direct-social-interaction)
+   				;Consequence
+    			(probabilistic 0.6 (and (child-moving-toward) ( increase reward 1 ))
+						       0.4 (not (child-moving-toward)))
+			)
+			(when
+				;Antecedent
+    			(social-interaction)
+   				;Consequence
+    			(probabilistic 0.6 (and (child-moving-toward) ( increase reward 1 ))
+							   0.4 (not (child-moving-toward)))
+			
+			)
+			(when
+				;Antecedent
+    			(solitary-play)
+   				;Consequence
+    			(probabilistic 0.5 (and (child-moving-toward) ( increase reward 1 ))
+							   0.5 (not (child-moving-toward)))
+			
+			)
+		)
+	)
+
+	(:action move-toward
+		;:parameters ()
+		:precondition (not (direct-social-interaction))
+		:effect (
+			(when
+				;Antecedent
+    			(social-interaction)
+   				;Consequence
+    			(probabilistic 0.4 (and (child-moving-toward) ( increase reward 1 ))
+							   0.6 (not (child-moving-toward)))
+			
+			)
+			(when
+				;Antecedent
+    			(solitary-play)
+   				;Consequence
+    			(probabilistic 0.5 (and (child-moving-toward) ( increase reward 1 ))
+							   0.5 (not (child-moving-toward)))
+			
+			)
+		)
+	)
+
+	(:action move-away
+		:parameters ()
+		:precondition ()
+		:effect (
+			(when
+				;Antecedent
+    			(direct-social-interaction)
+   				;Consequence
+    			(probabilistic 0.7 (and (child-moving-toward) ( increase reward 1 ))
+						       0.3 (not (child-moving-toward)))
+			)
+			(when
+				;Antecedent
+    			(social-interaction)
+   				;Consequence
+    			(probabilistic 0.7 (and (child-moving-toward) ( increase reward 1 ))
+							   0.3 (not (child-moving-toward)))
+			
+			)
+			(when
+				;Antecedent
+    			(solitary-play)
+   				;Consequence
+    			(probabilistic 0.5 (and (child-moving-toward) ( increase reward 1 ))
+							   0.5 (not (child-moving-toward)))
+			
+			)
+		)
+	)
+
+	(:action blow-bubbles
+		;:parameters ()
+		:precondition (and (direct-social-interaction) (has-bubbles))
+		:effect (probabilistic 0.9 (and (child-moving-toward) ( increase reward 1 ))
+							   0.1 (not (child-moving-toward)))
+	)
+
+	(:action flash-lights
+		:parameters ()
+		:precondition ()
+		:effect ()
+	)
+
+	(:action make-sound
+		:parameters ()
+		:precondition ()
+		:effect ()
+	)
+
+)
