@@ -59,10 +59,10 @@ tokens = (
     'OBJECTS_KEY',
     'INIT_KEY',
     'GOAL_KEY',
-    'NEGATIVE_PRECONDITIONS_KEY', ##
-    'CONSTRAINTS_KEY',
-    'FORALL',
-    'ATMOSTONCE',
+    'NEGATIVE_PRECONDITIONS_KEY', 
+    'CONSTRAINTS_KEY', ##########
+    'FORALL_KEY', ###########
+    'ATMOSTONCE_KEY', ##########
 )
 
 
@@ -95,9 +95,11 @@ reserved = {
     ':objects'                  : 'OBJECTS_KEY',
     ':init'                     : 'INIT_KEY',
     ':goal'                     : 'GOAL_KEY',
-    'increase'                  : 'INCREASE', ##
-    'reward'                    : 'REWARD', ##
-    ':constraints'              : 'CONSTRAINTS_KEY'
+    'increase'                  : 'INCREASE', 
+    'reward'                    : 'REWARD', 
+    ':constraints'              : 'CONSTRAINTS_KEY',
+    'forall'                    : 'FORALL_KEY',
+    'at-most-once'              : 'ATMOSTONCE_KEY'
 }
 
 
@@ -158,9 +160,9 @@ def p_pddl(p):
 
 
 def p_domain(p):
-    '''domain : LPAREN DEFINE_KEY domain_def require_def types_def predicates_def action_def_lst RPAREN'''
+    '''domain : LPAREN DEFINE_KEY domain_def require_def types_def predicates_def constraints_def action_def_lst RPAREN'''
     print('p_domain')
-    p[0] = Domain(p[3], p[4], p[5], p[6], p[7])
+    p[0] = Domain(p[3], p[4], p[5], p[6], p[8]) #p[7] is constraints_def
 
 
 def p_problem(p):
@@ -279,7 +281,7 @@ def p_predicate_def(p):
 
 
 def p_constraint(p):
-    '''constraint : LPAREN FORALL typed_variables_lst LPAREN ATMOSTONCE literal RPAREN RPAREN
+    '''constraint : LPAREN FORALL_KEY LPAREN typed_variables_lst RPAREN LPAREN ATMOSTONCE_KEY literal RPAREN RPAREN
               '''
     print('p_constraint')
     if len(p) == 9:
@@ -289,8 +291,8 @@ def p_constraint(p):
     print('p_constraint finished')
 
 def p_constraints_def(p):
-    '''constraints_def : CONSTRAINTS_KEY LPAREN AND_KEY constraints_lst RPAREN
-                   | CONSTRAINTS_KEY constraint'''
+    '''constraints_def : LPAREN CONSTRAINTS_KEY LPAREN AND_KEY constraints_lst RPAREN RPAREN
+                   | LPAREN CONSTRAINTS_KEY constraint RPAREN'''
     #print('p_effects_def')
     if len(p) == 3:
         p[0] = [p[2]]
