@@ -12,7 +12,7 @@
 		(dirty-at right-cell)
 	)
 
-	(:goal
+	(:goal ;goal we do not use
 		(and
 		    (robot-at right-cell) ;dummy goal, will not be used
 			;(not (dirty-at left-cell)) ;(not (dirty-at ?x))

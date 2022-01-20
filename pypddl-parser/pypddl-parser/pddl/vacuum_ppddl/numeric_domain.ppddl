@@ -1,0 +1,22 @@
+(define (domain vacuum-domain)
+
+	(:requirements :equality :typing :probabilistic-effects :fluents)
+
+	(:types cell object) ; object can be robot or dirt, cell is 1 or 2
+
+	(:predicates (at ?o - object ?c - cell))
+
+	(:action move
+		:parameters (?robot - object ?from ?to - cell)
+		:precondition (and (at ?robot ?from) (not (= ?from ?to)))
+		:effect (and (at ?robot ?to) (not (at ?robot ?from)))
+	)
+
+	(:action clean TODO ???
+		:parameters (?robot ? dirt - object ?loc - cell)
+		:precondition (and (at ?robot ?loc) (at ?dirt ?loc))
+		:effect (probabilistic 0.9 (and (not (at ?dirt ?loc)) ( increase reward 2 ))
+							   0.1 ( increase reward -1 ))
+	)
+
+)

@@ -1,0 +1,15 @@
+(define (problem numeric-vacuum-problem)
+	
+	(:domain vacuum-domain)
+	
+	(:objects
+		robot dirt - object
+		1 2 - cell ; 1 for left, 2 for right
+	)
+
+	(:init
+		(at robot 1)
+		(at dirt 1)
+		(at dirt 2)
+	)
+)

@@ -16,6 +16,10 @@
 # Emily Scheide
 # Use of pyppdl-parser + additions
 
+# NOTE THIS FILE IS CURRENTLY BEING USED AS MAIN FILE 
+# FOR RUNNING PPDDL TO SIMPLIFIED BEHAVIOR TREE METHOD
+# (This is because of simplicity with pointing to the pddl files, but I will update this and create a main file)
+
 from policy_to_bt import *
 from simplify_bt import *
 
