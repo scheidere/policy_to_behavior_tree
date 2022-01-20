@@ -162,7 +162,7 @@ def p_pddl(p):
 def p_domain(p):
     '''domain : LPAREN DEFINE_KEY domain_def require_def types_def predicates_def constraints_def action_def_lst RPAREN'''
     print('p_domain')
-    p[0] = Domain(p[3], p[4], p[5], p[6], p[8]) #p[7] is constraints_def
+    p[0] = Domain(p[3], p[4], p[5], p[6], p[7], p[8]) #p[7] is constraints_def
 
 
 def p_problem(p):

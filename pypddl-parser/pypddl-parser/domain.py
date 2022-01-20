@@ -15,13 +15,13 @@
 
 class Domain(object):
 
-    #def __init__(self, name, requirements, types, predicates, constraints, operators):
-    def __init__(self, name, requirements, types, predicates, operators):
+    def __init__(self, name, requirements, types, predicates, constraints, operators):
+    #def __init__(self, name, requirements, types, predicates, operators):
         self._name = name
         self._requirements = requirements
         self._types = types
         self._predicates = predicates
-        #self._constraints = constraints
+        self._constraints = constraints
         self._operators = operators
 
     @property
@@ -40,9 +40,9 @@ class Domain(object):
     def predicates(self):
         return self._predicates[:]
 
-    # @property
-    # def constraints(self):
-    #     return self._constraints[:]
+    @property
+    def constraints(self):
+        return self._constraints[:]
 
     @property
     def operators(self):
@@ -54,6 +54,8 @@ class Domain(object):
         domain_str += '>> types: {0}\n'.format(', '.join(self._types))
         domain_str += '>> predicates: {0}\n'.format(', '.join(map(str, self._predicates)))
         #domain_str += '>> constraints: {0}\n'.format(', '.join(map(str, self._constraints)))
+        domain_str += '>> constraints:\n    {0}\n'.format(
+            '\n    '.join(str(con).replace('\n', '\n    ') for con in self._constraints))
         print(domain_str)
         domain_str += '>> operators:\n    {0}\n'.format(
             '\n    '.join(str(op).replace('\n', '\n    ') for op in self._operators))
