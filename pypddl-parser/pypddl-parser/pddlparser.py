@@ -59,7 +59,10 @@ tokens = (
     'OBJECTS_KEY',
     'INIT_KEY',
     'GOAL_KEY',
-    'NEGATIVE_PRECONDITIONS_KEY' ##
+    'NEGATIVE_PRECONDITIONS_KEY', ##
+    'CONSTRAINTS_KEY',
+    'FORALL',
+    'ATMOSTONCE',
 )
 
 
@@ -93,7 +96,8 @@ reserved = {
     ':init'                     : 'INIT_KEY',
     ':goal'                     : 'GOAL_KEY',
     'increase'                  : 'INCREASE', ##
-    'reward'                    : 'REWARD' ##
+    'reward'                    : 'REWARD', ##
+    ':constraints'              : 'CONSTRAINTS_KEY'
 }
 
 
@@ -273,6 +277,36 @@ def p_predicate_def(p):
         p[0] = Predicate(p[2], p[3])
 
 
+
+def p_constraint(p):
+    '''constraint : LPAREN FORALL typed_variables_lst LPAREN ATMOSTONCE literal RPAREN RPAREN
+              '''
+    print('p_constraint')
+    if len(p) == 9:
+        print('FOUND LIFE')
+        p[0] = (p[3],p[6])
+    
+    print('p_constraint finished')
+
+def p_constraints_def(p):
+    '''constraints_def : CONSTRAINTS_KEY LPAREN AND_KEY constraints_lst RPAREN
+                   | CONSTRAINTS_KEY constraint'''
+    #print('p_effects_def')
+    if len(p) == 3:
+        p[0] = [p[2]]
+    elif len(p) == 6:
+        p[0] = p[4]
+
+
+def p_constraints_lst(p):
+    '''constraints_lst : constraint constraints_lst
+                   | constraint'''
+    #print('p_effects_lst')
+    if len(p) == 2:
+        p[0] = [p[1]]
+    elif len(p) == 3:
+        p[0] = [p[1]] + p[2]
+
 def p_action_def_lst(p):
     '''action_def_lst : action_def action_def_lst
                       | action_def'''
@@ -334,7 +368,6 @@ def p_effects_lst(p):
     elif len(p) == 3:
         p[0] = [p[1]] + p[2]
 
-# does this account for literals_lst with the AND???
 def p_probability_lst(p):
     '''probability_lst : PROBABILITY literal
                        | PROBABILITY literal probability_lst
@@ -404,7 +437,6 @@ def p_ground_predicates_lst(p):
     elif len(p) == 3:
         p[0] = [p[1]] + p[2]
 
-
 def p_predicate(p):
     '''predicate : LPAREN NAME variables_lst RPAREN
                  | LPAREN EQUALS VARIABLE VARIABLE RPAREN
@@ -433,7 +465,6 @@ def p_reward(p):
     p[0] = Reward(p[4]) 
 
     
-#                        #| LPAREN NOT_KEY predicate RPAREN''' ???
 
 def p_ground_predicate(p):
     '''ground_predicate : LPAREN NAME constants_lst RPAREN

@@ -10,10 +10,7 @@
 	)
 
 	(:constraints
-		(and
-            		(forall (?loc - cell) (at-most-once (robot-at ?loc)))
-
-        	)
+            (forall (?loc - cell) (at-most-once (robot-at ?loc)))
 
 	)
 
