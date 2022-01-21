@@ -24,6 +24,7 @@ from reward    import Reward
 from action    import Action
 from domain    import Domain
 from problem   import Problem
+from constraint import Constraint
 
 import traceback 
 
@@ -160,12 +161,14 @@ def p_pddl(p):
 
 
 def p_domain(p):
-    '''domain : LPAREN DEFINE_KEY domain_def require_def types_def predicates_def constraints_def action_def_lst RPAREN'''
+    '''domain : LPAREN DEFINE_KEY domain_def require_def types_def predicates_def constraints_def action_def_lst RPAREN
+              | LPAREN DEFINE_KEY domain_def require_def types_def predicates_def action_def_lst RPAREN'''
 
-    #Add another line to account for no constraints and add if len(p) ==  bla block to have different p[0] values ???
     print('p_domain')
-    print('p7 ', p[7])
-    p[0] = Domain(p[3], p[4], p[5], p[6], p[7], p[8])
+    if len(p) == 10:
+        p[0] = Domain(p[3], p[4], p[5], p[6], p[8],constraints=p[7])
+    elif len(p) == 9:
+        p[0] = Domain(p[3], p[4], p[5], p[6], p[7])
 
 
 def p_problem(p):
@@ -287,7 +290,8 @@ def p_constraint(p):
               '''
     print('p_constraint')
     if len(p) == 11:
-        p[0] = (p[4][0].__str__(),p[8],p[7])
+        #p[0] = (p[4][0].__str__(),p[8],p[7]) # basic version
+        p[0] = Constraint(p[7],p[8],p[4]) # constraint name, literal, typed_variables_lst
         print(p[0])
     print('p_constraint finished')
 

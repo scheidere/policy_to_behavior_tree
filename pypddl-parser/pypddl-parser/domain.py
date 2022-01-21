@@ -15,7 +15,7 @@
 
 class Domain(object):
 
-    def __init__(self, name, requirements, types, predicates, constraints, operators):
+    def __init__(self, name, requirements, types, predicates, operators,constraints=None):
     #def __init__(self, name, requirements, types, predicates, operators):
         self._name = name
         self._requirements = requirements
@@ -53,8 +53,8 @@ class Domain(object):
         domain_str += '>> requirements: {0}\n'.format(', '.join(self._requirements))
         domain_str += '>> types: {0}\n'.format(', '.join(self._types))
         domain_str += '>> predicates: {0}\n'.format(', '.join(map(str, self._predicates)))
-        #if self._constraints:
-        domain_str += '>> constraints: {0}\n'.format(', '.join(map(str, self._constraints)))
+        if self._constraints:
+            domain_str += '>> constraints: {0}\n'.format(', '.join(map(str, self._constraints)))
         #print(domain_str)
         domain_str += '>> operators:\n    {0}\n'.format(
             '\n    '.join(str(op).replace('\n', '\n    ') for op in self._operators))
