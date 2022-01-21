@@ -44,6 +44,7 @@ if __name__ == '__main__':
 
         bt = BehaviorTree(filepath+ 'output_bt.tree')
 
+
         includes = [True, True, True, True, True, True, True, True, True, True,\
             True, True, True, True, True,True, True, True, True, True,\
             True, True, True, True, True,True, True, True, True, True]
