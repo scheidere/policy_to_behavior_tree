@@ -1,0 +1,31 @@
+->
+	(Sees robot and toy)
+	?
+		->
+			(Focused attention - toy)
+			?
+				->
+					(isAttuned - toy)
+					[Play - toy]
+				[Move random direction]
+
+		->
+			(Focused attention - robot)
+			?
+				->
+					(isAttuned - robot)
+					[Play - robot]
+				[Move random direction]
+
+		->
+			(Casual attention)
+			?
+				->
+					(isLookingAhead)
+					[Stay still]
+				[Move random direction]
+
+
+
+
+

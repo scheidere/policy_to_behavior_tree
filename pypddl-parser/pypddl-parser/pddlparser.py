@@ -161,8 +161,11 @@ def p_pddl(p):
 
 def p_domain(p):
     '''domain : LPAREN DEFINE_KEY domain_def require_def types_def predicates_def constraints_def action_def_lst RPAREN'''
+
+    #Add another line to account for no constraints and add if len(p) ==  bla block to have different p[0] values ???
     print('p_domain')
-    p[0] = Domain(p[3], p[4], p[5], p[6], p[7], p[8]) #p[7] is constraints_def
+    print('p7 ', p[7])
+    p[0] = Domain(p[3], p[4], p[5], p[6], p[7], p[8])
 
 
 def p_problem(p):
@@ -279,25 +282,23 @@ def p_predicate_def(p):
         p[0] = Predicate(p[2], p[3])
 
 
-
 def p_constraint(p):
     '''constraint : LPAREN FORALL_KEY LPAREN typed_variables_lst RPAREN LPAREN ATMOSTONCE_KEY literal RPAREN RPAREN
               '''
     print('p_constraint')
-    if len(p) == 9:
-        print('FOUND LIFE')
-        p[0] = (p[3],p[6])
-    
+    if len(p) == 11:
+        p[0] = (p[4][0].__str__(),p[8],p[7])
+        print(p[0])
     print('p_constraint finished')
 
 def p_constraints_def(p):
     '''constraints_def : LPAREN CONSTRAINTS_KEY LPAREN AND_KEY constraints_lst RPAREN RPAREN
                    | LPAREN CONSTRAINTS_KEY constraint RPAREN'''
     #print('p_effects_def')
-    if len(p) == 3:
-        p[0] = [p[2]]
-    elif len(p) == 6:
-        p[0] = p[4]
+    if len(p) == 5:
+        p[0] = [p[3]]
+    elif len(p) == 8:
+        p[0] = p[5]
 
 
 def p_constraints_lst(p):
