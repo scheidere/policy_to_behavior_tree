@@ -10,8 +10,9 @@
 	)
 
 	(:constraints
+		(and
             (forall (?loc - cell) (at-most-once (robot-at ?loc)))
-
+        )
 	)
 
 	(:action move

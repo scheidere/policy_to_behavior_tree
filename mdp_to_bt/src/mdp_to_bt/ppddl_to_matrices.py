@@ -73,6 +73,8 @@ def getParamCombos(action):
 
 def getStateList():
 
+    # Get all states (valid and invalid)
+
     single_state = []
     for i in range(len(domain.predicates)):
         #print('Predicate is %s' % str(domain.predicates[i]))
@@ -99,8 +101,71 @@ def getStateList():
 
     #print('states ', states)
 
+    # Remove invalid states per constraints in domain
+    ##states = removeInvalidStates(states)
+
+
     return states
 
+def removeInvalidStates(state_list):
+
+    # This would need to have more constraint types added to be entirely complete
+    # Also needs generalization for the case that robot-at has multiple params
+    # e.g. literal(?var1 ?var2 - type) would correspond to 
+    # [(literal,var1,var2,0),(literal,var1,var2,1)]
+
+    TODO Need to use term[-1] instead of term[2]
+    and need to match literal name e.g. robot-at
+    AND also match the middle var terms which must be the same
+
+    valid_states_list = []
+    removal_indices = [] # Indices of all invalid states
+
+    # For each constraint, remove states that do not satisfy 
+    for i in range(len(domain.constraints)):
+        constraint = domain.constraints[i]
+        print('Constraint: ', constraint)
+        print(constraint._name)
+        print(constraint._literal._predicate._name)
+        print(''.join(map(str, constraint._params)))
+
+        # Check each state for failure, per kind of constraint (currently only at-most-once)
+        for j in range(len(state_list)):
+            state = state_list[j]
+            constraint_satisfied = True
+            if constraint._name == 'at-most-once':
+                # Find all terms in state with the literal that is in the constraint
+                # If all terms have different bool vals, we good (01 or 10 fine, 11 or 00 not fine)
+                num=None
+                for term in state:
+                    if term[0] == constraint._literal._predicate._name:
+                        if num==None:
+                            num=term[2] # 0 or 1
+                        elif term[2] == num: # CONSTRAINT NOT SATISFIED (num appeared more than once)
+                            constraint_satisfied = False
+                            removal_indices.append(j)
+
+    # Only retain valid states
+    for idx in range(len(state_list)):
+        if idx not in removal_indices:
+            # Then state at idx in list is valid
+            valid_states_list.append(state_list[idx])
+
+    return valid_states_list
+
+
+def testRemoveInvalidStates():
+
+    states = getStateList()
+
+    for s in states:
+        print(s)
+
+    print('{{{{{{{{{{{{')
+
+    valid = removeInvalidStates(states)
+    for s in valid:
+        print(s)
 
 
 def getComboArgValues(args,combo_dict):
@@ -443,7 +508,7 @@ def getPandR():
     # Init main lists, NxN arrays will be added to (later converted to 3d numpy array)
     P,R = [],[]
 
-    # Get states
+    # Get valid states
     states = getStateList()
 
     # Initialize actions with parameters list (used for reading policy)
@@ -631,3 +696,7 @@ if __name__ == '__main__':
     final_bt = simplify.simplified_bt
     final_bt.write_config('output_config/final_output_bt.tree')
     final_bt.write_config('../../../behavior_tree/config/final_output_bt.tree')
+
+
+    print('TESTING TESTING TESTING')
+    testRemoveInvalidStates()
