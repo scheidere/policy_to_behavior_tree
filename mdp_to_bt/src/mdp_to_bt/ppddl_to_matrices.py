@@ -110,13 +110,6 @@ def getStateList():
 def removeInvalidStates(state_list):
 
     # This would need to have more constraint types added to be entirely complete
-    # Also needs generalization for the case that robot-at has multiple params
-    # e.g. literal(?var1 ?var2 - type) would correspond to 
-    # [(literal,var1,var2,0),(literal,var1,var2,1)]
-
-    TODO Need to use term[-1] instead of term[2]
-    and need to match literal name e.g. robot-at
-    AND also match the middle var terms which must be the same
 
     valid_states_list = []
     removal_indices = [] # Indices of all invalid states
@@ -132,18 +125,42 @@ def removeInvalidStates(state_list):
         # Check each state for failure, per kind of constraint (currently only at-most-once)
         for j in range(len(state_list)):
             state = state_list[j]
-            constraint_satisfied = True
+            print('state ', state)
             if constraint._name == 'at-most-once':
                 # Find all terms in state with the literal that is in the constraint
-                # If all terms have different bool vals, we good (01 or 10 fine, 11 or 00 not fine)
+                # Simplest case (one literal, one param, two param values): [literal,param value 1, 0],[literal,param value 2, 1]
+                # Only 0 and 1, or 1 and 0 are allowed
+
+                # Satisfy constraint: One 1, rest are 0s
+                # Fail to satisfy: All zeros, or more than one 1
                 num=None
+                found_a_one = False
                 for term in state:
                     if term[0] == constraint._literal._predicate._name:
                         if num==None:
-                            num=term[2] # 0 or 1
-                        elif term[2] == num: # CONSTRAINT NOT SATISFIED (num appeared more than once)
-                            constraint_satisfied = False
+                            num=term[-1] # 0 or 1
+                            print('num ',num)
+                            continue
+                        elif num==1 and term[-1]==num: # Found another 1, so constraint is not satisfied
                             removal_indices.append(j)
+                            print("More than one 1 found")
+                            break
+                        elif num==0:
+                            if term[-1] == 1: # found a one
+                                if not found_a_one:
+                                    found_a_one = True # found first 1
+                                else: # found second 1, constraint not satisfied
+                                    removal_indices.append(j)
+                                    print("More than one 1 found*")
+                                    break
+
+
+                # After searching whole state
+                if num == 0 and not found_a_one: # If all zeros -> failure
+                    removal_indices.append(j)
+                    print('all zeros')
+ 
+
 
     # Only retain valid states
     for idx in range(len(state_list)):
