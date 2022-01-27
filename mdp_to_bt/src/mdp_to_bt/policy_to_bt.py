@@ -59,7 +59,7 @@ class PolicyToBT:
             action_with_params_term = self.actions[action_num]
             action_name = action_with_params_term[0]
             params = action_with_params_term[1] # dictionary
-            print('params ', params.keys)
+            #print('params ', params.keys)
             action_label = action_name + '('
             for key in params.keys():
                 variable = key[1:]

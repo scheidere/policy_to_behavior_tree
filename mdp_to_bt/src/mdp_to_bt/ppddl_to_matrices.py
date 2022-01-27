@@ -102,7 +102,7 @@ def getStateList():
     #print('states ', states)
 
     # Remove invalid states per constraints in domain
-    ##states = removeInvalidStates(states)
+    states = removeInvalidStates(states)
 
 
     return states
@@ -711,9 +711,9 @@ if __name__ == '__main__':
     # Simplify the behavior tree via conflict (remove irrelevant conditions/decorators and combine same-action subtrees)
     simplify = SimplifyBT(p2bt.behavior_tree)
     final_bt = simplify.simplified_bt
-    final_bt.write_config('output_config/final_output_bt.tree')
-    final_bt.write_config('../../../behavior_tree/config/final_output_bt.tree')
+    final_bt.write_config('output_config/test_final_output_bt.tree')
+    final_bt.write_config('../../../behavior_tree/config/test_final_output_bt.tree')
 
 
-    print('TESTING TESTING TESTING')
-    testRemoveInvalidStates()
+    #print('TESTING TESTING TESTING')
+    #testRemoveInvalidStates()

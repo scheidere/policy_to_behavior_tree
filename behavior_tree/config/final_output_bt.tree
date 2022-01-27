@@ -1,7 +1,13 @@
 ?
 	->
+		<!>
+			(dirty-at{left-cell})
+		<!>
+			(dirty-at{right-cell})
 		[move(x: left-cell, y: left-cell)]
 	->
+		<!>
+			(robot-at{left-cell})
 		(robot-at{right-cell})
 		(dirty-at{right-cell})
 		[clean(x: right-cell)]
@@ -23,5 +29,7 @@
 		[move(x: left-cell, y: right-cell)]
 	->
 		(robot-at{left-cell})
+		<!>
+			(robot-at{right-cell})
 		(dirty-at{left-cell})
 		[clean(x: left-cell)]
