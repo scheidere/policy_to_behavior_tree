@@ -2,6 +2,7 @@
 
 import numpy as np
 from behavior_tree.behavior_tree import *
+from itertools import combinations
 
 class SimplifyBT:
 
@@ -25,57 +26,53 @@ class SimplifyBT:
         # Need to update this so that the list of subtrees gets updated (or check this is happening)
         # as pairs are simplified, we might still want to compare a simplified one to a not yet simplified one
 
+        unique_subtree_pairs = list(combinations(self.tree.root.children,2))
+
+        already_included = [] # subtrees already included
         print('subtrees 0', self.tree.root.children)
 
-        for i in range(len(self.tree.root.children)):
-            print('*',i)
-            #if i < len(self.tree.root.children):
-            subtree_1 = self.tree.root.children[i]
-            # else:
-            #     return
+        for subtree_1, subtree_2 in unique_subtree_pairs:
 
-            for j in range(len(self.tree.root.children)):
+            # Attempt to combine pair of subtrees if they have the same action
+            if self.hasSameAction(subtree_1,subtree_2):
 
-                if j != i: # Don't compare a subtree to itself
-                    #if j < len(self.tree.root.children):
-                    subtree_2 = self.tree.root.children[j]
-                    # else:
-                    #     return
+                print(subtree_1.children[-1].label)
 
-                    # Attempt to combine pair of subtrees if they have the same action
-                    if self.hasSameAction(subtree_1,subtree_2):
+                new_subtree = self.simplifySubtreePair(subtree_1,subtree_2)
 
-                        new_subtree = self.simplifySubtreePair(subtree_1,subtree_2)
+                if new_subtree: # if no simplification possible, new_subtree will be None
 
-                        print(new_subtree)
+                    self.simplified_bt.root.children.append(new_subtree)
+                    print('new subtree added', new_subtree)
 
-                        if new_subtree: # if no simplification possible, new_subtree will be None
+                else:
 
-                            # Remove subtree 1 and 2 from the behavior tree
-                            #self.tree.root.children.remove(subtree_1)
-                            #self.tree.root.children.remove(subtree_2)
+                    if subtree_1 not in already_included:
+                        self.simplified_bt.root.children.append(subtree_1)
+                        print('adding subtree 1')
+                        already_included.append(subtree_1)
+                    if subtree_2 not in already_included:
+                        self.simplified_bt.root.children.append(subtree_2)
+                        print('adding subtree 2')
+                        already_included.append(subtree_2)
 
-                            #print('subtrees 1', self.tree.root.children, len(self.tree.root.children))
+        # Add subtrees that cannot be simplified 
+        # because they are the only subtrees with a certain action individually
+        for a in range(len(self.tree.root.children)):
+            subtree_a = self.tree.root.children[a]
+            unique = True
+            action_label_a = subtree_a.children[-1].label
+            for b in range(len(self.tree.root.children)):
+                subtree_b = self.tree.root.children[b]
+                action_label_b = subtree_b.children[-1].label
 
-                            # Get new subtree location based on subtree 1 and 2 locations
-                            # Ignoring for now since order doesn't matter (in this case)
-                            # Just use left-most subtree position out of subtree 1 and 2
-                            #most_left_index = min(i,j)
-                            #print(most_left_index)
+                if action_label_a == action_label_b and a != b:
+                    print('not unique')
+                    unique = False
 
-                            # Add new subtree at specified location
-                            #self.tree.root.children.insert(most_left_index, new_subtree)
-                            self.simplified_bt.root.children.append(new_subtree)
-
-                            #print('subtrees 2', self.tree.root.children, len(self.tree.root.children))
-                        else:
-                            if subtree_1 not in self.simplified_bt.root.children:
-                                self.simplified_bt.root.children.append(subtree_1)
-                            if subtree_2 not in self.simplified_bt.root.children:
-                                self.simplified_bt.root.children.append(subtree_2)
-
-        #self.simplified_bt = self.tree
-
+            if unique: # add subtree
+                print(unique)
+                self.simplified_bt.root.children.append(subtree_a)
 
     def hasSameAction(self,subtree_1,subtree_2):
 
