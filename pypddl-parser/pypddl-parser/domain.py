@@ -21,7 +21,7 @@ class Domain(object):
         self._requirements = requirements
         self._types = types
         self._predicates = predicates
-        self._constraints = constraints
+        self._constraints = constraints # could be None
         self._operators = operators
 
     @property
@@ -42,7 +42,8 @@ class Domain(object):
 
     @property
     def constraints(self):
-        return self._constraints[:]
+        if self._constraints:
+            return self._constraints[:]
 
     @property
     def operators(self):

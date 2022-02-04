@@ -102,7 +102,8 @@ def getStateList():
     #print('states ', states)
 
     # Remove invalid states per constraints in domain
-    states = removeInvalidStates(states)
+    if domain.constraints:
+        states = removeInvalidStates(states)
 
 
     return states
@@ -700,8 +701,8 @@ if __name__ == '__main__':
     p2bt = PolicyToBT(states, actions_with_params, policy)
 
     # Save behavior tree in a file
-    p2bt.behavior_tree.write_config('output_config/raw_output_bt.tree') # need to copy output_bt.tree to behavior_tree/src/behavior_tree/config/
-    p2bt.behavior_tree.write_config('../../../behavior_tree/config/raw_output_bt.tree') # Needed here to show in rqt
+    p2bt.behavior_tree.write_config('output_config/raw_policy_output_bt.tree') # need to copy output_bt.tree to behavior_tree/src/behavior_tree/config/
+    p2bt.behavior_tree.write_config('../../../behavior_tree/config/raw_policy_output_bt.tree') # Needed here to show in rqt
 
     # To visualize the behavior tree, navigate to the behavior tree package
     # The output file will be here: your_workspace/src/policy_to_behavior_tree/behavior_tree/config
@@ -711,8 +712,8 @@ if __name__ == '__main__':
     # Simplify the behavior tree via conflict (remove irrelevant conditions/decorators and combine same-action subtrees)
     simplify = SimplifyBT(p2bt.behavior_tree)
     final_bt = simplify.simplified_bt
-    final_bt.write_config('output_config/test_final_output_bt.tree')
-    final_bt.write_config('../../../behavior_tree/config/test_final_output_bt.tree')
+    final_bt.write_config('output_config/final_simplified_output_bt.tree')
+    final_bt.write_config('../../../behavior_tree/config/final_simplified_output_bt.tree')
 
 
     #print('TESTING TESTING TESTING')
