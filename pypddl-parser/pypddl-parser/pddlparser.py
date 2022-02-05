@@ -60,7 +60,7 @@ tokens = (
     'OBJECTS_KEY',
     'INIT_KEY',
     'GOAL_KEY',
-    'NEGATIVE_PRECONDITIONS_KEY', 
+    'NEGATIVE_PRECONDITIONS_KEY', # Currently not used :(
     'CONSTRAINTS_KEY', ##########
     'FORALL_KEY', ###########
     'ATMOSTONCE_KEY', ##########

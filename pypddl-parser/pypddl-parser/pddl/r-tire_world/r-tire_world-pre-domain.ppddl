@@ -1,0 +1,43 @@
+(define (domain r-tire-world-pre)
+	(:requirements :typing :probabilistic-effects) 
+	(:types location)
+	(:predicates	(vehicle-at ?loc - location)
+			(hasspare-vehicle)
+			(hasspare-location ?loc - location)
+			(road ?from - location ?to - location)
+			(flattire))
+	(:action mov-car
+		:parameters (?from - location ?to - location)
+		:precondition (and (vehicle-at ?from) (road ?from ?to))
+					;(not (flattire)))
+		;:effect (and (vehicle-at ?to) (not (vehicle-at ?from))
+		;		( increase reward -1 ) ;(decrease reward 1)
+		;		(probabilistic 0.15 (flattire)
+		;					   0.85 (flattire))
+		:effect (probabilistic 0.15 (and (flattire) (increase reward -1)))
+							   ;0.85 (flattire))
+	)
+
+	;(:action loadtire
+	;	:parameters (?loc - location)
+	;	:precondition (and (vehicle-at ?loc) (hasspare-location ?loc))
+	;				;(not (hasspare-vehicle)))
+	;	:effect (and (hasspare-vehicle) (not (hasspare-location ?loc)) 
+	;					( increase reward -1 ))
+	;)
+
+	;(:action changetire
+	;	:precondition (and (hasspare-vehicle) (flattire))
+	;	:effect (and ( increase reward -1 )
+	;			 (not (hasspare-vehicle))
+	;			 (not (flattire))
+	;		  )
+	;)
+
+	;(:action callAAA
+	;	:precondition (flattire)
+	;	:effect  (and ( increase reward -100 )
+	;			  (not (flattire))
+	;		   )
+	;)
+)

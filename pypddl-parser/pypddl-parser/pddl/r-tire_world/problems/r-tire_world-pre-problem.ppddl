@@ -45,6 +45,12 @@
 		(hasspare-location cm)
 		(hasspare-location d4)
 	)
-	(:goal (vehicle-at c9))
-	(:goal-reward 100)
+	;(:goal (vehicle-at c9))
+	;(:goal-reward 100)
+
+	(:goal 
+		(and
+		(vehicle-at c9)
+		)
+	)
 )
