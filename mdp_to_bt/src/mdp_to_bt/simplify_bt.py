@@ -29,7 +29,7 @@ class SimplifyBT:
         unique_subtree_pairs = list(combinations(self.tree.root.children,2))
 
         already_included = [] # subtrees already included
-        print('subtrees 0', self.tree.root.children)
+        #print('subtrees 0', self.tree.root.children)
 
         for subtree_1, subtree_2 in unique_subtree_pairs:
 
@@ -43,17 +43,17 @@ class SimplifyBT:
                 if new_subtree: # if no simplification possible, new_subtree will be None
 
                     self.simplified_bt.root.children.append(new_subtree)
-                    print('new subtree added', new_subtree)
+                    #print('new subtree added', new_subtree)
 
                 else:
 
                     if subtree_1 not in already_included:
                         self.simplified_bt.root.children.append(subtree_1)
-                        print('adding subtree 1')
+                        #print('adding subtree 1')
                         already_included.append(subtree_1)
                     if subtree_2 not in already_included:
                         self.simplified_bt.root.children.append(subtree_2)
-                        print('adding subtree 2')
+                        #print('adding subtree 2')
                         already_included.append(subtree_2)
 
         # Add subtrees that cannot be simplified 
@@ -67,11 +67,11 @@ class SimplifyBT:
                 action_label_b = subtree_b.children[-1].label
 
                 if action_label_a == action_label_b and a != b:
-                    print('not unique')
+                    #print('not unique')
                     unique = False
 
             if unique: # add subtree
-                print(unique)
+                #print(unique)
                 self.simplified_bt.root.children.append(subtree_a)
 
     def hasSameAction(self,subtree_1,subtree_2):
@@ -126,28 +126,28 @@ class SimplifyBT:
         output_subtree = Sequence()
 
         conditions_vs_decorators = self.convertPairToBinaryArray(subtree_pair)
-        print(conditions_vs_decorators)
+        #print(conditions_vs_decorators)
         #print(conditions_vs_decorators)
 
         num_conflicts = 0 # only one allowed, for simplification this way to be possible
         # Look for conflicts in condition/decorator appearance between subtrees in group
         for i in range(conditions_vs_decorators.shape[1]):
 
-            print('i',i)
-            print('num_conflicts', num_conflicts)
+            #print('i',i)
+            #print('num_conflicts', num_conflicts)
 
             # If number of conflicts is more than 1, this pair cannot be simplified in this way
             if num_conflicts > 1:
                 return None
 
             col = conditions_vs_decorators[:,i]
-            print('col',col)
-            print(np.unique(col))
+            #print('col',col)
+            #print(np.unique(col))
 
             # Conflict found between same condition in each subtree (e.g. decorator vs condition)
             if len(np.unique(col)) > 1: # np.unqiue returns list of unique vals, so if conflict it is [0,1] 
 
-                print('conflict at i=',i)
+                #print('conflict at i=',i)
                 num_conflicts += 1
             else:
 
