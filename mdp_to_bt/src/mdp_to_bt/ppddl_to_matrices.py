@@ -323,6 +323,8 @@ def testGetStateIndex():
 
 def outcome(param_values, start_state, action, test=False):
 
+    precond_satisfied = True
+
     # List of lists
     # Each sub list includes an outcome state with probability p and reward r, [state,p,r]
     outcome_list = []
@@ -334,6 +336,7 @@ def outcome(param_values, start_state, action, test=False):
 
         outcome_sublist = [unchanged_state_terms,1.0,0]
         outcome_list.append(outcome_sublist)
+        precond_satisfied = False
 
     else:
 
@@ -445,7 +448,7 @@ def outcome(param_values, start_state, action, test=False):
             print('Outcome list: ', outcome_list)
 
 
-    return outcome_list
+    return outcome_list, precond_satisfied
 
 def getOutcomeSublist(literals, prob, reward, start_state, param_values, is_probabilistic=False):
 
@@ -519,6 +522,15 @@ def updatePandR(outcome_list):
 
     pass
 
+def preconditionSatisfiedActionParams(action, combo_dict):
+
+    Need to remove things like move(left,left) and move(right,right) by checking preconditions
+
+    Might also be able to merge with preconditionSatisfied, but not sure what is most elegant option
+
+    use this in getPandR to ammend the actions_with_params list to only contain valid actions_with_params
+
+    then update loops so you only consider those actions for p and r
 
 
 def getPandR():
@@ -536,6 +548,8 @@ def getPandR():
     N = len(states)
     print('N: ',N)
 
+    count = 0
+
     # Loop through all actions in domain (first try with just action move)
     for action in domain.operators:
 
@@ -546,7 +560,8 @@ def getPandR():
         # For combo in possible combos, update P and R with NxN matrix for given action/param combo
         for combo_dict in param_combos:
 
-            # Add info to readbility list
+            # Add info to readbility list (including invalid param combos e.g. move(left,left) which fails preconditions)
+            #??? issue, only want action/param combos added to this if valid per precondtions
             actions_with_params.append([action.name,combo_dict])
 
             # Init two NxN arrays with zeros (one for P_a and one for R_a)
@@ -556,7 +571,22 @@ def getPandR():
             for i in range(len(states)):
                 start_state = states[i]
 
-                outcome_list = outcome(combo_dict,start_state,action)
+                count += 1
+
+                print('+++++++++++++++++++')
+                print('action ',action)
+                print('params ', combo_dict)
+                print('count ', count)
+                print('start state ', start_state)
+
+                # Get list of [end state, prob, reward] terms, given action and start state
+                # Also return only the actions_with_params that satisfy preconds
+                outcome_list, precond_satisfied = outcome(combo_dict,start_state,action)
+                print("outcome_list: ",outcome_list)
+
+                # if precond_satisfied: # i.e. list not empty
+                #     print(action.name, combo_dict)
+                #     actions_with_params.append([action.name,combo_dict])
 
                 # Update NxN matrices, p and r according to outcome
                 for outcome_sublist in outcome_list:
@@ -625,20 +655,25 @@ def precondSatisfiedTest():
 
     states = getStateList()
 
-    action = domain.operators[0]
-    print('Action: ', action)
+    for action in domain.operators:
+    #action = domain.operators[0]
+    #print('Action: ', action)
 
-    param_combos = getParamCombos(action)
+        param_combos = getParamCombos(action)
 
-    for i in range(len(states)):
-        start_state = states[i]
-        print('Start: ', start_state)
+        for i in range(len(states)):
+            start_state = states[i]
+            
 
-        for combo_dict in param_combos:
+            for combo_dict in param_combos:
 
-            print('Param combo: ', combo_dict)
+                print('Action: ', action)
 
-            print('Precond satisfied? %s\n' % preconditionSatisfied(combo_dict,start_state,action,test=True))
+                print('Start: ', start_state)
+
+                print('Param combo: ', combo_dict)
+
+                print('Precond satisfied? %s\n' % preconditionSatisfied(combo_dict,start_state,action,test=True))
 
 
 def solve(solver,P,R):
@@ -688,6 +723,10 @@ if __name__ == '__main__':
     print('P:\n', P, '\n',P.shape)
     print('R:\n', R, '\n',R.shape)
 
+    print('actions_with_params: ')
+    for action in actions_with_params:
+        print(action)
+
     # Choose method of solving for a policy given P and R
     solver = input("Enter value iteration (v) or Q-learning (q): ") 
 
@@ -718,3 +757,6 @@ if __name__ == '__main__':
 
     #print('TESTING TESTING TESTING')
     #testRemoveInvalidStates()
+
+    #print('+++++++++++++++++++++++++++++++')
+    #precondSatisfiedTest() # this does show issue with move(left,left)
