@@ -21,6 +21,18 @@ class SimplifyBT:
         simplified_bt.root = Fallback()
         self.simplified_bt = simplified_bt
 
+    def printBT(self, bt):
+        bt.generate_nodes_list()
+        for node in bt.nodes:
+            print(node.label)
+        print(len(bt.root.children))
+
+    def printSubtree(self, subtree):
+
+        printable_subtree = BehaviorTree('')
+        printable_subtree.root = subtree
+        self.printBT(printable_subtree)
+
     def simplifyBT(self):
 
         # Need to update this so that the list of subtrees gets updated (or check this is happening)
@@ -120,6 +132,13 @@ class SimplifyBT:
         # Distributivity of and over or: X . ( Y + Z ) = ( X . Y ) + ( X . Z)
         # Complementation 2 (notA + A = 1)
 
+        print('+++++++++++++++++++++')
+        print('Input subtree 1: \n')
+        self.printSubtree(subtree_1)
+        print('Input subtree 2: \n')
+        self.printSubtree(subtree_2)
+        print('+++++++++++++++++++++')
+
         subtree_pair = [subtree_1, subtree_2]
 
         # Initialize consolidated subtree to return after simplification
@@ -158,6 +177,10 @@ class SimplifyBT:
         # k will be last child, which should be the action
         output_subtree.children.append(subtree_pair[0].children[i+1]) 
 
+        print('====================')
+        print('Output subtree: \n')
+        self.printSubtree(output_subtree)
+        print('====================')
 
         return output_subtree
 

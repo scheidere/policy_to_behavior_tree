@@ -7,7 +7,7 @@
 			(dirty-at{left-cell})
 		<!>
 			(dirty-at{right-cell})
-		[move(x: left-cell, y: left-cell)]
+		[move(x: left-cell, y: right-cell)]
 	->
 		<!>
 			(robot-at{left-cell})
@@ -39,7 +39,7 @@
 			(dirty-at{left-cell})
 		<!>
 			(dirty-at{right-cell})
-		[move(x: left-cell, y: left-cell)]
+		[move(x: left-cell, y: right-cell)]
 	->
 		(robot-at{left-cell})
 		<!>

@@ -8,7 +8,7 @@ class PolicyToBT:
     def __init__(self, states, actions, policy, goal=None):
 
         self.states = states
-        self.actions = actions
+        self.actions = actions # actions with params list
         self.policy = policy # e.g. (0,0,1,1,0,0,0,0)
 
         self.run()
@@ -57,7 +57,7 @@ class PolicyToBT:
             # Add action associated with each state
             action_num = self.policy[i]
             action_with_params_term = self.actions[action_num]
-            action_name = action_with_params_term[0]
+            action_name = action_with_params_term[0].name
             params = action_with_params_term[1] # dictionary
             #print('params ', params.keys)
             action_label = action_name + '('

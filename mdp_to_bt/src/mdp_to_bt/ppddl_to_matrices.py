@@ -522,15 +522,60 @@ def updatePandR(outcome_list):
 
     pass
 
-def preconditionSatisfiedActionParams(action, combo_dict):
+def preconditionSatisfiedActionParams(action, combo_dict, test=True):
 
-    Need to remove things like move(left,left) and move(right,right) by checking preconditions
+    #Need to remove things like move(left,left) and move(right,right) by checking preconditions
 
-    Might also be able to merge with preconditionSatisfied, but not sure what is most elegant option
+    #Might also be able to merge with preconditionSatisfied, but not sure what is most elegant option
 
-    use this in getPandR to ammend the actions_with_params list to only contain valid actions_with_params
+    #use this in getPandR to ammend the actions_with_params list to only contain valid actions_with_params
 
-    then update loops so you only consider those actions for p and r
+    #then update loops so you only consider those actions for p and r
+
+    # Check equation preconditions with combo parameter values
+    for precond in action.precond:
+        if precond._predicate.name == '=':
+            args = precond._predicate.args
+
+            if precond.is_positive(): # =
+
+                if combo_dict[args[0]] != combo_dict[args[1]]:
+                    if test:
+                        print('Failure due to params not being equal...')
+                    return False
+            else: # !=
+
+                if combo_dict[args[0]] == combo_dict[args[1]]:
+                    if test:
+                        print('Failure due to params being equal...')
+                    return False
+
+    return True
+
+def getActionsWithParamsList():
+
+    # Get all action/param combos
+
+    # Initialize actions with parameters list (used for reading policy)
+    actions_with_params = []
+
+    # Loop through all actions in domain
+    for action in domain.operators:
+
+        # Get all possible combos of action parameter values
+        param_combos = getParamCombos(action)
+
+        for combo_dict in param_combos:
+
+            # Make sure parameters pass the preconditions that can be checked at this stage
+            # e.g. params == or != to each other or something
+            if preconditionSatisfiedActionParams(action,combo_dict):
+
+                #actions_with_params.append([action.name,combo_dict])
+                actions_with_params.append([action,combo_dict])
+
+    #print(actions_with_params)
+    return actions_with_params
 
 
 def getPandR():
@@ -548,62 +593,103 @@ def getPandR():
     N = len(states)
     print('N: ',N)
 
-    count = 0
+    # Get valid action/param combos
+    actions_with_params = getActionsWithParamsList()
 
-    # Loop through all actions in domain (first try with just action move)
-    for action in domain.operators:
+    for action_with_params in actions_with_params:
 
-        # Get all possible combos of action parameter values
-        param_combos = getParamCombos(action)
-        #print('param combos', param_combos)
+        action, combo_dict = action_with_params
 
-        # For combo in possible combos, update P and R with NxN matrix for given action/param combo
-        for combo_dict in param_combos:
+        # Init two NxN arrays with zeros (one for P_a and one for R_a)
+        p, r = np.zeros((N,N)), np.zeros((N,N))
 
-            # Add info to readbility list (including invalid param combos e.g. move(left,left) which fails preconditions)
-            #??? issue, only want action/param combos added to this if valid per precondtions
-            actions_with_params.append([action.name,combo_dict])
+        # Loop through start states s, indexing with i
+        for i in range(len(states)):
+            start_state = states[i]
 
-            # Init two NxN arrays with zeros (one for P_a and one for R_a)
-            p, r = np.zeros((N,N)), np.zeros((N,N))
+            # print('+++++++++++++++++++')
+            # print('action ',action)
+            # print('params ', combo_dict)
+            # print('start state ', start_state)
 
-            # Loop through start states s, indexing with i
-            for i in range(len(states)):
-                start_state = states[i]
+            # Get list of [end state, prob, reward] terms, given action and start state
+            # Also return only the actions_with_params that satisfy preconds
+            outcome_list, precond_satisfied = outcome(combo_dict,start_state,action)
+            #print("outcome_list: ",outcome_list)
 
-                count += 1
+            # if precond_satisfied: # i.e. list not empty
+            #     print(action.name, combo_dict)
+            #     actions_with_params.append([action.name,combo_dict])
 
-                print('+++++++++++++++++++')
-                print('action ',action)
-                print('params ', combo_dict)
-                print('count ', count)
-                print('start state ', start_state)
+            # Update NxN matrices, p and r according to outcome
+            for outcome_sublist in outcome_list:
 
-                # Get list of [end state, prob, reward] terms, given action and start state
-                # Also return only the actions_with_params that satisfy preconds
-                outcome_list, precond_satisfied = outcome(combo_dict,start_state,action)
-                print("outcome_list: ",outcome_list)
+                #print('outcome_sublist', outcome_sublist)
 
-                # if precond_satisfied: # i.e. list not empty
-                #     print(action.name, combo_dict)
-                #     actions_with_params.append([action.name,combo_dict])
+                # Get index of end state where outcome_sublist = [end state, prob, reward]
+                #print(outcome_sublist[0])
+                j = getStateIndex(outcome_sublist[0],states)
+                #print('j', j)
 
-                # Update NxN matrices, p and r according to outcome
-                for outcome_sublist in outcome_list:
+                p[j,i] = outcome_sublist[1]
+                r[j,i] = outcome_sublist[2]
+                
+        # Add NxN matrices to lists P and R
+        P.append(p)
+        R.append(r)
 
-                    #print('outcome_sublist', outcome_sublist)
 
-                    # Get index of end state where outcome_sublist = [end state, prob, reward]
-                    #print(outcome_sublist[0])
-                    j = getStateIndex(outcome_sublist[0],states)
-                    #print('j', j)
+    # # Loop through all actions in domain
+    # for action in domain.operators:
 
-                    p[j,i] = outcome_sublist[1]
-                    r[j,i] = outcome_sublist[2]
+    #     # Get all possible combos of action parameter values
+    #     param_combos = getParamCombos(action)
+    #     #print('param combos', param_combos)
+
+    #     # For combo in possible combos, update P and R with NxN matrix for given action/param combo
+    #     for combo_dict in param_combos:
+
+    #         # Add info to readbility list (including invalid param combos e.g. move(left,left) which fails preconditions)
+    #         #??? issue, only want action/param combos added to this if valid per precondtions
+    #         actions_with_params.append([action.name,combo_dict])
+
+    #         # Init two NxN arrays with zeros (one for P_a and one for R_a)
+    #         p, r = np.zeros((N,N)), np.zeros((N,N))
+
+    #         # Loop through start states s, indexing with i
+    #         for i in range(len(states)):
+    #             start_state = states[i]
+
+    #             print('+++++++++++++++++++')
+    #             print('action ',action)
+    #             print('params ', combo_dict)
+    #             print('start state ', start_state)
+
+    #             # Get list of [end state, prob, reward] terms, given action and start state
+    #             # Also return only the actions_with_params that satisfy preconds
+    #             outcome_list, precond_satisfied = outcome(combo_dict,start_state,action)
+    #             print("outcome_list: ",outcome_list)
+
+    #             # if precond_satisfied: # i.e. list not empty
+    #             #     print(action.name, combo_dict)
+    #             #     actions_with_params.append([action.name,combo_dict])
+
+    #             # Update NxN matrices, p and r according to outcome
+    #             for outcome_sublist in outcome_list:
+
+    #                 #print('outcome_sublist', outcome_sublist)
+
+    #                 # Get index of end state where outcome_sublist = [end state, prob, reward]
+    #                 #print(outcome_sublist[0])
+    #                 j = getStateIndex(outcome_sublist[0],states)
+    #                 #print('j', j)
+
+    #                 p[j,i] = outcome_sublist[1]
+    #                 r[j,i] = outcome_sublist[2]
                     
-            # Add NxN matrices to lists P and R
-            P.append(p)
-            R.append(r)
+    #         # Add NxN matrices to lists P and R
+    #         P.append(p)
+    #         R.append(r)
 
     # Convert list of matrices to 3d numpy array
     P = np.dstack(P).transpose()
@@ -702,7 +788,7 @@ def readPolicy(policy,states,actions_with_params):
     for i in range(len(policy)):
 
         print(states[i])
-        print(actions_with_params[policy[i]],'\n')
+        print(actions_with_params[policy[i]][0].name,actions_with_params[policy[i]][1],'\n')
 
 if __name__ == '__main__':
 
@@ -758,5 +844,6 @@ if __name__ == '__main__':
     #print('TESTING TESTING TESTING')
     #testRemoveInvalidStates()
 
-    #print('+++++++++++++++++++++++++++++++')
+    print('+++++++++++++++++++++++++++++++')
     #precondSatisfiedTest() # this does show issue with move(left,left)
+    getActionsWithParamsList()
