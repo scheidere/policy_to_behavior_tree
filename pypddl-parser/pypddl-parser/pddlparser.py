@@ -54,6 +54,7 @@ tokens = (
     'PRECONDITION_KEY',
     'EFFECT_KEY',
     'AND_KEY',
+    'OR_KEY',
     'NOT_KEY',
     'PROBABILISTIC_KEY',
     'PROBLEM_KEY',
@@ -64,6 +65,8 @@ tokens = (
     'CONSTRAINTS_KEY', ##########
     'FORALL_KEY', ###########
     'ATMOSTONCE_KEY', ##########
+    'REWARDS_KEY',
+    'DISJUNCTIVE_PRECONDITIONS_KEY'
 )
 
 
@@ -89,6 +92,7 @@ reserved = {
     ':precondition'             : 'PRECONDITION_KEY',
     ':effect'                   : 'EFFECT_KEY',
     'and'                       : 'AND_KEY',
+    'or'                        : 'OR_KEY',
     'not'                       : 'NOT_KEY',
     'probabilistic'             : 'PROBABILISTIC_KEY',
     'problem'                   : 'PROBLEM_KEY',
@@ -100,7 +104,10 @@ reserved = {
     'reward'                    : 'REWARD', 
     ':constraints'              : 'CONSTRAINTS_KEY',
     'forall'                    : 'FORALL_KEY',
-    'at-most-once'              : 'ATMOSTONCE_KEY'
+    'at-most-once'              : 'ATMOSTONCE_KEY',
+    ':negative-preconditions'   : 'NEGATIVE_PRECONDITIONS_KEY',
+    ':rewards'                  : 'REWARDS_KEY',
+    ':disjunctive-preconditions': 'DISJUNCTIVE_PRECONDITIONS_KEY'
 }
 
 
@@ -231,7 +238,10 @@ def p_require_key(p):
     '''require_key : STRIPS_KEY
                    | EQUALITY_KEY
                    | TYPING_KEY
-                   | PROBABILISTIC_EFFECTS_KEY'''
+                   | PROBABILISTIC_EFFECTS_KEY
+                   | NEGATIVE_PRECONDITIONS_KEY
+                   | REWARDS_KEY
+                   | DISJUNCTIVE_PRECONDITIONS_KEY'''
     print('p_require_key')
     p[0] = str(p[1])
 
@@ -298,7 +308,6 @@ def p_constraint(p):
 def p_constraints_def(p):
     '''constraints_def : LPAREN CONSTRAINTS_KEY LPAREN AND_KEY constraints_lst RPAREN RPAREN
                    | LPAREN CONSTRAINTS_KEY constraint RPAREN'''
-    #print('p_effects_def')
     if len(p) == 5:
         p[0] = [p[3]]
     elif len(p) == 8:
@@ -308,7 +317,6 @@ def p_constraints_def(p):
 def p_constraints_lst(p):
     '''constraints_lst : constraint constraints_lst
                    | constraint'''
-    #print('p_effects_lst')
     if len(p) == 2:
         p[0] = [p[1]]
     elif len(p) == 3:
@@ -348,12 +356,17 @@ def p_action_def_body(p):
 
 def p_precond_def(p):
     '''precond_def : PRECONDITION_KEY LPAREN AND_KEY literals_lst RPAREN
+                   | PRECONDITION_KEY LPAREN OR_KEY literals_lst RPAREN
                    | PRECONDITION_KEY literal'''
     print('p_precond_def')
     if len(p) == 3:
         p[0] = [p[2]]
     elif len(p) == 6:
-        p[0] = p[4]
+        if p[3] == 'and':
+            p[0] = p[4]
+        elif p[3] == 'or':
+            p[0] = ['or', p[4]]
+
 
 
 def p_effects_def(p):

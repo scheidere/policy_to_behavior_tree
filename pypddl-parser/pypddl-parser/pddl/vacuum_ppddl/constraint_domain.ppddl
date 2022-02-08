@@ -21,6 +21,12 @@
 		:effect (and (robot-at ?y) (not (robot-at ?x)))
 	)
 
+	(:action test
+		:parameters (?x ?y - cell)
+		:precondition (and (robot-at ?x) (not (= ?x ?y)))
+		:effect (and (probabilistic 0.1 (robot-at ?y)) (not (robot-at ?x)))
+	)
+
 	(:action clean
 		:parameters (?x - cell)
 		:precondition (and (robot-at ?x) (dirty-at ?x))
