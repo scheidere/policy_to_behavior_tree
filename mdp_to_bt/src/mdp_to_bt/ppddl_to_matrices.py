@@ -823,27 +823,27 @@ if __name__ == '__main__':
     readPolicy(policy,states,actions_with_params)
 
     # Convert policy to behavior tree
-    p2bt = PolicyToBT(states, actions_with_params, policy)
+    # p2bt = PolicyToBT(states, actions_with_params, policy)
 
-    # Save behavior tree in a file
-    p2bt.behavior_tree.write_config('output_config/raw_policy_output_bt.tree') # need to copy output_bt.tree to behavior_tree/src/behavior_tree/config/
-    p2bt.behavior_tree.write_config('../../../behavior_tree/config/raw_policy_output_bt.tree') # Needed here to show in rqt
+    # # Save behavior tree in a file
+    # p2bt.behavior_tree.write_config('output_config/raw_policy_output_bt.tree') # need to copy output_bt.tree to behavior_tree/src/behavior_tree/config/
+    # p2bt.behavior_tree.write_config('../../../behavior_tree/config/raw_policy_output_bt.tree') # Needed here to show in rqt
 
-    # To visualize the behavior tree, navigate to the behavior tree package
-    # The output file will be here: your_workspace/src/policy_to_behavior_tree/behavior_tree/config
-    # Run 'roslaunch behavior_tree show_tree.launch'
-    # Change .tree file on line 45 of show_tree.py in behavior_tree/src/behavior_tree 
+    # # To visualize the behavior tree, navigate to the behavior tree package
+    # # The output file will be here: your_workspace/src/policy_to_behavior_tree/behavior_tree/config
+    # # Run 'roslaunch behavior_tree show_tree.launch'
+    # # Change .tree file on line 45 of show_tree.py in behavior_tree/src/behavior_tree 
 
-    # Simplify the behavior tree via conflict (remove irrelevant conditions/decorators and combine same-action subtrees)
-    simplify = SimplifyBT(p2bt.behavior_tree)
-    final_bt = simplify.simplified_bt
-    final_bt.write_config('output_config/final_simplified_output_bt_SIMPLIFYTEST.tree')
-    final_bt.write_config('../../../behavior_tree/config/final_simplified_output_bt_SIMPLIFYTEST.tree')
+    # # Simplify the behavior tree via conflict (remove irrelevant conditions/decorators and combine same-action subtrees)
+    # simplify = SimplifyBT(p2bt.behavior_tree)
+    # final_bt = simplify.simplified_bt
+    # final_bt.write_config('output_config/final_simplified_output_bt_SIMPLIFYTEST.tree')
+    # final_bt.write_config('../../../behavior_tree/config/final_simplified_output_bt_SIMPLIFYTEST.tree')
 
 
-    #print('TESTING TESTING TESTING')
-    #testRemoveInvalidStates()
+    # #print('TESTING TESTING TESTING')
+    # #testRemoveInvalidStates()
 
-    print('+++++++++++++++++++++++++++++++')
-    #precondSatisfiedTest() # this does show issue with move(left,left)
-    getActionsWithParamsList()
+    # print('+++++++++++++++++++++++++++++++')
+    # #precondSatisfiedTest() # this does show issue with move(left,left)
+    # getActionsWithParamsList()
