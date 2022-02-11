@@ -837,8 +837,8 @@ if __name__ == '__main__':
     # Simplify the behavior tree via conflict (remove irrelevant conditions/decorators and combine same-action subtrees)
     simplify = SimplifyBT(p2bt.behavior_tree)
     final_bt = simplify.simplified_bt
-    final_bt.write_config('output_config/final_simplified_output_bt.tree')
-    final_bt.write_config('../../../behavior_tree/config/final_simplified_output_bt.tree')
+    final_bt.write_config('output_config/final_simplified_output_bt_SIMPLIFYTEST.tree')
+    final_bt.write_config('../../../behavior_tree/config/final_simplified_output_bt_SIMPLIFYTEST.tree')
 
 
     #print('TESTING TESTING TESTING')

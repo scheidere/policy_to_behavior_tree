@@ -44,6 +44,7 @@
 	)
 
 	(:action changetire
+		:parameters ()
 		:precondition (and (hasspare-vehicle) (flattire))
 		:effect (and ( increase reward -1 )
 				 (not (hasspare-vehicle))
@@ -52,6 +53,7 @@
 	)
 
 	(:action callAAA
+		:parameters ()
 		:precondition (flattire)
 		:effect  (and ( increase reward -100 )
 				  (not (flattire))

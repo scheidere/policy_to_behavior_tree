@@ -42,8 +42,10 @@ if __name__ == '__main__':
 
     try:
 
-        bt = BehaviorTree(filepath+ 'output_bt.tree')
-
+        #bt = BehaviorTree(filepath+ 'output_bt.tree')
+	    #bt = BehaviorTree(filepath+ 'raw_output_bt.tree')
+        #bt = BehaviorTree(filepath+ 'test_final_output_bt.tree')
+        bt = BehaviorTree(filepath+ 'human_final_bt.tree')
 
         includes = [True, True, True, True, True, True, True, True, True, True,\
             True, True, True, True, True,True, True, True, True, True,\
