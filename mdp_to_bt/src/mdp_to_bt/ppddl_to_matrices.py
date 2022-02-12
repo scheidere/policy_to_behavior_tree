@@ -22,6 +22,7 @@
 
 from policy_to_bt import *
 from simplify_bt import *
+from evaluate_mdp_policy import *
 
 import mdptoolbox
 import numpy as np
@@ -821,6 +822,12 @@ if __name__ == '__main__':
 
     # Translate policy to readable form
     readPolicy(policy,states,actions_with_params)
+
+    # Evaluate the policy
+    mdp_problem = MDP_Problem(P, R, states, actions_with_params)
+    reward = evaluate_mdp_policy(mdp_problem, policy)
+    print("reward:", reward)
+
 
     # Convert policy to behavior tree
     # p2bt = PolicyToBT(states, actions_with_params, policy)
