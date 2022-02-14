@@ -262,7 +262,7 @@ class Simplify:
         c = self.setConditionSymbols()
         print('c: ', c)
 
-        dontcares = None
+        dontcares = []
         ##for i in range(len(self.policy)):
         for i in range(len(self.actions)):
 
@@ -273,9 +273,9 @@ class Simplify:
             action_num = self.getActionNum(action)
 
             if i >= 1:
-                dontcares = prev_minterms
+                dontcares += prev_minterms
 
-            action_num = self.policy[i]
+            #action_num = self.policy[i]
             print(self.policy)
             print(action_num)
 
