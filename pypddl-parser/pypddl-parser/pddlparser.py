@@ -66,7 +66,9 @@ tokens = (
     'FORALL_KEY', ###########
     'ATMOSTONCE_KEY', ##########
     'REWARDS_KEY',
-    'DISJUNCTIVE_PRECONDITIONS_KEY'
+    'DISJUNCTIVE_PRECONDITIONS_KEY',
+    'CONDITIONAL_EFFECTS_KEY',
+    'WHEN_KEY'
 )
 
 
@@ -107,7 +109,9 @@ reserved = {
     'at-most-once'              : 'ATMOSTONCE_KEY',
     ':negative-preconditions'   : 'NEGATIVE_PRECONDITIONS_KEY',
     ':rewards'                  : 'REWARDS_KEY',
-    ':disjunctive-preconditions': 'DISJUNCTIVE_PRECONDITIONS_KEY'
+    ':disjunctive-preconditions': 'DISJUNCTIVE_PRECONDITIONS_KEY',
+    ':conditional-effects'      : 'CONDITIONAL_EFFECTS_KEY',
+    'when'                      : 'WHEN_KEY'
 }
 
 
@@ -241,7 +245,8 @@ def p_require_key(p):
                    | PROBABILISTIC_EFFECTS_KEY
                    | NEGATIVE_PRECONDITIONS_KEY
                    | REWARDS_KEY
-                   | DISJUNCTIVE_PRECONDITIONS_KEY'''
+                   | DISJUNCTIVE_PRECONDITIONS_KEY
+                   | CONDITIONAL_EFFECTS_KEY'''
     print('p_require_key')
     p[0] = str(p[1])
 
@@ -372,6 +377,7 @@ def p_precond_def(p):
 def p_effects_def(p):
     '''effects_def : EFFECT_KEY LPAREN AND_KEY effects_lst RPAREN
                    | EFFECT_KEY effect'''
+
     print('p_effects_def')
     if len(p) == 3:
         p[0] = [p[2]]
@@ -407,11 +413,14 @@ def p_probability_lst(p):
 #  | LPAREN PROBABILISTIC_KEY PROBABILITY LPAREN AND_KEY literals_lst RPAREN RPAREN
 def p_effect(p):
     '''effect : literal
-              | LPAREN PROBABILISTIC_KEY PROBABILITY literal RPAREN
               | LPAREN PROBABILISTIC_KEY probability_lst RPAREN
-              | LPAREN PROBABILISTIC_KEY PROBABILITY LPAREN AND_KEY literals_lst RPAREN RPAREN'''
+              | LPAREN WHEN_KEY literal literal RPAREN
+              | LPAREN WHEN_KEY literal LPAREN PROBABILISTIC_KEY probability_lst RPAREN RPAREN
+              | LPAREN WHEN_KEY LPAREN AND_KEY literals_lst RPAREN LPAREN AND_KEY literals_lst RPAREN RPAREN
+              | LPAREN WHEN_KEY LPAREN AND_KEY literals_lst RPAREN LPAREN PROBABILISTIC_KEY probability_lst RPAREN RPAREN'''
+
     print('p_effect')
-    print(len(p))
+
     if len(p) == 2:
         print(p[1])
         p[0] = (1.0, p[1]) # 1.0 represents 100% probability, since a prob isn't specified 
@@ -419,9 +428,16 @@ def p_effect(p):
         #p[0] = ('reward',p[4]) # Does this need a probability term too?
         p[0] = p[3]
     elif len(p) == 6:
-        p[0] = (p[3], p[4])
-    elif len(p) == 9: #???
-        p[0] = (p[3], p[6]) #???
+        if p[2] == 'when':
+            p[0] = ['when', p[3], 'do', p[4]]
+    elif len(p) == 9:
+        if p[2] == 'when': 
+            p[0] = ['when', p[3], 'do', (p[5], p[6])]
+    elif len(p) == 12:
+        if p[8] == 'probabilistic':
+            p[0] = ['when', p[5], 'do', p[9]]
+        else:
+            p[0] = ['when', p[5], 'do', p[9]]
     print('p_effect finished')
 
 def p_literals_lst(p):

@@ -21,6 +21,34 @@
 		:effect (and (robot-at ?y) (not (robot-at ?x)))
 	)
 
+	(:action test0
+		:parameters (?x ?y - cell)
+		:precondition (and (robot-at ?x) (not (= ?x ?y)))
+		:effect (when (robot-at ?y) (not (robot-at ?x)))
+	)
+
+	(:action test1
+		:parameters (?x ?y - cell)
+		:precondition (and (robot-at ?x) (not (= ?x ?y)))
+		:effect (when (and (robot-at ?y) (robot-at ?y)) (and (not (robot-at ?x)) (not (robot-at ?x))))
+	)
+
+	(:action test2
+		:parameters (?x ?y - cell)
+		:precondition (and (robot-at ?x) (not (= ?x ?y)))
+		:effect (and 
+					(when (and (robot-at ?y) (robot-at ?y)) (and (not (robot-at ?x)) (not (robot-at ?x))))
+					(when (and (robot-at ?y) (robot-at ?y)) (and (not (robot-at ?x)) (not (robot-at ?x)))))
+	)
+
+	(:action test3
+		:parameters (?x ?y - cell)
+		:precondition (and (robot-at ?x) (not (= ?x ?y)))
+		:effect (and 
+					(when (and (robot-at ?y) (robot-at ?y)) (probabilistic 0.9 (and (not (robot-at ?x)) (not (robot-at ?x)))))
+					(when (and (robot-at ?y) (robot-at ?y)) (and (not (robot-at ?x)) (not (robot-at ?x)))))
+	)
+
 	; (:action test
 	; 	:parameters (?x ?y - cell)
 	; 	:precondition (and (robot-at ?x) (not (= ?x ?y)))
