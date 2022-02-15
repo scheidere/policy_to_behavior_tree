@@ -21,8 +21,8 @@
 # (This is because of simplicity with pointing to the pddl files, but I will update this and create a main file)
 
 from policy_to_bt import *
-## from simplify_bt import * # OLD WAY
 from simplify import * # NEW WAY
+from evaluate_mdp_policy import *
 
 import mdptoolbox
 import numpy as np
@@ -827,10 +827,12 @@ if __name__ == '__main__':
 
     simplify = Simplify(states, actions_with_params, policy, domain, problem)
 
-
+    # Evaluate the policy
+    mdp_problem = MDP_Problem(P, R, states, actions_with_params)
+    reward = evaluate_mdp_policy(mdp_problem, policy)
+    print("reward:", reward)
 
     # OLD WAY BELOW
-
     # Convert policy to behavior tree
     # p2bt = PolicyToBT(states, actions_with_params, policy)
 
