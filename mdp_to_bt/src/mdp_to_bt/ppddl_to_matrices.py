@@ -21,7 +21,7 @@
 # (This is because of simplicity with pointing to the pddl files, but I will update this and create a main file)
 
 from policy_to_bt import *
-from simplify_bt import *
+from simplify import * # NEW WAY
 from evaluate_mdp_policy import *
 
 import mdptoolbox
@@ -65,7 +65,7 @@ def getParamCombos(action):
 
         param_values_dict[param._name] = problem.objects[param.type]
 
-    #print('param val dict', param_values_dict)
+    print('param val dict', param_values_dict)
 
     # Get all combinations of param values in dictionaries, congregate in list
     combo_list = list(dictproduct(param_values_dict))
@@ -823,12 +823,16 @@ if __name__ == '__main__':
     # Translate policy to readable form
     readPolicy(policy,states,actions_with_params)
 
+    # NEW WAY HERE
+
+    simplify = Simplify(states, actions_with_params, policy, domain, problem)
+
     # Evaluate the policy
     mdp_problem = MDP_Problem(P, R, states, actions_with_params)
     reward = evaluate_mdp_policy(mdp_problem, policy)
     print("reward:", reward)
 
-
+    # OLD WAY BELOW
     # Convert policy to behavior tree
     # p2bt = PolicyToBT(states, actions_with_params, policy)
 
