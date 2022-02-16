@@ -1,34 +1,39 @@
-; (define (problem marine-problem)
-	
-; 	(:domain marine-domain)
-	
-; 	(:objects )
-
-; 	(:init )
-
-; 	(:goal )
-
-; )
-
-(define (problem testproblem2)
+(define (problem marine-problem)
 	
 	(:domain marine-domain)
 	
-	(:objects
-		left-cell right-cell - cell
-	)
+	(:objects X - None )
 
-	(:init
-		(robot-at left-cell)
-		(dirty-at left-cell)
-		(dirty-at right-cell)
-	)
+	(:init (has-object X)
+		(found-object X)
+		(found-mine X)
+		(found-target-to-report X)
+		(at-drop-off X)
+		(in-comms-range X))
 
-	(:goal ;goal we do not use
-		(and
-		    (robot-at right-cell) ;dummy goal, will not be used
-			;(not (dirty-at left-cell)) ;(not (dirty-at ?x))
-			;(not (dirty-at right-cell))
-		)
-	)
+	(:goal (and (has-object)) )
+
 )
+
+; (define (problem testproblem2)
+	
+; 	(:domain marine-domain)
+	
+; 	(:objects
+; 		left-cell right-cell - cell
+; 	)
+
+; 	(:init
+; 		(robot-at left-cell)
+; 		(dirty-at left-cell)
+; 		(dirty-at right-cell)
+; 	)
+
+; 	(:goal ;goal we do not use
+; 		(and
+; 		    (robot-at right-cell) ;dummy goal, will not be used
+; 			;(not (dirty-at left-cell)) ;(not (dirty-at ?x))
+; 			;(not (dirty-at right-cell))
+; 		)
+; 	)
+; )

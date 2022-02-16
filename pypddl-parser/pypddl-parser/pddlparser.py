@@ -401,7 +401,7 @@ def p_probability_lst(p):
                        | PROBABILITY LPAREN AND_KEY literals_lst RPAREN probability_lst
                        | '''
     if len(p) == 3:
-        p[0] = (p[1], p[2])
+        p[0] =  (p[1], p[2])
     elif len(p) == 4:
         p[0] = (p[1], p[2]),p[3]
     elif len(p) == 6:

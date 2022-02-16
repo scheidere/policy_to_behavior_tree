@@ -5,40 +5,88 @@
 	(:types None)
 
 	(:predicates
-		(has-object)
-		(found-object)
-		(found-mine)
-		(found-target-to-report)
-		(at-drop-off)
-		(in-comms-range)
+		(has-object ?x - None)
+		(found-object ?x - None)
+		(found-mine ?x - None)
+		(found-target-to-report ?x - None)
+		(at-drop-off ?x - None)
+		(in-comms-range ?x - None)
+		(garbage ?x - None)
 	)
 
 	(:action pick-up
 
-		:parameters ()
-		:precondition (and (found-object) (not (has-object )))
-		:effect (probabilistic 0.9 (has-object)
-							   0.1 ( increase reward 2) )
+		:parameters (?x - None)
+		:precondition (and (found-object ?x) (not (has-object ?x)))
+		:effect (probabilistic 0.9 (and (has-object ?x) (not (found-object ?x)) )
+							   0.1 (garbage ?x)
+				)
 	)
 
-	; (:action drop-off
+	(:action drop-off
 
-	; 	:para
-	; )
+		:parameters (?x - None)
+		:precondition (and (has-object ?x) (at-drop-off ?x))
+		:effect (probabilistic 0.85 (and (not (has-object ?x)) (increase reward 2))
+							   0.15 (garbage ?x)
+				)
+
+	)
+
+	(:action disarm
+
+		:parameters (?x - None)
+		:precondition (found-mine ?x)
+		:effect (probabilistic 0.95 (and (increase reward 3) (not (found-mine ?x)))
+							   0.05 (garbage ?x)
+				)
+	)
+
+	(:action go-to-comms
+
+		:parameters (?x - None)
+		:precondition (and (not (in-comms-range ?x)) (found-target-to-report ?x))
+		:effect (in-comms-range ?x)
+	)
+
+	(:action go-to-drop-off
+
+		:parameters (?x - None)
+		:precondition (and (has-object ?x) (not (at-drop-off ?x)))
+		:effect (at-drop-off ?x)
+	)
+
+	(:action explore
+
+		:parameters (?x - None)
+		:precondition (and (not (has-object ?x)) (not (found-mine ?x)) (not (found-target-to-report ?x)))
+		:effect (probabilistic 0.2 (found-target-to-report ?x)
+							   0.15 (found-object ?x)
+							   0.1 (found-mine ?x) ;what about mine-live?
+							   0.55 (garbage ?x)
+				)
+	)
+
+	(:action report
+
+		:parameters (?x - None)
+		:precondition (and (found-target-to-report ?x) (in-comms-range ?x))
+		:effect (and (not (found-target-to-report ?x)) (increase reward 1))
+	)
 	
-	??? Look at IROS necessities doc for other actions, and add them here
-	test one by one
+	; ??? Look at IROS necessities doc for other actions, and add them here
+	; test one by one
 
-	Next check by running with method and debug any issues with conditions expecting parameters always
+	; Next check by running with method and debug any issues with conditions expecting parameters always
 
-	Get a reward from this probabilistic domain
+	; Get a reward from this probabilistic domain
 
-	make deterministic version of this domain so pddl
+	; make deterministic version of this domain so pddl
 
-	run with method and get a reward from that
+	; run with method and get a reward from that
 
-	goal for tonight: compare rewards for prob and det domain
+	; goal for tonight: compare rewards for prob and det domain
 
-	After: revisit simplification code (add BT conversion)
+	; After: revisit simplification code (add BT conversion)
 
 )

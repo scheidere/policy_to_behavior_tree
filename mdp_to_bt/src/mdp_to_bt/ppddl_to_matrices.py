@@ -199,7 +199,7 @@ def getComboArgValues(args,combo_dict):
 
 
 
-def preconditionSatisfied(combo_dict,start_state,action,test=False):
+def preconditionSatisfied(start_state,action,combo_dict=None,test=False):
 
     # Check that parameter values in combo match start state per action precondition 
     for precond in action.precond:
@@ -217,12 +217,15 @@ def preconditionSatisfied(combo_dict,start_state,action,test=False):
                 if term[0] == precond._predicate.name and term[-1] == 1: # Check robot-at is True
 
                     # Get param values in start state for current term (associated with given predicate)
-                    term_arg_vals = term[1:-1]
+                    term_arg_vals = term[1:-1] # if are no parameters this is = []
                     if test:
                         print('term arg vals', term_arg_vals)
 
-                    # Get parameter values to compare with from the param_combo given
-                    combo_arg_vals = getComboArgValues(precond_args,combo_dict)
+                    if combo_dict: # if there are parameters to compare at all (might be None)
+                        # Get parameter values to compare with from the param_combo given
+                        combo_arg_vals = getComboArgValues(precond_args,combo_dict)
+                    else:
+                        combo_arg_vals = None
 
                     if test:
                         print('Comparing %s to %s' % (term_arg_vals,combo_arg_vals))
@@ -322,7 +325,7 @@ def testGetStateIndex():
 
     print(getStateIndex(state,states))
 
-def outcome(param_values, start_state, action, test=False):
+def outcome(start_state, action, param_values = None, test=False):
 
     precond_satisfied = True
 
@@ -333,7 +336,7 @@ def outcome(param_values, start_state, action, test=False):
     # Initialize state terms left over after given action is taken in the start state
     unchanged_state_terms = copy.deepcopy(start_state)
 
-    if not preconditionSatisfied(param_values,start_state,action):
+    if not preconditionSatisfied(start_state,action, combo_dict=param_values):
 
         outcome_sublist = [unchanged_state_terms,1.0,0]
         outcome_list.append(outcome_sublist)
@@ -346,7 +349,19 @@ def outcome(param_values, start_state, action, test=False):
         probabilistic = True
 
         literals = []
-        for effect in action.effects:
+
+        action_effects = action.effects
+
+        # #print('entire' , action.effects)
+        # #print('TYPE ACT EFF', type(action.effects[0][0]))
+
+        # if type(action.effects[0][0]) != list and type(action.effects[0][0]) != tuple:
+
+        #     print('MAKING IT A LIST')
+        #     action_effects = [action.effects] # make it a list
+        #     print('action_effects', action_effects)
+
+        for effect in action_effects: #action.effects might be list of lists, or single list
 
             if effect[0] == 1.0: # Non-probabilistic effect
                 # Initialize state terms left over after given action is taken in the start state
@@ -391,14 +406,23 @@ def outcome(param_values, start_state, action, test=False):
 
                 for term in effect:
 
-                    #print('term',term)
+                    print('term',term)
                     prob = term[0]
+                    reward = 0
                     #print('prob: ', prob)
                     literals = []
-                    for t1 in term[1:]:
-                        #print('t1 ', t1)
+
+                    temp = term[1:]
+                    if isinstance(temp[0],Literal):
+
+                        temp = [temp]
+
+                    for t1 in temp:
+                        print('t1 ', t1)
                         if len(term) > 1:
 
+                            #print('t10', t1[0])
+                            #input('wait')
                             # in case t1 = ('reward', 2) for e.g.
                             if t1[0] == 'reward':
                                 reward = t1[1]
@@ -578,6 +602,16 @@ def getActionsWithParamsList():
     #print(actions_with_params)
     return actions_with_params
 
+def getActions():
+
+    actions = []
+
+    for action in domain.operators:
+
+        actions.append(action)
+
+    return actions
+
 
 def getPandR():
 
@@ -588,18 +622,26 @@ def getPandR():
     states = getStateList()
 
     # Initialize actions with parameters list (used for reading policy)
-    actions_with_params = []
+    #actions_with_params = []
 
     # Number of states
     N = len(states)
     print('N: ',N)
 
-    # Get valid action/param combos
-    actions_with_params = getActionsWithParamsList()
+    if problem != None:
 
-    for action_with_params in actions_with_params:
+        # Get valid action/param combos
+        actions = getActionsWithParamsList() # old var name: actions_with_params
 
-        action, combo_dict = action_with_params
+    else:
+        actions = getActions()
+
+    for action_term in actions:
+
+        if problem != None:
+            action, combo_dict = action_term # action term is [action, params]
+        else:
+            action = action_term
 
         # Init two NxN arrays with zeros (one for P_a and one for R_a)
         p, r = np.zeros((N,N)), np.zeros((N,N))
@@ -615,7 +657,10 @@ def getPandR():
 
             # Get list of [end state, prob, reward] terms, given action and start state
             # Also return only the actions_with_params that satisfy preconds
-            outcome_list, precond_satisfied = outcome(combo_dict,start_state,action)
+            if combo_dict:
+                outcome_list, precond_satisfied = outcome(start_state,action,param_values=combo_dict)
+            else: # no parameters
+                outcome_list, precond_satisfied = outcome(start_state,action)
             #print("outcome_list: ",outcome_list)
 
             # if precond_satisfied: # i.e. list not empty
