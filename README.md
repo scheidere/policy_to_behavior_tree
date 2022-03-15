@@ -49,7 +49,7 @@ There are five main stages to this method:
 * [Related work: PDDL to BT](https://arxiv.org/abs/2101.01964)
 * [Basic PPDDL parser](https://github.com/thiagopbueno/pypddl-parser)
 * [Python Toolbox MDP Solver](https://pymdptoolbox.readthedocs.io/en/latest/api/mdp.html)
-* [Boolean Algebra](https://docs.sympy.org/latest/modules/logic.html)
+* [Boolean Algebra Support](https://docs.sympy.org/latest/modules/logic.html)
 
 
 
