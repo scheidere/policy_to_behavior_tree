@@ -1,4 +1,4 @@
-# Behavior Tree Synthesis for MDPs through Probabilistic PPDDL 
+# Behavior Tree Synthesis for MDPs through Probabilistic PDDL 
 
 This repo provides a method of translating an MDP represented by a Probabilistic PDDL (PPDDL) specification into behavior tree (BT) form, including a policy simplification step based on Boolean albebra. This method is applicable to domains with nondeterministic actions, unlike previous methods that only relate PDDL to BTs.
 
