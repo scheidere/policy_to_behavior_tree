@@ -325,6 +325,7 @@ def testGetStateIndex():
 
     print(getStateIndex(state,states))
 
+
 def outcome(start_state, action, param_values = None, test=False):
 
     precond_satisfied = True
@@ -403,52 +404,96 @@ def outcome(start_state, action, param_values = None, test=False):
 
 
             else: # Probabilistic effect
+                print('PROBABILISTIC')
 
                 for term in effect:
 
                     print('term',term)
+                    print('term[0]', term[0])
+
+                    # Get probability
                     prob = term[0]
+                    # if type(term[0])==int:
+                    #     prob = term[0]
+                    #     print('p1', prob)
+                    # else:
+                    #     # e.g. (0.15, found-object(?x))
+                    #     prob = term[0][0]
+                    #     print('p2', prob)
+
+                    print('PROB ', prob)
+
+                    # Init reward
                     reward = 0
-                    #print('prob: ', prob)
+
+                    # Get literals/predicates in effect term (could be condition or reward)
                     literals = []
+                    subterm = term[1] # list of conditions or reward terms
+                    #print('temp: ', subterm)
 
-                    temp = term[1:]
-                    if isinstance(temp[0],Literal):
+                    #input('wait')
 
-                        temp = [temp]
+                    # if isinstance(temp[0],Literal):
 
-                    for t1 in temp:
-                        print('t1 ', t1)
-                        if len(term) > 1:
+                    #     #temp = [temp] # ??? is this needed?
+                    #     print('temp2', temp)
 
-                            #print('t10', t1[0])
-                            #input('wait')
-                            # in case t1 = ('reward', 2) for e.g.
-                            if t1[0] == 'reward':
-                                reward = t1[1]
-                                #print('reward t1 len > 1', reward)
+                    # Single element in effect term
+                    if isinstance(subterm, Literal): # single literal in effect term
 
-                            else:
-                                for t2 in t1:
-                                    if isinstance(t2,Literal):
-                                        #print('literal t2 ', t2)
-                                        literal = t2
-                                        literals.append(literal)
-                                    elif t2:
-                                        if t2[0] == 'reward':
-                                            reward = t2[1]
-                                            #print('reward t2', reward)
-                        else:
-                            if t1[0] == 'reward': #only contains a reward term, no state changes
-                                reward = t1[1]
-                                #print('reward t1 len = 1', reward)
-                                #end_state = unchanged_state_terms # full start state
-                                #outcome_sublist = outcome_sublist = [end_state,prob,reward]
-                                #print('outcome_sublist 2', outcome_sublist)
-                            else: # literals
-                                #print('literal t1 ', t1)
+                        #print("is literal!")
+                        literal = subterm
+                        #print("literal ", literal)
+                        literals.append(literal)
+
+                    elif subterm[0] == 'reward': # single reward in effect term
+                            reward = subterm[1]
+
+                    # Multi-subterm effect term
+                    else:
+                        for t1 in subterm: # e.g. ('reward', 3.0), or not found-mine(?x), or found-mine(?x)
+                            #print('t1 ', t1)
+                            
+                            if isinstance(t1,Literal):
+                                #print("is literal!")
                                 literal = t1
+                                #print("literal ", literal)
                                 literals.append(literal)
+
+                            elif t1[0] == 'reward':
+                                reward = t1[1]
+
+
+                        # if len(term) > 1:
+
+                        #     #print('t10', t1[0])
+                        #     #input('wait')
+                        #     # in case t1 = ('reward', 2) for e.g.
+                        #     if t1[0] == 'reward':
+                        #         reward = t1[1]
+                        #         #print('reward t1 len > 1', reward)
+
+                        #     else:
+                        #         for t2 in t1:
+                        #             if isinstance(t2,Literal):
+                        #                 #print('literal t2 ', t2)
+                        #                 literal = t2
+                        #                 literals.append(literal)
+                        #             elif t2:
+                        #                 if t2[0] == 'reward':
+                        #                     reward = t2[1]
+                        #                     #print('reward t2', reward)
+                        # else:
+                        #     if t1[0] == 'reward': #only contains a reward term, no state changes
+                        #         reward = t1[1]
+                        #         #print('reward t1 len = 1', reward)
+                        #         #end_state = unchanged_state_terms # full start state
+                        #         #outcome_sublist = outcome_sublist = [end_state,prob,reward]
+                        #         #print('outcome_sublist 2', outcome_sublist)
+                        #     else: # literals
+                        #         #print('literal t1 ', t1)
+                        #         literal = t1
+                        #         literals.append(literal)
 
                     # print('PROB', prob)
                     # print('REWARD ', reward)
@@ -478,6 +523,8 @@ def outcome(start_state, action, param_values = None, test=False):
 def getOutcomeSublist(literals, prob, reward, start_state, param_values, is_probabilistic=False):
 
     #print('agh lit', literals)
+
+    print('LOOOOOOOOOOK prob ', prob)
 
     if not literals: # No state changes, just prob and reward
         end_state = copy.deepcopy(start_state)
@@ -528,6 +575,7 @@ def getOutcomeSublist(literals, prob, reward, start_state, param_values, is_prob
 
         end_state = replacement_state_terms + unchanged_state_terms
         outcome_sublist = [end_state,prob,reward]
+        print('prob type', type(prob))
         #print('outcome_sublist 2', outcome_sublist)
 
     return outcome_sublist
@@ -653,7 +701,7 @@ def getPandR():
             # print('+++++++++++++++++++')
             # print('action ',action)
             # print('params ', combo_dict)
-            # print('start state ', start_state)
+            print('start state ', start_state)
 
             # Get list of [end state, prob, reward] terms, given action and start state
             # Also return only the actions_with_params that satisfy preconds
@@ -668,14 +716,19 @@ def getPandR():
             #     actions_with_params.append([action.name,combo_dict])
 
             # Update NxN matrices, p and r according to outcome
+            print('outcome_list ', outcome_list)
             for outcome_sublist in outcome_list:
+
+                print('outcome_sublist ', outcome_sublist)
 
                 #print('outcome_sublist', outcome_sublist)
 
                 # Get index of end state where outcome_sublist = [end state, prob, reward]
                 #print(outcome_sublist[0])
                 j = getStateIndex(outcome_sublist[0],states)
-                #print('j', j)
+                print('j', j, type(j))
+                print('i', i, type(i))
+                print(outcome_sublist[1]) # expected to be a probability, but some probs are associated with certain components so its a tuple
 
                 p[j,i] = outcome_sublist[1]
                 r[j,i] = outcome_sublist[2]
@@ -839,7 +892,7 @@ def readPolicy(policy,states,actions_with_params):
 if __name__ == '__main__':
 
     # Define domain and problem to consider (they represent an MDP)
-    print('For the following domain and problem: ')
+    print('\nFor the following domain and problem: \n\n')
     args = parse()
 
     domain  = PDDLParser.parse(args.domain)
@@ -848,34 +901,40 @@ if __name__ == '__main__':
     print(domain)
     print(problem)
 
-    # Convert to MDP, i.e. generate transition probability matrix P and reward matrix R
-    print('The follow matrices represent the transition probabilities\n and rewards for all state transitions: ')
-    P, R, states, actions_with_params = getPandR()
+    # # Convert to MDP, i.e. generate transition probability matrix P and reward matrix R
+    # print('The follow matrices represent the transition probabilities\n and rewards for all state transitions: ')
+    # P, R, states, actions_with_params = getPandR()
 
-    print('P:\n', P, '\n',P.shape)
-    print('R:\n', R, '\n',R.shape)
+    # print('P:\n', P, '\n',P.shape)
+    # print('R:\n', R, '\n',R.shape)
 
-    print('actions_with_params: ')
-    for action in actions_with_params:
-        print(action)
+    # print('actions_with_params: ')
+    # for action in actions_with_params:
+    #     print(action)
 
-    # Choose method of solving for a policy given P and R
-    solver = input("Enter value iteration (v) or Q-learning (q): ") 
+    # # Choose method of solving for a policy given P and R
+    # solver = input("Enter value iteration (v) or Q-learning (q): ") 
 
-    # Solve for a policy
-    policy = solve(solver,P,R)
+    # # Solve for a policy
+    # policy = solve(solver,P,R)
 
-    # Translate policy to readable form
-    readPolicy(policy,states,actions_with_params)
+    # # Translate policy to readable form
+    # readPolicy(policy,states,actions_with_params)
 
-    # NEW WAY HERE
+    # # NEW WAY HERE
 
-    simplify = Simplify(states, actions_with_params, policy, domain, problem)
+    # simplify = Simplify(states, actions_with_params, policy, domain, problem)
 
-    # Evaluate the policy
-    mdp_problem = MDP_Problem(P, R, states, actions_with_params)
-    reward = evaluate_mdp_policy(mdp_problem, policy)
-    print("reward:", reward)
+    # # Evaluate the policy
+    # mdp_problem = MDP_Problem(P, R, states, actions_with_params)
+    # reward = evaluate_mdp_policy(mdp_problem, policy)
+    # print("reward:", reward)
+
+
+
+
+
+    ########################################
 
     # OLD WAY BELOW
     # Convert policy to behavior tree
