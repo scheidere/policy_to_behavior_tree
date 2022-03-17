@@ -1,4 +1,4 @@
-# Project Title
+# Behavior Tree Synthesis for MDPs through Probabilistic PDDL 
 
 This repo provides a method of translating an MDP represented by a Probabilistic PDDL (PPDDL) specification into behavior tree (BT) form, including a policy simplification step based on Boolean albebra. This method is applicable to domains with nondeterministic actions, unlike previous methods that only relate PDDL to BTs.
 
@@ -34,22 +34,22 @@ There are five main stages to this method:
 ### Executing the program
 
 * Navigate to the following location: 
-'''~/your_workspace/src/policy_to_behavior_tree/mdp_to_bt/src/mdp_to_bt'''
+```~/your_workspace/src/policy_to_behavior_tree/mdp_to_bt/src/mdp_to_bt```
 * Locate your domain and problem file paths, which we will refer to as domain-path and problem-path
-* Open another terminal window and run '''roscore'''
+* Open another terminal window and run ```roscore```
 * Run the main method:
-'''python3 ppddl_to_matrices.py domain-path problem-path'''
+```python3 ppddl_to_matrices.py domain-path problem-path```
 
 ## Help
 
-* Remember to '''source devel/setup.bash''' in the root of your workspace with every new terminal window
+* Remember to ```source devel/setup.bash``` in the root of your workspace with every new terminal window
 
 ## Acknowledgments
 
 * [Related work: PDDL to BT](https://arxiv.org/abs/2101.01964)
 * [Basic PPDDL parser](https://github.com/thiagopbueno/pypddl-parser)
 * [Python Toolbox MDP Solver](https://pymdptoolbox.readthedocs.io/en/latest/api/mdp.html)
-* [Boolean Algebra](https://docs.sympy.org/latest/modules/logic.html)
+* [Boolean Algebra Support](https://docs.sympy.org/latest/modules/logic.html)
 
 
 
