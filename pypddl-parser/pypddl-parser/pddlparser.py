@@ -443,6 +443,7 @@ def p_probability_lst(p):
 
 def p_effect(p):
     '''effect : literal
+              | LPAREN AND_KEY literals_lst RPAREN
               | LPAREN PROBABILISTIC_KEY probability_lst RPAREN
               | LPAREN WHEN_KEY literal literal RPAREN
               | LPAREN WHEN_KEY literal LPAREN PROBABILISTIC_KEY probability_lst RPAREN RPAREN
@@ -457,8 +458,10 @@ def p_effect(p):
             print(p[1])
         p[0] = (1.0, p[1]) # 1.0 represents 100% probability, since a prob isn't specified 
     elif len(p) == 5: # Prints reward, value instead of 1.0, value
-        #p[0] = ('reward',p[4]) # Does this need a probability term too?
-        p[0] = p[3]
+        if p[2] != 'and':
+            p[0] = p[3]
+        else:
+            p[0] = (1.0, p[3])
     elif len(p) == 6:
         if p[2] == 'when':
             p[0] = ['when', p[3], 'do', p[4]]
