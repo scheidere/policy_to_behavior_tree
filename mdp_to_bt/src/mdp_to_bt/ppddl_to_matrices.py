@@ -779,7 +779,12 @@ def getPandR():
 
         # Get valid action/param combos
         actions = getActionsWithParamsList() # old var name: actions_with_params
-        print('actions: ', actions)
+        #print('actions: ', actions)
+        print('actions: ')
+        for action in actions:
+            print(action[0]._name, action[1])
+
+        #input("YOU ARE HERE")
 
     else:
         print('Problem is None')
@@ -841,74 +846,15 @@ def getPandR():
         P.append(p)
         R.append(r)
 
-
-    # # Loop through all actions in domain
-    # for action in domain.operators:
-
-    #     # Get all possible combos of action parameter values
-    #     param_combos = getParamCombos(action)
-    #     #print('param combos', param_combos)
-
-    #     # For combo in possible combos, update P and R with NxN matrix for given action/param combo
-    #     for combo_dict in param_combos:
-
-    #         # Add info to readbility list (including invalid param combos e.g. move(left,left) which fails preconditions)
-    #         #??? issue, only want action/param combos added to this if valid per precondtions
-    #         actions_with_params.append([action.name,combo_dict])
-
-    #         # Init two NxN arrays with zeros (one for P_a and one for R_a)
-    #         p, r = np.zeros((N,N)), np.zeros((N,N))
-
-    #         # Loop through start states s, indexing with i
-    #         for i in range(len(states)):
-    #             start_state = states[i]
-
-    #             print('+++++++++++++++++++')
-    #             print('action ',action)
-    #             print('params ', combo_dict)
-    #             print('start state ', start_state)
-
-    #             # Get list of [end state, prob, reward] terms, given action and start state
-    #             # Also return only the actions_with_params that satisfy preconds
-    #             outcome_list, precond_satisfied = outcome(combo_dict,start_state,action)
-    #             print("outcome_list: ",outcome_list)
-
-    #             # if precond_satisfied: # i.e. list not empty
-    #             #     print(action.name, combo_dict)
-    #             #     actions_with_params.append([action.name,combo_dict])
-
-    #             # Update NxN matrices, p and r according to outcome
-    #             for outcome_sublist in outcome_list:
-
-    #                 #print('outcome_sublist', outcome_sublist)
-
-    #                 # Get index of end state where outcome_sublist = [end state, prob, reward]
-    #                 #print(outcome_sublist[0])
-    #                 j = getStateIndex(outcome_sublist[0],states)
-    #                 #print('j', j)
-
-    #                 p[j,i] = outcome_sublist[1]
-    #                 r[j,i] = outcome_sublist[2]
-                    
-    #         # Add NxN matrices to lists P and R
-    #         P.append(p)
-    #         R.append(r)
-
     # Convert list of matrices to 3d numpy array
     P = np.dstack(P).transpose()
     R = np.dstack(R).transpose()
-    actions = []
-    for action in domain.operators:
-        actions.append(action.name)
-    #print('Actions: ', actions)
-    #print('Param combos: ', param_combos)
-    #print('Probability transition matrix P:')
-    #print2DArraysFrom3DArray(P)
-    # print('Reward matrix R:')
-    #print2DArraysFrom3DArray(R)
-    # print(P.shape)
-    # print('R:\n',R)
-    # print(R.shape)
+    # actions = []
+    # for action in domain.operators:
+    #     actions.append(action.name)
+
+    #input("YOU ARE HERE NOW")
+
 
     return P, R, states, actions
 
@@ -991,7 +937,8 @@ def readPolicy(policy,states,actions_with_params):
     for i in range(len(policy)):
 
         print(states[i])
-        print(actions_with_params[policy[i]][0].name,actions_with_params[policy[i]][1],'\n')
+        #print(actions_with_params[policy[i]][0].name,actions_with_params[policy[i]][1],'\n')
+        print(actions_with_params[policy[i]][0],actions_with_params[policy[i]][1],'\n')
 
 if __name__ == '__main__':
 
@@ -1009,10 +956,8 @@ if __name__ == '__main__':
     print('The follow matrices represent the transition probabilities\n and rewards for all state transitions: ')
     P, R, states, actions_with_params = getPandR()
 
-    #print('P:\n', P, '\n',P.shape)
-    #print('R:\n', R, '\n',R.shape)
-    print('P shape ', P.shape)
-    print('R.shape ', R.shape)
+    print('P:\n', P, '\n',P.shape)
+    print('R:\n', R, '\n',R.shape)
 
     print('actions_with_params: ')
     for action in actions_with_params:
@@ -1027,8 +972,9 @@ if __name__ == '__main__':
     # Translate policy to readable form
     readPolicy(policy,states,actions_with_params)
 
-    # NEW WAY HERE
+    input('wait')
 
+    # Simplify the policy using Boolean logic
     simplify = Simplify(states, actions_with_params, policy, domain, problem)
 
     # Evaluate the policy
@@ -1036,35 +982,5 @@ if __name__ == '__main__':
     reward = evaluate_mdp_policy(mdp_problem, policy)
     print("reward:", reward)
 
-
-
-
-
-    ########################################
-
-    # OLD WAY BELOW
-    # Convert policy to behavior tree
-    # p2bt = PolicyToBT(states, actions_with_params, policy)
-
-    # # Save behavior tree in a file
-    # p2bt.behavior_tree.write_config('output_config/raw_policy_output_bt.tree') # need to copy output_bt.tree to behavior_tree/src/behavior_tree/config/
-    # p2bt.behavior_tree.write_config('../../../behavior_tree/config/raw_policy_output_bt.tree') # Needed here to show in rqt
-
-    # # To visualize the behavior tree, navigate to the behavior tree package
-    # # The output file will be here: your_workspace/src/policy_to_behavior_tree/behavior_tree/config
-    # # Run 'roslaunch behavior_tree show_tree.launch'
-    # # Change .tree file on line 45 of show_tree.py in behavior_tree/src/behavior_tree 
-
-    # # Simplify the behavior tree via conflict (remove irrelevant conditions/decorators and combine same-action subtrees)
-    # simplify = SimplifyBT(p2bt.behavior_tree)
-    # final_bt = simplify.simplified_bt
-    # final_bt.write_config('output_config/final_simplified_output_bt_SIMPLIFYTEST.tree')
-    # final_bt.write_config('../../../behavior_tree/config/final_simplified_output_bt_SIMPLIFYTEST.tree')
-
-
-    # #print('TESTING TESTING TESTING')
-    # #testRemoveInvalidStates()
-
-    # print('+++++++++++++++++++++++++++++++')
-    # #precondSatisfiedTest() # this does show issue with move(left,left)
-    # getActionsWithParamsList()
+    # Generate behavior tree from simplified policy
+    # TODO
