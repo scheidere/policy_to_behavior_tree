@@ -456,7 +456,7 @@ def p_effect(p):
     if len(p) == 2:
         if debug:
             print(p[1])
-        p[0] = (1.0, p[1]) # 1.0 represents 100% probability, since a prob isn't specified 
+        p[0] = (1.0, [p[1]]) # 1.0 represents 100% probability, since a prob isn't specified 
     elif len(p) == 5: # Prints reward, value instead of 1.0, value
         if p[2] != 'and':
             p[0] = p[3]

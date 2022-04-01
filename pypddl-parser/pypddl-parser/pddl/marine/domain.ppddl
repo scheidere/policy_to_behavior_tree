@@ -11,7 +11,7 @@
 		(found-target-to-report ?x - None)
 		(at-drop-off ?x - None)
 		(in-comms-range ?x - None)
-		(garbage ?x - None)
+		;(garbage ?x - None)
 	)
 
 	(:action pick-up
@@ -19,7 +19,7 @@
 		:parameters (?x - None)
 		:precondition (and (found-object ?x) (not (has-object ?x)))
 		:effect (probabilistic 0.9 (and (has-object ?x) (not (found-object ?x)) )
-							   0.1 (garbage ?x)
+							   0.1 (has-object ?x)
 				)
 	)
 
@@ -28,7 +28,7 @@
 		:parameters (?x - None)
 		:precondition (and (has-object ?x) (at-drop-off ?x))
 		:effect (probabilistic 0.85 (and (not (has-object ?x)) (increase reward 2))
-							   0.15 (garbage ?x)
+							   0.15 (has-object ?x)
 				)
 
 	)
@@ -38,7 +38,7 @@
 		:parameters (?x - None)
 		:precondition (found-mine ?x)
 		:effect (probabilistic 0.95 (and (increase reward 3) (not (found-mine ?x)))
-							   0.05 (garbage ?x)
+							   0.05 (has-object ?x)
 				)
 	)
 
@@ -63,7 +63,7 @@
 		:effect (probabilistic 0.2 (found-target-to-report ?x)
 							   0.15 (found-object ?x)
 							   0.1 (found-mine ?x) ;what about mine-live?
-							   0.55 (garbage ?x)
+							   0.55 (has-object ?x)
 				)
 	)
 

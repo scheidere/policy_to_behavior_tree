@@ -65,7 +65,7 @@ def getParamCombos(action):
 
         param_values_dict[param._name] = problem.objects[param.type]
 
-    print('param val dict', param_values_dict)
+    #print('param val dict', param_values_dict)
 
     # Get all combinations of param values in dictionaries, congregate in list
     combo_list = list(dictproduct(param_values_dict))
@@ -204,6 +204,8 @@ def preconditionSatisfied(start_state,action,combo_dict=None,test=False):
     # Check that parameter values in combo match start state per action precondition 
     for precond in action.precond:
 
+        print('precond type ', type(precond))
+
         if precond._predicate.name != '=':
             match_found = False
             
@@ -214,34 +216,41 @@ def preconditionSatisfied(start_state,action,combo_dict=None,test=False):
             # Search start state for precondition predicate name where true
             for term in start_state:
                 # True is defined by term[-1] == 1
-                if term[0] == precond._predicate.name and term[-1] == 1: # Check robot-at is True
 
-                    # Get param values in start state for current term (associated with given predicate)
-                    term_arg_vals = term[1:-1] # if are no parameters this is = []
-                    if test:
-                        print('term arg vals', term_arg_vals)
+                print(type(term[0]))
 
-                    if combo_dict: # if there are parameters to compare at all (might be None)
-                        # Get parameter values to compare with from the param_combo given
-                        combo_arg_vals = getComboArgValues(precond_args,combo_dict)
-                    else:
-                        combo_arg_vals = None
+                # First, check that the state term is the same as the precondition term
+                if term[0] == precond._predicate.name:
 
-                    if test:
-                        print('Comparing %s to %s' % (term_arg_vals,combo_arg_vals))
+                    # Second, check that the Boolean value is the same for both
+                    if precond.is_positive() and term[-1] == 1 or precond.is_negative() and term[-1] == 0:
 
-                    # Compare start state term with combo
-                    if term_arg_vals != combo_arg_vals:
-                        # Term does not match arg vals in give combo
-                        if test:
-                            print('Discrepancy found')
+                        # Third, check that the parameters/args are the same
+                        term_arg_vals = term[1:-1] # if are no parameters this is = [] or has dummy var like 'x'
+                        print('term_arg_vals: ', term_arg_vals)
+
+                        if combo_dict: # if there are parameters to compare at all (might be None)
+                            # Get parameter values to compare with from the param_combo given
+                            combo_arg_vals = getComboArgValues(precond_args,combo_dict)
                         else:
-                            pass
-                    else:
+                            combo_arg_vals = None
+
                         if test:
-                            print('Match found') # precondition is satisfied
-                        match_found = True
-                        continue
+                            print('Comparing %s to %s' % (term_arg_vals,combo_arg_vals))
+
+                        # Compare start state term with combo
+                        if term_arg_vals != combo_arg_vals:
+                            # Term does not match arg vals in give combo
+                            if test:
+                                print('Discrepancy found')
+                            else:
+                                pass
+                        else:
+                            if test:
+                                print('Match found') # precondition is satisfied
+                            match_found = True
+                            continue
+
 
             if not match_found: # Precondition fails for given state and param combo
                 if test:
@@ -327,11 +336,76 @@ def testGetStateIndex():
 
 def outcome(start_state, action, param_values = None, test=False):
 
+    print('entering new outcome function')
+
     precond_satisfied = True
 
     # List of lists
     # Each sub list includes an outcome state with probability p and reward r, [state,p,r]
     outcome_list = []
+
+    # Initialize state terms left over after given action is taken in the start state
+    unchanged_state_terms = copy.deepcopy(start_state)
+
+    #test (remove these lines after you can access the else below)
+    action_effects = action.effects[0] # Indexed to remove duplicate outer list
+    print('Action effect: ', action_effects)
+    #input('Waiting')
+
+
+    if not preconditionSatisfied(start_state,action, combo_dict=param_values):
+
+        print('Precondition not satisfied...')
+
+        outcome_sublist = [unchanged_state_terms,1.0,0]
+        outcome_list.append(outcome_sublist)
+        precond_satisfied = False
+
+    else:
+
+        replacement_state_terms = [] # [state,p,r]
+
+        action_effects = action.effects[0]
+        print('action effects ', action_effects)
+
+        for i in range(len(action_effects)):
+
+            term = action_effects[i]
+
+            literals = []
+
+            reward = 0
+
+            if isinstance(term, float):
+                prob = term
+                print('prob: ', prob)
+
+                effects = action_effects[i+1]
+                print('effects: ', effects)
+
+                for effect_term in effects:
+
+                    if isinstance(effect_term, Literal):
+                                #print('is literal')
+
+                        literals.append(effect_term)
+
+                    elif effect_term[0] == 'reward':
+                        #print('is reward')
+
+                        reward = effect_term[1]
+
+                outcome_sublist = getOutcomeSublist(literals,prob,reward,start_state,param_values,is_probabilistic=True)
+                print('1 ', start_state)
+                print('2 ', outcome_sublist)
+                outcome_list.append(outcome_sublist)
+
+    # if precond_satisfied:
+    #     input('Wait')
+
+    print('exiting new outcome')
+    return outcome_list, precond_satisfied
+
 
 def outcome_old(start_state, action, param_values = None, test=False):
 
@@ -558,7 +632,7 @@ def outcome_old(start_state, action, param_values = None, test=False):
 
 def getOutcomeSublist(literals, prob, reward, start_state, param_values, is_probabilistic=False):
 
-    #print('agh lit', literals)
+    print('agh lit', literals)
 
     #print('LOOOOOOOOOOK prob ', prob)
 
@@ -584,7 +658,7 @@ def getOutcomeSublist(literals, prob, reward, start_state, param_values, is_prob
         for param in params:
             values.append(param_values[param])
 
-        print('values ', values)
+        #print('values ', values)
     
         #print('values', values)
         # Search for relevant terms in start state, those that will be affected
@@ -697,15 +771,20 @@ def getPandR():
 
     # Number of states
     N = len(states)
-    print('N: ',N)
+    print('Number of states, N: ',N)
 
     if problem != None:
 
+        print('Problem exists')
+
         # Get valid action/param combos
         actions = getActionsWithParamsList() # old var name: actions_with_params
+        print('actions: ', actions)
 
     else:
+        print('Problem is None')
         actions = getActions()
+        print('actions: ', actions)
 
     for action_term in actions:
 
@@ -721,9 +800,9 @@ def getPandR():
         for i in range(len(states)):
             start_state = states[i]
 
-            # print('+++++++++++++++++++')
-            # print('action ',action)
-            # print('params ', combo_dict)
+            print('+++++++++++++++++++')
+            print('action ',action)
+            print('params ', combo_dict)
             print('start state ', start_state)
 
             # Get list of [end state, prob, reward] terms, given action and start state
@@ -755,6 +834,8 @@ def getPandR():
 
                 p[j,i] = outcome_sublist[1]
                 r[j,i] = outcome_sublist[2]
+
+                #input('Wait')
                 
         # Add NxN matrices to lists P and R
         P.append(p)
@@ -829,7 +910,7 @@ def getPandR():
     # print('R:\n',R)
     # print(R.shape)
 
-    return P, R, states, actions_with_params
+    return P, R, states, actions
 
 def test_outcome():
 
@@ -928,8 +1009,10 @@ if __name__ == '__main__':
     print('The follow matrices represent the transition probabilities\n and rewards for all state transitions: ')
     P, R, states, actions_with_params = getPandR()
 
-    print('P:\n', P, '\n',P.shape)
-    print('R:\n', R, '\n',R.shape)
+    #print('P:\n', P, '\n',P.shape)
+    #print('R:\n', R, '\n',R.shape)
+    print('P shape ', P.shape)
+    print('R.shape ', R.shape)
 
     print('actions_with_params: ')
     for action in actions_with_params:
