@@ -972,7 +972,7 @@ if __name__ == '__main__':
     # Translate policy to readable form
     readPolicy(policy,states,actions_with_params)
 
-    input('wait')
+    input('Waiting so user can look at readable policy')
 
     # Simplify the policy using Boolean logic
     simplify = Simplify(states, actions_with_params, policy, domain, problem)
