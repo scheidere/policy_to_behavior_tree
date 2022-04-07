@@ -5,12 +5,12 @@
 	(:types None)
 
 	(:predicates
-		(has-object ?x - None)
-		(found-object ?x - None)
-		(found-mine ?x - None)
-		(found-target-to-report ?x - None)
-		(at-drop-off ?x - None)
-		(in-comms-range ?x - None)
+		(has-object ?x - None) ;Group 1
+		(found-object ?x - None) ;Group 1
+		(found-mine ?x - None) ;Group 2
+		(at-drop-off ?x - None) ;Group 1
+		(found-target-to-report ?x - None) ;Group 3
+		(in-comms-range ?x - None) ;Group 3
 		;(garbage ?x - None)
 	)
 
