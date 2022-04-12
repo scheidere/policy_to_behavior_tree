@@ -198,13 +198,13 @@ def getComboArgValues(args,combo_dict):
     return values
 
 
-
 def preconditionSatisfied(start_state,action,combo_dict=None,test=False):
 
     # Check that parameter values in combo match start state per action precondition 
     for precond in action.precond:
 
-        print('precond type ', type(precond))
+        if test:
+            print('precond type ', type(precond))
 
         if precond._predicate.name != '=':
             match_found = False
@@ -217,7 +217,8 @@ def preconditionSatisfied(start_state,action,combo_dict=None,test=False):
             for term in start_state:
                 # True is defined by term[-1] == 1
 
-                print(type(term[0]))
+                if test:
+                    print(type(term[0]))
 
                 # First, check that the state term is the same as the precondition term
                 if term[0] == precond._predicate.name:
@@ -227,7 +228,8 @@ def preconditionSatisfied(start_state,action,combo_dict=None,test=False):
 
                         # Third, check that the parameters/args are the same
                         term_arg_vals = term[1:-1] # if are no parameters this is = [] or has dummy var like 'x'
-                        print('term_arg_vals: ', term_arg_vals)
+                        if test:
+                            print('term_arg_vals: ', term_arg_vals)
 
                         if combo_dict: # if there are parameters to compare at all (might be None)
                             # Get parameter values to compare with from the param_combo given
@@ -406,229 +408,6 @@ def outcome(start_state, action, param_values = None, test=False):
     print('exiting new outcome')
     return outcome_list, precond_satisfied
 
-
-def outcome_old(start_state, action, param_values = None, test=False):
-
-    precond_satisfied = True
-
-    # List of lists
-    # Each sub list includes an outcome state with probability p and reward r, [state,p,r]
-    outcome_list = []
-
-    # Initialize state terms left over after given action is taken in the start state
-    unchanged_state_terms = copy.deepcopy(start_state)
-
-    if not preconditionSatisfied(start_state,action, combo_dict=param_values):
-
-        outcome_sublist = [unchanged_state_terms,1.0,0]
-        outcome_list.append(outcome_sublist)
-        precond_satisfied = False
-
-    else:
-
-        replacement_state_terms = [] # [state,p,r]
-
-        probabilistic = True
-
-        literals = []
-
-        action_effects = action.effects
-
-        # #print('entire' , action.effects)
-        # #print('TYPE ACT EFF', type(action.effects[0][0]))
-
-        # if type(action.effects[0][0]) != list and type(action.effects[0][0]) != tuple:
-
-        #     print('MAKING IT A LIST')
-        #     action_effects = [action.effects] # make it a list
-        #     print('action_effects', action_effects)
-
-        for effect in action_effects: #action.effects might be list of lists, or single list
-
-            if effect[0] == 1.0: # Non-probabilistic effect (NEED TO ADD REWARD SUPPORT)
-                # Initialize state terms left over after given action is taken in the start state
-                #unchanged_state_terms = copy.deepcopy(start_state)
-
-                #replacement_state_terms = [] # [state,p,r]
-                prob = 1.0
-                reward = 0
-                #print('not probabilistic')
-                #literals.append(effect[1])
-
-                probabilistic = False
-
-                predicate = effect[1]._predicate
-                predicate_name = predicate.name
-                params = predicate._args
-                values = []
-                for param in params:
-                    values.append(param_values[param])
-                
-                # Search for relevant terms in start state, those that will be affected
-                for i in range(len(start_state)):
-                    term = start_state[i]
-
-                    # Find term that will change due to effect of taking action in start state
-                    if term[0] == predicate_name and term[1:-1] == values:
-
-                        unchanged_state_terms.remove(term)
-
-                        # Initialize term for end state, state that results from action occurance
-                        new_term = copy.deepcopy(term[0:-1])
-
-                        if effect[1].is_positive():
-                            new_term.append(1)
-                        else:
-                            new_term.append(0)
-
-                        replacement_state_terms.append(new_term)
-
-
-            else: # Probabilistic effect
-                #print('PROBABILISTIC')
-
-                literals = []
-                reward = 0
-
-                for i in range(len(effect)-2):
-
-                    if i%2 == 0: # even
-
-                        # Get probability
-                        prob = effect[i]
-                        #print('Prob: ', prob)
-
-                        # Get associated changes (either state components or reward)
-                        effect_info_list = effect[i+1]
-                        #print('Effect info list: ', effect_info_list)
-
-                        # Track changes, separating state change vs reward
-                        for effect_info in effect_info_list:
-                            #print('effect info ', effect_info)
-
-                            if isinstance(effect_info, Literal):
-                                #print('is literal')
-
-                                literals.append(effect_info)
-
-                            elif effect_info[0] == 'reward':
-                                #print('is reward')
-
-                                reward = effect_info[1]
-
-                # for term in effect: # (0.1, [stuff 10% of time], 0.9, [stuff 90% of time])
-
-                #     print('term',term)
-                #     print('term[0]', term[0])
-
-                #     # Get probability
-                #     prob = term[0]
-                #     # if type(term[0])==int:
-                #     #     prob = term[0]
-                #     #     print('p1', prob)
-                #     # else:
-                #     #     # e.g. (0.15, found-object(?x))
-                #     #     prob = term[0][0]
-                #     #     print('p2', prob)
-
-                #     print('PROB ', prob)
-
-                #     # Init reward
-                #     reward = 0
-
-                #     # Get literals/predicates in effect term (could be condition or reward)
-                #     literals = []
-                #     subterm = term[1] # list of conditions or reward terms
-                #     #print('temp: ', subterm)
-
-                #     #input('wait')
-
-                #     # if isinstance(temp[0],Literal):
-
-                #     #     #temp = [temp] # ??? is this needed?
-                #     #     print('temp2', temp)
-
-                #     # Single element in effect term
-                #     if isinstance(subterm, Literal): # single literal in effect term
-
-                #         #print("is literal!")
-                #         literal = subterm
-                #         #print("literal ", literal)
-                #         literals.append(literal)
-
-                #     elif subterm[0] == 'reward': # single reward in effect term
-                #             reward = subterm[1]
-
-                #     # Multi-subterm effect term
-                #     else:
-                #         for t1 in subterm: # e.g. ('reward', 3.0), or not found-mine(?x), or found-mine(?x)
-                #             #print('t1 ', t1)
-                            
-                #             if isinstance(t1,Literal):
-                #                 #print("is literal!")
-                #                 literal = t1
-                #                 #print("literal ", literal)
-                #                 literals.append(literal)
-
-                #             elif t1[0] == 'reward':
-                #                 reward = t1[1]
-
-
-                        # if len(term) > 1:
-
-                        #     #print('t10', t1[0])
-                        #     #input('wait')
-                        #     # in case t1 = ('reward', 2) for e.g.
-                        #     if t1[0] == 'reward':
-                        #         reward = t1[1]
-                        #         #print('reward t1 len > 1', reward)
-
-                        #     else:
-                        #         for t2 in t1:
-                        #             if isinstance(t2,Literal):
-                        #                 #print('literal t2 ', t2)
-                        #                 literal = t2
-                        #                 literals.append(literal)
-                        #             elif t2:
-                        #                 if t2[0] == 'reward':
-                        #                     reward = t2[1]
-                        #                     #print('reward t2', reward)
-                        # else:
-                        #     if t1[0] == 'reward': #only contains a reward term, no state changes
-                        #         reward = t1[1]
-                        #         #print('reward t1 len = 1', reward)
-                        #         #end_state = unchanged_state_terms # full start state
-                        #         #outcome_sublist = outcome_sublist = [end_state,prob,reward]
-                        #         #print('outcome_sublist 2', outcome_sublist)
-                        #     else: # literals
-                        #         #print('literal t1 ', t1)
-                        #         literal = t1
-                        #         literals.append(literal)
-
-                    # print('PROB', prob)
-                    # print('REWARD ', reward)
-                    # print('literals ', literals)
-
-                    
-                    outcome_sublist = getOutcomeSublist(literals,prob,reward,start_state,param_values,is_probabilistic=True)
-                    #print(outcome_sublist)
-                    outcome_list.append(outcome_sublist)
-
-        if not probabilistic:
-            end_state = unchanged_state_terms + replacement_state_terms
-            if equal(end_state,start_state):
-                print('end is same as start state')
-            outcome_sublist = [end_state,prob,reward]
-            #print(outcome_sublist)
-            #print('non probabilitistic outcome', outcome_sublist)
-            ##getOutcomeSublist(literals, prob, reward, start_state, param_values,is_probabilistic=False)
-            outcome_list.append(outcome_sublist)
-
-        if test:
-            print('Outcome list: ', outcome_list)
-
-
-    return outcome_list, precond_satisfied
 
 def getOutcomeSublist(literals, prob, reward, start_state, param_values, is_probabilistic=False):
 
@@ -860,6 +639,8 @@ def getPandR():
 
 def test_outcome():
 
+    # Need to confirm this test is updated, so it can actually be used to test...
+
     states = getStateList()
 
     for action in domain.operators:
@@ -878,7 +659,7 @@ def test_outcome():
                 print('\n')
                 print('Start state: ', start_state)
                 print('Combo dict: ', combo_dict)
-                print('Precondition satisfied? ', preconditionSatisfied(combo_dict,start_state,action))
+                print('Precondition satisfied? ', preconditionSatisfied(start_state,action, combo_dict=combo_dict,test=True))
                 print('Action: ', action.name)
                 outcome_list = outcome(combo_dict,start_state,action)
                 for o in outcome_list:
@@ -887,6 +668,8 @@ def test_outcome():
                 print('\n')
 
 def precondSatisfiedTest():
+
+    # Need to confirm this test is updated, so it can actually be used to test...
 
     states = getStateList()
 
@@ -908,7 +691,7 @@ def precondSatisfiedTest():
 
                 print('Param combo: ', combo_dict)
 
-                print('Precond satisfied? %s\n' % preconditionSatisfied(combo_dict,start_state,action,test=True))
+                print('Precond satisfied? %s\n' % preconditionSatisfied(start_state,action, combo_dict=param_values,test=True))
 
 
 def solve(solver,P,R):
@@ -940,6 +723,25 @@ def readPolicy(policy,states,actions_with_params):
         #print(actions_with_params[policy[i]][0].name,actions_with_params[policy[i]][1],'\n')
         print(actions_with_params[policy[i]][0],actions_with_params[policy[i]][1],'\n')
 
+def checkPolicyPreconditions(policy, states,actions_with_params):
+
+    # Used to make the policy readable and check for issues with preconditions
+
+    print('Policy in readable form: \n')
+
+    for i in range(len(policy)):
+
+        print('State: \n', states[i])
+        action = actions_with_params[policy[i]][0]
+        print('\nAction: \n %s' % action)
+        param_values = actions_with_params[policy[i]][1]
+        print('Params: \n', param_values)
+        precondsatisfied = preconditionSatisfied(states[i],action, combo_dict=param_values)
+        print('\nPreconditions satisfied? %r' % precondsatisfied)
+        if not precondsatisfied:
+            input('Found failure')
+
+
 if __name__ == '__main__':
 
     # Define domain and problem to consider (they represent an MDP)
@@ -970,9 +772,10 @@ if __name__ == '__main__':
     policy = solve(solver,P,R)
 
     # Translate policy to readable form
-    readPolicy(policy,states,actions_with_params)
+    #readPolicy(policy,states,actions_with_params)
+    checkPolicyPreconditions(policy,states,actions_with_params)
 
-    input('Waiting so user can look at readable policy')
+    input('Scroll up to read the policy. Press enter to simplify and evaluate.')
 
     # Simplify the policy using Boolean logic
     simplify = Simplify(states, actions_with_params, policy, domain, problem)
