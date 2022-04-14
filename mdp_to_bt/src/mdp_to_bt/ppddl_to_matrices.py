@@ -659,13 +659,16 @@ def test_outcome():
                 print('\n')
                 print('Start state: ', start_state)
                 print('Combo dict: ', combo_dict)
-                print('Precondition satisfied? ', preconditionSatisfied(start_state,action, combo_dict=combo_dict,test=True))
                 print('Action: ', action.name)
-                outcome_list = outcome(combo_dict,start_state,action)
+                ps = preconditionSatisfied(start_state,action, combo_dict=combo_dict)
+                print('Precondition satisfied? ', ps)
+                outcome_list = outcome(start_state,action,param_values=combo_dict)
                 for o in outcome_list:
                     print(o)
+                
 
                 print('\n')
+
 
 def precondSatisfiedTest():
 
@@ -753,6 +756,11 @@ if __name__ == '__main__':
 
     print(domain)
     print(problem)
+
+    # Trying to debug issue with pickup preconditions not being satisfied but it still being in policy
+    test_outcome()
+
+    input('STOP')
 
     # Convert to MDP, i.e. generate transition probability matrix P and reward matrix R
     print('The follow matrices represent the transition probabilities\n and rewards for all state transitions: ')
