@@ -757,11 +757,6 @@ if __name__ == '__main__':
     print(domain)
     print(problem)
 
-    # Trying to debug issue with pickup preconditions not being satisfied but it still being in policy
-    test_outcome()
-
-    input('STOP')
-
     # Convert to MDP, i.e. generate transition probability matrix P and reward matrix R
     print('The follow matrices represent the transition probabilities\n and rewards for all state transitions: ')
     P, R, states, actions_with_params = getPandR()
