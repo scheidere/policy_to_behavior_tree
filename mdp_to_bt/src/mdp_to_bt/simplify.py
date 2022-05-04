@@ -5,6 +5,7 @@ from sympy.logic import SOPform
 from sympy.core.symbol import *
 from sympy.logic.boolalg import *
 import numpy as np
+from behavior_tree.behavior_tree import *
 from itertools import product
 import itertools
 
@@ -245,43 +246,50 @@ class Simplify:
 
     def buildSubtree(self, sop_simplify, action):
 
-        # This is not set up for a BT yet, just printing as is for now
+        # Create root of subtree, which is a sequence node
+        sequence_node = Sequence()
 
         # Extract the subtrees from the logic
         if type(sop_simplify) == Or:
 
             # "Or" found, therefore must be multiple subtrees
             terms = sop_simplify.args
+            print('OR')
 
         elif type(sop_simplify) == And:
 
             # "And" found, therefore must be a single subtree
             # Put the subtree in a list so it is compatible with the following loop
             terms = [sop_simplify]
+            print('And')
 
         elif type(sop_simplify) == Not:
 
+            print('Not')
+
             # The tree is a single subtree with a Not decorator
             # Process this case separately
-            terms = [] # So the following loop is skipped
-            print("==============")
-            print("subtree [single NOT] (")
+            #terms = [] # So the following loop is skipped
+            terms = [sop_simplify]
+            # print("==============")
+            # print("subtree [single NOT] (")
             name = str(sop_simplify.args[0])
-            print("\t NOT", name)
-            print("\t",action)
-            print(")")
+            # print("\t NOT", name)
+            # print("\t",action[0].name, action[1]) #.name added
+            # print(")")
 
         elif type(sop_simplify) == Symbol:
 
+            print('Symbol')
             # The tree is a single subtree with a single condition
             # Process this case separately
             terms = [] # So the following loop is skipped
-            print("==============")
-            print("subtree [single Condition] (")
+            # print("==============")
+            # print("subtree [single Condition] (")
             name = str(sop_simplify)
-            print("\t",name)
-            print("\t",action)
-            print(")")
+            # print("\t",name)
+            # print("\t",action[0].name, action[1])
+            # print(")")
 
         elif type(sop_simplify) == BooleanFalse:
 
@@ -292,10 +300,12 @@ class Simplify:
 
             # This action has no conditions
             terms = [] # So the following loop is skipped
-            print("==============")
-            print("subtree [always] (")
-            print("\t",action)
-            print(")")
+            # print("==============")
+            # print("subtree [always] (")
+            # print("\t",action[0].name, action[1])
+            # print(")")
+            action_node = self.createActionNode(action)
+            return action_node
 
         else:
 
@@ -314,8 +324,8 @@ class Simplify:
             if type(term) == And:
 
                 # "And" found, iterate through the list of conditions
-                print("==============")
-                print("subtree [multiple Conditions] (")
+                # print("==============")
+                # print("subtree [multiple Conditions] (")
                 
                 conditions = term.args
 
@@ -323,8 +333,8 @@ class Simplify:
 
                 # "Not" or "Condition" found
                 # Wrap it in a list, then proceed with the following loop
-                print("==============")
-                print("subtree [single Condition/Not] (")
+                # print("==============")
+                # print("subtree [single Condition/Not] (")
                 conditions = [term]
 
             # Look at each condition one at a time
@@ -333,20 +343,71 @@ class Simplify:
                 # Determine if it is positive or negative
                 if type(condition) == Not:
 
-                    # Not decorator with condition
-                    name = str(condition.args[0])
-                    print("\t NOT", name)
+                    # Not decorator with condition #
+                    #name = str(condition.args[0])
+                    #print("\t NOT", name)
+
+                    # Get condition label
+                    condition_label = str(condition.args[0])
+
+                    # Make condition node
+                    condition_node = Condition(condition_label)
+
+                    # Make decorator node
+                    decorator_node = NotDecorator()
+                    decorator_node.add_child(condition_node)
+
+                    # Add decorator to subtree
+                    sequence_node.children.append(decorator_node)
 
                 else:
 
-                    # Condition
-                    name = str(condition)
-                    print("\t",name)
+                    # Condition #
+
+                    # Get condition label
+                    condition_label = str(condition)
+                    condition_node = Condition(condition_label)
+                    #print("\t",condition_label)
+
+                    # Add condition to subtree
+                    sequence_node.children.append(condition_node)
+
+
 
             # Add the action at the end of the subtree
-            print("\t",action)
+            # print("\t",action[0].name, action[1])
+            # print(")")
 
-            print(")")
+            action_node = self.createActionNode(action)
+
+            # Add action to subtree
+            sequence_node.children.append(action_node)
+
+            return sequence_node
+
+            
+
+        # print('++++++++++++++++++++++++++end')
+
+    def createActionNode(self, action):
+
+        # Get action label with parameters
+        action_name = action[0].name
+        params = action[1]
+        action_label = action_name + '('
+        for key in params.keys():
+            variable = key[1:]
+            value = params[key]
+            action_label = action_label + variable + ': ' + value + ', '
+        action_label = action_label[:-2] # remove extra comma and space
+        action_label = action_label + ')'
+        print('action label', action_label)
+
+        # Make action node
+        action_node = Action(action_label)
+        print(action_node)
+
+        return action_node
 
 
     def buildFullTree(self, subtrees):
@@ -354,52 +415,85 @@ class Simplify:
         bt = BehaviorTree('')
         bt.root = Fallback()
 
+        #self.printBT(bt)
+
+        for subtree in subtrees:
+
+            print('subtree', subtree)
+
+            bt.root.children.append(subtree)
+            #self.printBT(bt)
+
+        return bt
+
+    def printBT(self, bt):
+        print('++++++++++++++++++')
+        bt.generate_nodes_list()
+        #print('!!!!!!!!!!!!!!!', type(bt.root))
+        #print(bt.nodes)
+        for node in bt.nodes:
+            print(node.label)
+        print(len(bt.root.children))
+        print('++++++++++++++++++')
 
     def run(self):
+
+        # Create list for subtrees
+        subtrees = []
 
         # I think the dont_cares determination is more complex
         # Am i looping the wrong way?
 
         # Extract the conditions from the MDP, set them as an array of symbols
         c = self.setConditionSymbols()
-        print('c: ', c)
+        # print('c: ', c)
 
         # dontcares = []
         dontcares = self.findInitialDontCares()
 
+        print('self.actions', self.actions)
+
         ##for i in range(len(self.policy)):
         for i in range(len(self.actions)):
 
-            ##print('i ', i)
+            print('i ', i)
 
             action = self.actions[i]
 
+            print('action: ', action)
+
             action_num = self.getActionNum(action)
+
+            print('action num', action_num)
 
             if i >= 1:
                 dontcares += prev_minterms
 
             #action_num = self.policy[i]
-            print(self.policy)
-            print(action_num)
+            #print(self.policy)
+            #print(action_num)
 
             # Get list of numeric states the policy states action a should be taken in
             minterms = self.getActionStates(action_num) # switch to take action num
 
             prev_minterms = minterms
 
-            print('minterms ', minterms)
-            print('dontcares ', dontcares)
+            # print('minterms ', minterms)
+            # print('dontcares ', dontcares)
 
             # Get the sum-of-product representation
             sop = SOPform(c, minterms, dontcares)
-            print('sop', sop)
+            # print('sop', sop)
 
             # Simplify it
             sop_simplify = to_dnf(sop,simplify=True)
             print('sop_simplify', sop_simplify)
+            # print('sop_simplify', sop_simplify)
 
-            self.buildSubtree(sop_simplify,action)
+            subtrees.append(self.buildSubtree(sop_simplify,action))
+
+        bt = self.buildFullTree(subtrees)
+        self.printBT(bt)
 
 
 

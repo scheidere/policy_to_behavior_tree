@@ -1,0 +1,39 @@
+(define (domain vacuum-domain)
+
+	(:requirements :equality :typing :probabilistic-effects)
+
+	(:types cell)
+
+	(:predicates
+		(robot-at ?x - cell)
+		(dirty-at ?x - cell)
+	)
+
+	(:constraints
+		(and
+            (forall (?loc - cell) (at-most-once (robot-at ?loc)))
+        )
+	)
+
+	(:action move
+		:parameters (?x ?y - cell)
+		:precondition (and (robot-at ?x) (not (= ?x ?y)))
+		:effect (and (robot-at ?y) (not (robot-at ?x)))
+	)
+
+	; (:action clean
+	; 	:parameters (?x - cell)
+	; 	:precondition (and (robot-at ?x) (dirty-at ?x))
+	; 	:effect (probabilistic 0.9 (and (not (dirty-at ?x)) ( increase reward 2 ))
+	; 						   0.1 ( increase reward -1 ))
+	; )
+
+	; Test 1: Remove reward penalty that has a 10% likelihood, so no consequences
+	(:action clean
+		:parameters (?x - cell)
+		:precondition (and (robot-at ?x) (dirty-at ?x))
+		:effect (probabilistic 1.0 (and (not (dirty-at ?x)) ( increase reward 2 )))
+	)
+
+
+)

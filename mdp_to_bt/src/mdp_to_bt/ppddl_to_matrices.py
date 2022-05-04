@@ -722,6 +722,8 @@ def readPolicy(policy,states,actions_with_params):
 
     for i in range(len(policy)):
 
+        print('Index in policy: ', i)
+        print('Action index: ', policy[i])
         print(states[i])
         #print(actions_with_params[policy[i]][0].name,actions_with_params[policy[i]][1],'\n')
         print(actions_with_params[policy[i]][0],actions_with_params[policy[i]][1],'\n')
@@ -734,6 +736,9 @@ def checkPolicyPreconditions(policy, states,actions_with_params):
 
     for i in range(len(policy)):
 
+        print('====================')
+        print('Index in policy: ', i)
+        print('Action index: ', policy[i])
         print('State: \n', states[i])
         action = actions_with_params[policy[i]][0]
         print('\nAction: \n %s' % action)
@@ -744,6 +749,73 @@ def checkPolicyPreconditions(policy, states,actions_with_params):
         if not precondsatisfied:
             input('Found failure')
 
+def main():
+
+    # Convert to MDP, i.e. generate transition probability matrix P and reward matrix R
+    print('The follow matrices represent the transition probabilities\n and rewards for all state transitions: ')
+    P, R, states, actions_with_params = getPandR()
+
+    # print('P:\n', P, '\n',P.shape)
+    # print('R:\n', R, '\n',R.shape)
+
+    # print('actions_with_params: ')
+    # for action in actions_with_params:
+    #     print(action)
+
+    # Choose method of solving for a policy given P and R
+    #solver = input("Enter value iteration (v) or Q-learning (q): ") 
+    solver = 'v' # Q-learning does not work, so always use value iteration
+
+    # Solve for a policy
+    policy = solve(solver,P,R)
+
+    # Convert policy to BT and save as
+    #p2bt = PolicyToBT(states, actions_with_params, policy)
+
+    # Translate policy to readable form
+    # choice = input('Press r to print policy in readable form. To skip press any other key.')
+    choice = 'nope'
+    if choice == 'r':
+        #readPolicy(policy,states,actions_with_params)
+        checkPolicyPreconditions(policy,states,actions_with_params) #Value iteration passes, Q-learning fails
+
+        input('Scroll up to read the policy. Press enter to simplify and evaluate.')
+
+    # print('Simplifying policy...')
+    # print('old policy', policy)
+    # Simplify the policy using Boolean logic
+    simplify = Simplify(states, actions_with_params, policy, domain, problem)
+
+    # Evaluate the policy
+    # mdp_problem = MDP_Problem(P, R, states, actions_with_params)
+    # reward = evaluate_mdp_policy(mdp_problem, policy)
+    # print("reward:", reward)
+
+    # Generate behavior tree from simplified policy
+    # TODO
+
+def get_average_reward(num_runs):
+
+    # Convert to MDP matrix form
+    P, R, states, actions_with_params = getPandR()
+
+    # Define MDP
+    mdp_problem = MDP_Problem(P, R, states, actions_with_params)
+
+    # Solve for a policy using value iteration
+    policy = solve('v',P,R)
+
+    rewards = []
+    for i in range(num_runs):
+
+        reward = evaluate_mdp_policy(mdp_problem, policy)
+        print(i,': ', reward)
+
+        rewards.append(reward)
+
+
+    return sum(rewards)/len(rewards)
+    
 
 if __name__ == '__main__':
 
@@ -754,39 +826,19 @@ if __name__ == '__main__':
     domain  = PDDLParser.parse(args.domain)
     problem = PDDLParser.parse(args.problem)
 
-    print(domain)
-    print(problem)
+    # print(domain)
+    # print(problem)
 
-    # Convert to MDP, i.e. generate transition probability matrix P and reward matrix R
-    print('The follow matrices represent the transition probabilities\n and rewards for all state transitions: ')
-    P, R, states, actions_with_params = getPandR()
+    main()
 
-    print('P:\n', P, '\n',P.shape)
-    print('R:\n', R, '\n',R.shape)
 
-    print('actions_with_params: ')
-    for action in actions_with_params:
-        print(action)
+    ### Generate results ###
 
-    # Choose method of solving for a policy given P and R
-    solver = input("Enter value iteration (v) or Q-learning (q): ") 
+    do = input('If you want to get the average reward, press r.')
 
-    # Solve for a policy
-    policy = solve(solver,P,R)
+    if do=='r':
 
-    # Translate policy to readable form
-    #readPolicy(policy,states,actions_with_params)
-    checkPolicyPreconditions(policy,states,actions_with_params)
+        # Get average reward over a certain number of runs
+        print(get_average_reward(100))
 
-    input('Scroll up to read the policy. Press enter to simplify and evaluate.')
-
-    # Simplify the policy using Boolean logic
-    simplify = Simplify(states, actions_with_params, policy, domain, problem)
-
-    # Evaluate the policy
-    mdp_problem = MDP_Problem(P, R, states, actions_with_params)
-    reward = evaluate_mdp_policy(mdp_problem, policy)
-    print("reward:", reward)
-
-    # Generate behavior tree from simplified policy
-    # TODO
+    

@@ -22,32 +22,32 @@ def evaluate_mdp_policy(mdp_problem, mdp_policy):
 	# Define the evaluation function
 	def evaluate_once(mdp_problem, mdp_policy):
 		
-		print("================ evaluate_once ==============")
+		# print("================ evaluate_once ==============")
 		# Accumulate reward over the "mission"
 		reward = 0
 
 		# Pick a start state
 		state_idx = random.randint(0,len(mdp_problem.states)-1)
-		print("state_idx", state_idx)
+		# print("state_idx", state_idx)
 
 		# Do a number of steps
 		for j in range(num_steps_per_trial):
-			print("j", j)
+			# print("j", j)
 
 			# Pick an action according to the policy
-			print("mdp_policy", mdp_policy)
+			# print("mdp_policy", mdp_policy)
 			action_idx = mdp_policy[state_idx]
-			print("action_idx", action_idx)
+			# print("action_idx", action_idx)
 
 			# Get the next state using the transition model
 			probabilities = mdp_problem.P[action_idx, state_idx]
 			next_states_idx = range(0,len(probabilities))
 			next_state_idx = np.random.choice(next_states_idx, p=probabilities)
-			print("next_state_idx", next_state_idx)
+			# print("next_state_idx", next_state_idx)
 
 			# Get a reward according to the reward matrix
 			reward += mdp_problem.R[action_idx, state_idx, next_state_idx]
-			print("accumulated reward", reward)
+			# print("accumulated reward", reward)
 
 			# Move to the next state
 			state_idx = next_state_idx
