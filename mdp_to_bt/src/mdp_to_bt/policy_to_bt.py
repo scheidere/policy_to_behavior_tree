@@ -26,10 +26,12 @@ class PolicyToBT:
         self.printBT(self.behavior_tree)
 
     def printBT(self, bt):
+        print('++++++++++++++++++\n')
         bt.generate_nodes_list()
         for node in bt.nodes:
             print(node.label)
-        print(len(bt.root.children))
+        print('\nNumber of subtrees: ', len(bt.root.children))
+        print('\n++++++++++++++++++\n')
 
     def convert_policy_to_subtrees(self, root):
 

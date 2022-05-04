@@ -187,7 +187,7 @@ class Simplify:
 
     def findInitialDontCares(self):
 
-        print("findInitialDontCares")
+        #print("findInitialDontCares")
         
         valid_states = [];
 
@@ -196,7 +196,7 @@ class Simplify:
 
             valid_states.append(self.getNumericalState(self.states[idx]))
 
-        print('valid_states', valid_states)
+        #print('valid_states', valid_states)
 
         # Find all states that are not in the above states list
         dontcares = []
@@ -211,7 +211,7 @@ class Simplify:
             if not (current_state in valid_states):
                 dontcares.append(current_state)
 
-        print('dontcares', dontcares)
+        #print('dontcares', dontcares)
 
         return dontcares
 
@@ -254,18 +254,18 @@ class Simplify:
 
             # "Or" found, therefore must be multiple subtrees
             terms = sop_simplify.args
-            print('OR')
+            #print('OR')
 
         elif type(sop_simplify) == And:
 
             # "And" found, therefore must be a single subtree
             # Put the subtree in a list so it is compatible with the following loop
             terms = [sop_simplify]
-            print('And')
+            #print('And')
 
         elif type(sop_simplify) == Not:
 
-            print('Not')
+            #print('Not')
 
             # The tree is a single subtree with a Not decorator
             # Process this case separately
@@ -280,7 +280,7 @@ class Simplify:
 
         elif type(sop_simplify) == Symbol:
 
-            print('Symbol')
+            #print('Symbol')
             # The tree is a single subtree with a single condition
             # Process this case separately
             terms = [] # So the following loop is skipped
@@ -401,11 +401,11 @@ class Simplify:
             action_label = action_label + variable + ': ' + value + ', '
         action_label = action_label[:-2] # remove extra comma and space
         action_label = action_label + ')'
-        print('action label', action_label)
+        #print('action label', action_label)
 
         # Make action node
         action_node = Action(action_label)
-        print(action_node)
+        #print(action_node)
 
         return action_node
 
@@ -419,7 +419,7 @@ class Simplify:
 
         for subtree in subtrees:
 
-            print('subtree', subtree)
+            #print('subtree', subtree)
 
             bt.root.children.append(subtree)
             #self.printBT(bt)
@@ -427,14 +427,14 @@ class Simplify:
         return bt
 
     def printBT(self, bt):
-        print('++++++++++++++++++')
+        print('++++++++++++++++++\n')
         bt.generate_nodes_list()
         #print('!!!!!!!!!!!!!!!', type(bt.root))
         #print(bt.nodes)
         for node in bt.nodes:
             print(node.label)
-        print(len(bt.root.children))
-        print('++++++++++++++++++')
+        print('\nNumber of subtrees: ', len(bt.root.children))
+        print('\n++++++++++++++++++\n')
 
     def run(self):
 
@@ -451,20 +451,20 @@ class Simplify:
         # dontcares = []
         dontcares = self.findInitialDontCares()
 
-        print('self.actions', self.actions)
+        #print('self.actions', self.actions)
 
         ##for i in range(len(self.policy)):
         for i in range(len(self.actions)):
 
-            print('i ', i)
+            #print('i ', i)
 
             action = self.actions[i]
 
-            print('action: ', action)
+            #print('action: ', action)
 
             action_num = self.getActionNum(action)
 
-            print('action num', action_num)
+            #print('action num', action_num)
 
             if i >= 1:
                 dontcares += prev_minterms
@@ -487,13 +487,14 @@ class Simplify:
 
             # Simplify it
             sop_simplify = to_dnf(sop,simplify=True)
-            print('sop_simplify', sop_simplify)
+            #print('sop_simplify', sop_simplify)
             # print('sop_simplify', sop_simplify)
 
             subtrees.append(self.buildSubtree(sop_simplify,action))
 
-        bt = self.buildFullTree(subtrees)
-        self.printBT(bt)
+        self.bt = self.buildFullTree(subtrees)
+        self.printBT(self.bt)
+        
 
 
 

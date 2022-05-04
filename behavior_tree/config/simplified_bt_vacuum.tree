@@ -1,0 +1,18 @@
+?
+	->
+		<!>
+			(dirty-at_left-cell)
+		<!>
+			(dirty-at_right-cell)
+		[move(x: left-cell, y: right-cell)]
+	->
+		<!>
+			(dirty-at_right-cell)
+		<!>
+			(robot-at_left-cell)
+		[move(x: right-cell, y: left-cell)]
+	->
+		<!>
+			(robot-at_right-cell)
+		[clean(x: left-cell)]
+	[clean(x: right-cell)]

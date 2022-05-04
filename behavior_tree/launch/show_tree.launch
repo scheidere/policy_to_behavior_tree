@@ -1,5 +1,7 @@
 <?xml version="1.0"?>
 
+<!-- This file is outdated. Need to add argument ability so you can specify which .tree to show. For now, we will rosrun show_tree.py. /-->
+
 <launch>
 
 	<node pkg="behavior_tree" type="show_tree.py" name="show_tree" output="screen">

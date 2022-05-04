@@ -9,6 +9,7 @@ from behavior_tree_msgs.msg import Status, Active
 
 import behavior_tree_graphviz as gv
 import zlib
+import sys
 
 def init_bt(bt):
     # print("BT_Interface initialising BT...")
@@ -31,6 +32,12 @@ def tick_bt(bt):
 
 if __name__ == '__main__':
 
+    # Get behavior tree we want to show from command line argument
+    print(sys.argv[0]) # file name
+    print(sys.argv[1]) # argument
+
+    bt_tree_file = sys.argv[1]
+
 	# Initialise the node
     rospy.init_node('show_tree')
     # Get the config file etc
@@ -45,7 +52,8 @@ if __name__ == '__main__':
         #bt = BehaviorTree(filepath+ 'output_bt.tree')
 	    #bt = BehaviorTree(filepath+ 'raw_output_bt.tree')
         #bt = BehaviorTree(filepath+ 'test_final_output_bt.tree')
-        bt = BehaviorTree(filepath+ 'human_final_bt.tree')
+        #bt = BehaviorTree(filepath+ 'human_final_bt.tree')
+        bt = BehaviorTree(filepath+bt_tree_file)
 
         includes = [True, True, True, True, True, True, True, True, True, True,\
             True, True, True, True, True,True, True, True, True, True,\

@@ -119,15 +119,15 @@ def removeInvalidStates(state_list):
     # For each constraint, remove states that do not satisfy 
     for i in range(len(domain.constraints)):
         constraint = domain.constraints[i]
-        print('Constraint: ', constraint)
-        print(constraint._name)
-        print(constraint._literal._predicate._name)
-        print(''.join(map(str, constraint._params)))
+        # print('Constraint: ', constraint)
+        # print(constraint._name)
+        # print(constraint._literal._predicate._name)
+        # print(''.join(map(str, constraint._params)))
 
         # Check each state for failure, per kind of constraint (currently only at-most-once)
         for j in range(len(state_list)):
             state = state_list[j]
-            print('state ', state)
+            #print('state ', state)
             if constraint._name == 'at-most-once':
                 # Find all terms in state with the literal that is in the constraint
                 # Simplest case (one literal, one param, two param values): [literal,param value 1, 0],[literal,param value 2, 1]
@@ -141,11 +141,11 @@ def removeInvalidStates(state_list):
                     if term[0] == constraint._literal._predicate._name:
                         if num==None:
                             num=term[-1] # 0 or 1
-                            print('num ',num)
+                            #print('num ',num)
                             continue
                         elif num==1 and term[-1]==num: # Found another 1, so constraint is not satisfied
                             removal_indices.append(j)
-                            print("More than one 1 found")
+                            #print("More than one 1 found")
                             break
                         elif num==0:
                             if term[-1] == 1: # found a one
@@ -153,14 +153,14 @@ def removeInvalidStates(state_list):
                                     found_a_one = True # found first 1
                                 else: # found second 1, constraint not satisfied
                                     removal_indices.append(j)
-                                    print("More than one 1 found*")
+                                    #print("More than one 1 found*")
                                     break
 
 
                 # After searching whole state
                 if num == 0 and not found_a_one: # If all zeros -> failure
                     removal_indices.append(j)
-                    print('all zeros')
+                    #print('all zeros')
  
 
 
@@ -334,11 +334,11 @@ def testGetStateIndex():
 
     state = [['robot-at', 'right-cell', 1], ['dirty-at', 'right-cell', 0], ['dirty-at', 'left-cell', 1], ['robot-at', 'left-cell', 0]]
 
-    print(getStateIndex(state,states))
+    #print(getStateIndex(state,states))
 
 def outcome(start_state, action, param_values = None, test=False):
 
-    print('entering new outcome function')
+    #print('entering new outcome function')
 
     precond_satisfied = True
 
@@ -351,13 +351,13 @@ def outcome(start_state, action, param_values = None, test=False):
 
     #test (remove these lines after you can access the else below)
     action_effects = action.effects[0] # Indexed to remove duplicate outer list
-    print('Action effect: ', action_effects)
+    #print('Action effect: ', action_effects)
     #input('Waiting')
 
 
     if not preconditionSatisfied(start_state,action, combo_dict=param_values):
 
-        print('Precondition not satisfied...')
+        #print('Precondition not satisfied...')
 
         outcome_sublist = [unchanged_state_terms,1.0,0]
         outcome_list.append(outcome_sublist)
@@ -368,7 +368,7 @@ def outcome(start_state, action, param_values = None, test=False):
         replacement_state_terms = [] # [state,p,r]
 
         action_effects = action.effects[0]
-        print('action effects ', action_effects)
+        #print('action effects ', action_effects)
 
         for i in range(len(action_effects)):
 
@@ -380,10 +380,10 @@ def outcome(start_state, action, param_values = None, test=False):
 
             if isinstance(term, float):
                 prob = term
-                print('prob: ', prob)
+                #print('prob: ', prob)
 
                 effects = action_effects[i+1]
-                print('effects: ', effects)
+                #print('effects: ', effects)
 
                 for effect_term in effects:
 
@@ -398,20 +398,20 @@ def outcome(start_state, action, param_values = None, test=False):
                         reward = effect_term[1]
 
                 outcome_sublist = getOutcomeSublist(literals,prob,reward,start_state,param_values,is_probabilistic=True)
-                print('1 ', start_state)
-                print('2 ', outcome_sublist)
+                # print('1 ', start_state)
+                # print('2 ', outcome_sublist)
                 outcome_list.append(outcome_sublist)
 
     # if precond_satisfied:
     #     input('Wait')
 
-    print('exiting new outcome')
+    #print('exiting new outcome')
     return outcome_list, precond_satisfied
 
 
 def getOutcomeSublist(literals, prob, reward, start_state, param_values, is_probabilistic=False):
 
-    print('agh lit', literals)
+    #print('agh lit', literals)
 
     #print('LOOOOOOOOOOK prob ', prob)
 
@@ -471,7 +471,7 @@ def getOutcomeSublist(literals, prob, reward, start_state, param_values, is_prob
 
     return outcome_sublist
 
-def preconditionSatisfiedActionParams(action, combo_dict, test=True):
+def preconditionSatisfiedActionParams(action, combo_dict, test=False):
 
     #Need to remove things like move(left,left) and move(right,right) by checking preconditions
 
@@ -550,25 +550,25 @@ def getPandR():
 
     # Number of states
     N = len(states)
-    print('Number of states, N: ',N)
+    #print('Number of states, N: ',N)
 
     if problem != None:
 
-        print('Problem exists')
+        #print('Problem exists')
 
         # Get valid action/param combos
         actions = getActionsWithParamsList() # old var name: actions_with_params
         #print('actions: ', actions)
-        print('actions: ')
-        for action in actions:
-            print(action[0]._name, action[1])
+        #print('actions: ')
+        # for action in actions:
+        #     print(action[0]._name, action[1])
 
         #input("YOU ARE HERE")
 
     else:
-        print('Problem is None')
+        #print('Problem is None')
         actions = getActions()
-        print('actions: ', actions)
+        #print('actions: ', actions)
 
     for action_term in actions:
 
@@ -584,10 +584,10 @@ def getPandR():
         for i in range(len(states)):
             start_state = states[i]
 
-            print('+++++++++++++++++++')
-            print('action ',action)
-            print('params ', combo_dict)
-            print('start state ', start_state)
+            # print('+++++++++++++++++++')
+            # print('action ',action)
+            # print('params ', combo_dict)
+            # print('start state ', start_state)
 
             # Get list of [end state, prob, reward] terms, given action and start state
             # Also return only the actions_with_params that satisfy preconds
@@ -602,19 +602,19 @@ def getPandR():
             #     actions_with_params.append([action.name,combo_dict])
 
             # Update NxN matrices, p and r according to outcome
-            print('outcome_list ', outcome_list)
+            #print('outcome_list ', outcome_list)
             for outcome_sublist in outcome_list:
 
-                print('outcome_sublist ', outcome_sublist)
+                #print('outcome_sublist ', outcome_sublist)
 
                 #print('outcome_sublist', outcome_sublist)
 
                 # Get index of end state where outcome_sublist = [end state, prob, reward]
                 #print(outcome_sublist[0])
                 j = getStateIndex(outcome_sublist[0],states)
-                print('j', j, type(j))
-                print('i', i, type(i))
-                print(outcome_sublist[1]) # expected to be a probability, but some probs are associated with certain components so its a tuple
+                # print('j', j, type(j))
+                # print('i', i, type(i))
+                # print(outcome_sublist[1]) # expected to be a probability, but some probs are associated with certain components so its a tuple
 
                 p[j,i] = outcome_sublist[1]
                 r[j,i] = outcome_sublist[2]
@@ -705,12 +705,12 @@ def solve(solver,P,R):
         val_it = mdptoolbox.mdp.ValueIteration(P, R, 0.96)
         val_it.run()
         policy = val_it.policy
-        print('Policy: ', val_it.policy)
+        print('\nPolicy: ', val_it.policy)
     elif solver == 'q':
         q_learn = mdptoolbox.mdp.QLearning(P, R, 0.96)
         q_learn.run()
         policy = q_learn.policy
-        print('Policy: ', q_learn.policy)
+        print('\nPolicy: ', q_learn.policy)
     else:
         print("That is not a valid solver...")
 
@@ -755,8 +755,8 @@ def main():
     print('The follow matrices represent the transition probabilities\n and rewards for all state transitions: ')
     P, R, states, actions_with_params = getPandR()
 
-    # print('P:\n', P, '\n',P.shape)
-    # print('R:\n', R, '\n',R.shape)
+    print('P:\n', P, '\n')
+    print('R:\n', R, '\n')
 
     # print('actions_with_params: ')
     # for action in actions_with_params:
@@ -770,7 +770,10 @@ def main():
     policy = solve(solver,P,R)
 
     # Convert policy to BT and save as
-    #p2bt = PolicyToBT(states, actions_with_params, policy)
+    print('\n++++++++++++++++++\n')
+    print('Raw policy behavior tree:\n')
+    p2bt = PolicyToBT(states, actions_with_params, policy)
+    raw_policy_bt = p2bt.behavior_tree
 
     # Translate policy to readable form
     # choice = input('Press r to print policy in readable form. To skip press any other key.')
@@ -779,37 +782,40 @@ def main():
         #readPolicy(policy,states,actions_with_params)
         checkPolicyPreconditions(policy,states,actions_with_params) #Value iteration passes, Q-learning fails
 
-        input('Scroll up to read the policy. Press enter to simplify and evaluate.')
+        input('Scroll up to read the policy. Press return to simplify and evaluate.')
 
     # print('Simplifying policy...')
     # print('old policy', policy)
-    # Simplify the policy using Boolean logic
+    # Simplify the policy using Boolean logic and the resulting behavior tree in a .tree file
+    print('Simplified policy behavior tree:\n')
     simplify = Simplify(states, actions_with_params, policy, domain, problem)
+    simplified_policy_bt = simplify.bt
 
-    # Evaluate the policy
-    # mdp_problem = MDP_Problem(P, R, states, actions_with_params)
-    # reward = evaluate_mdp_policy(mdp_problem, policy)
-    # print("reward:", reward)
-
-    # Generate behavior tree from simplified policy
-    # TODO
-
-def get_average_reward(num_runs):
-
-    # Convert to MDP matrix form
-    P, R, states, actions_with_params = getPandR()
-
-    # Define MDP
+    # Save the behavior trees in .tree files in behavior_tree/config
+    print('Saving behavior trees to files...\n')
+    raw_policy_bt.write_config('../../../behavior_tree/config/raw_policy_bt.tree')
+    simplified_policy_bt.write_config('../../../behavior_tree/config/simplified_bt.tree')
+    
+    # Evaluate the policy (simplified policy is equivalent, by definition)
     mdp_problem = MDP_Problem(P, R, states, actions_with_params)
+    reward = evaluate_mdp_policy(mdp_problem, policy)
+    print("\nReward: %f\n" % reward)
 
-    # Solve for a policy using value iteration
-    policy = solve('v',P,R)
+    input('If you want to get the average reward, press return.')
+    # Get average reward over a certain number of runs
+    num_trials = 100
+    avg_reward = get_average_reward(num_trials, mdp_problem, policy)
+    print('\nAverage reward over %d trials: %f' % (num_trials, avg_reward))
+
+def get_average_reward(num_runs, mdp_problem, policy):
+
+    print('Getting average reward over %d trials... It should take about a minute.' % num_runs)
 
     rewards = []
     for i in range(num_runs):
 
         reward = evaluate_mdp_policy(mdp_problem, policy)
-        print(i,': ', reward)
+        #print(i,': ', reward)
 
         rewards.append(reward)
 
@@ -826,19 +832,11 @@ if __name__ == '__main__':
     domain  = PDDLParser.parse(args.domain)
     problem = PDDLParser.parse(args.problem)
 
-    # print(domain)
-    # print(problem)
+    print(domain)
+    print(problem)
 
     main()
 
-
-    ### Generate results ###
-
-    do = input('If you want to get the average reward, press r.')
-
-    if do=='r':
-
-        # Get average reward over a certain number of runs
-        print(get_average_reward(100))
+    ### Generate results - Evaluate reward ###
 
     

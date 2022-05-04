@@ -37,7 +37,7 @@ def evaluate_mdp_policy(mdp_problem, mdp_policy):
 			# Pick an action according to the policy
 			# print("mdp_policy", mdp_policy)
 			action_idx = mdp_policy[state_idx]
-			# print("action_idx", action_idx)
+			# print("action_idx", action_idx) 
 
 			# Get the next state using the transition model
 			probabilities = mdp_problem.P[action_idx, state_idx]
