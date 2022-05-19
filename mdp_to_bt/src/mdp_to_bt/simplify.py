@@ -246,8 +246,8 @@ class Simplify:
 
     def buildSubtree(self, sop_simplify, action):
 
-        # Create root of subtree, which is a sequence node
-        sequence_node = Sequence()
+        # Create list to contain a single or multiple (if OR) subtrees
+        new_subtrees = []
 
         # Extract the subtrees from the logic
         if type(sop_simplify) == Or:
@@ -305,7 +305,7 @@ class Simplify:
             # print("\t",action[0].name, action[1])
             # print(")")
             action_node = self.createActionNode(action)
-            return action_node
+            return [action_node]
 
         else:
 
@@ -319,6 +319,9 @@ class Simplify:
 
             # Each "term" is either an And, Condition, or Decorator+Condition
             # Treat each case slightly differently
+
+            # Create root of subtree, which is a sequence node
+            sequence_node = Sequence()
             
             # Get the conditions for this subtree
             if type(term) == And:
@@ -383,9 +386,11 @@ class Simplify:
             # Add action to subtree
             sequence_node.children.append(action_node)
 
-            return sequence_node
+            new_subtrees.append(sequence_node)
 
-            
+        #print(len(new_subtrees))
+        #print(new_subtrees)
+        return new_subtrees    
 
         # print('++++++++++++++++++++++++++end')
 
@@ -490,7 +495,17 @@ class Simplify:
             #print('sop_simplify', sop_simplify)
             # print('sop_simplify', sop_simplify)
 
-            subtrees.append(self.buildSubtree(sop_simplify,action))
+            subtree_list = self.buildSubtree(sop_simplify,action)
+            #print('out', subtree_list)
+            #print('len',len(subtree_list))
+            # if len(subtree_list) < 2:
+            #     subtrees.append(subtree_list[0])
+            # else:
+            #     subtrees.extend(subtree_list)
+            for s in subtree_list:
+                subtrees.append(s)
+                print(subtrees)
+                print(len(subtrees))
 
         self.bt = self.buildFullTree(subtrees)
         self.printBT(self.bt)

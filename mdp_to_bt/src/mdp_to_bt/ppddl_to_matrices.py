@@ -768,6 +768,12 @@ def main():
 
     # Solve for a policy
     policy = solve(solver,P,R)
+    # if domain == prob_domain:
+    #     print('Probabilistic')
+    #     prob_policy = policy
+    # elif domain == det_domain:
+    #     print('Deterministic')
+    #     det_policy = policy
 
     # Convert policy to BT and save as
     print('\n++++++++++++++++++\n')
@@ -788,24 +794,35 @@ def main():
     # print('old policy', policy)
     # Simplify the policy using Boolean logic and the resulting behavior tree in a .tree file
     print('Simplified policy behavior tree:\n')
-    simplify = Simplify(states, actions_with_params, policy, domain, problem)
-    simplified_policy_bt = simplify.bt
+    print("COMMENTED OUT SIMPLIFICATION BC OF MARINE BUG with domain.ppddl")
+    # simplify = Simplify(states, actions_with_params, policy, domain, problem)
+    # simplified_policy_bt = simplify.bt
 
     # Save the behavior trees in .tree files in behavior_tree/config
     print('Saving behavior trees to files...\n')
     raw_policy_bt.write_config('../../../behavior_tree/config/raw_policy_bt.tree')
-    simplified_policy_bt.write_config('../../../behavior_tree/config/simplified_bt.tree')
+    # simplified_policy_bt.write_config('../../../behavior_tree/config/simplified_bt.tree')
     
     # Evaluate the policy (simplified policy is equivalent, by definition)
     mdp_problem = MDP_Problem(P, R, states, actions_with_params)
+    # if domain == prob_domain:
+    #     prob_mdp_problem = mdp_problem # to use in fairly evaluating policies
     reward = evaluate_mdp_policy(mdp_problem, policy)
     print("\nReward: %f\n" % reward)
 
-    input('If you want to get the average reward, press return.')
+
+    # print('Now lets compare performance of the policies learned from the deterministc vs the probabilistic domains')
+    # # print('Probabilistic: ', prob_policy)
+    # # print('Deterministic: ', det_policy)
+    # num_trials = 100
+    # getAverageRewardInSameWorld(prob_mdp_problem, prob_policy, det_policy)
+
+    #input('If you want to get the average reward, press return.')
     # Get average reward over a certain number of runs
-    num_trials = 100
-    avg_reward = get_average_reward(num_trials, mdp_problem, policy)
-    print('\nAverage reward over %d trials: %f' % (num_trials, avg_reward))
+    #num_trials = 100
+    #avg_reward = get_average_reward(num_trials, mdp_problem, policy)
+    #print('\nAverage reward over %d trials: %f' % (num_trials, avg_reward))
+    return mdp_problem # TO BE REMOVED
 
 def get_average_reward(num_runs, mdp_problem, policy):
 
@@ -821,22 +838,83 @@ def get_average_reward(num_runs, mdp_problem, policy):
 
 
     return sum(rewards)/len(rewards)
+
+def getAverageRewardInSameWorldTODO(num_runs, prob_mdp_problem, p_policy, d_policy):
+
+    # prob_mdp_problem is the probabilistic MDP (otherwise wrong test)
+    # p_policy is the policy learned from the probabilistic domain version
+    # d_policy is the policy learned from the deterministic domain version
+
+    # First define the MDP based on the probabilistic domain
+    # Hardcoding so command line input can't mess this up from user error
+    # domain = PDDLParser.parse('../../../pypddl-parser/pypddl-parser/pddl/marine/domain.ppddl')
+    # problem = PDDLParser.parse('../../../pypddl-parser/pypddl-parser/pddl/marine/problems/problem1.ppddl')
+
+    # THE BELOW IS HOW I WANT IT
+    # p_avg_reward = get_average_reward(num_runs, prob_mdp_problem, p_policy)
+    # print('\nAverage reward over %d trials for probabilistic policy: %f' % (num_trials, p_avg_reward))
+    # d_avg_reward = get_average_reward(num_runs, prob_mdp_problem, d_policy)
+    # print('\nAverage reward over %d trials for deterministic policy: %f' % (num_trials, d_avg_reward))
+
+    pass
+
+def getAverageRewardInSameWorld():
+
+    # domain3
+    #p_policy = (5, 5, 3, 6, 5, 5, 3, 6, 2, 2, 2, 2, 2, 2, 2, 2, 5, 5, 3, 6, 5, 5, 3, 6, 2, 2, 2, 2, 2, 2, 2, 2, 4, 4, 4, 6, 1, 1, 1, 6, 2, 2, 2, 2, 1, 1, 1, 1, 4, 4, 4, 6, 1, 1, 1, 6, 2, 2, 2, 2, 1, 1, 1, 1)
     
+    # domain2
+    p_policy = (5, 5, 3, 6, 5, 5, 3, 6, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 6, 0, 0, 0, 6, 2, 2, 2, 2, 2, 2, 2, 2, 4, 4, 4, 6, 1, 1, 1, 1, 4, 4, 4, 2, 1, 1, 1, 1, 4, 4, 4, 6, 1, 1, 1, 1, 4, 4, 4, 2, 1, 1, 1, 1)
+    d_policy = (5, 5, 3, 6, 5, 5, 3, 6, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 6, 0, 0, 0, 6, 2, 2, 2, 2, 2, 2, 2, 2, 4, 4, 4, 6, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 4, 4, 4, 6, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2)
+
+    num_runs = 100
+
+    p_avg_reward = get_average_reward(num_runs, mdp_problem, p_policy)
+    print('\nAverage reward over %d trials for probabilistic policy: %f' % (num_runs, p_avg_reward))
+    d_avg_reward = get_average_reward(num_runs, mdp_problem, d_policy)
+    print('\nAverage reward over %d trials for deterministic policy: %f' % (num_runs, d_avg_reward))
+
+
+
 
 if __name__ == '__main__':
 
     # Define domain and problem to consider (they represent an MDP)
     print('\nFor the following domain and problem: \n\n')
     args = parse()
-
     domain  = PDDLParser.parse(args.domain)
     problem = PDDLParser.parse(args.problem)
+
+    # Hard-coded
+    # prob_domain = PDDLParser.parse('../../../pypddl-parser/pypddl-parser/pddl/marine/domain3.ppddl')
+    # problem = PDDLParser.parse('../../../pypddl-parser/pypddl-parser/pddl/marine/problems/problem1.ppddl')
+
+    # det_domain = PDDLParser.parse('../../../pypddl-parser/pypddl-parser/pddl/marine/domain_deterministic.ppddl')
+
+    # print(prob_domain)
+    # print('deterministic:\n', det_domain)
+    # print(problem)
+
+    # domains = [prob_domain,det_domain]
+
+    # for domain in domains:
+
+    #     main()
+
+
+    # domain = PDDLParser.parse('../../../pypddl-parser/pypddl-parser/pddl/marine/domain3.ppddl')
+    # problem = PDDLParser.parse('../../../pypddl-parser/pypddl-parser/pddl/marine/problems/problem1.ppddl')
 
     print(domain)
     print(problem)
 
-    main()
+    mdp_problem = main()
 
-    ### Generate results - Evaluate reward ###
+    # print('Now lets compare performance of the policies learned from the deterministc vs the probabilistic domains')
+    # # print('Probabilistic: ', prob_policy)
+    # # print('Deterministic: ', det_policy)
+    # num_trials = 100
+    # getAverageRewardInSameWorld(prob_mdp_problem, prob_policy, det_policy)
 
-    
+    # HARDCODED FOR SPEED
+    getAverageRewardInSameWorld()

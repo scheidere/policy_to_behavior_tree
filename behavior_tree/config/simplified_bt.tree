@@ -1,18 +1,55 @@
 ?
 	->
+		(found-object_x)
 		<!>
-			(dirty-at_left-cell)
+			(found-mine_x)
 		<!>
-			(dirty-at_right-cell)
-		[move(x: left-cell, y: right-cell)]
+			(found-target-to-report_x)
+		<!>
+			(has-object_x)
+		[pick-up(x: x)]
+	->
+		(found-object_x)
+		<!>
+			(found-mine_x)
+		<!>
+			(has-object_x)
+		<!>
+			(in-comms-range_x)
+		[pick-up(x: x)]
+	->
+		(at-drop-off_x)
+		(has-object_x)
+		[drop-off(x: x)]
+	->
+		(found-mine_x)
+		<!>
+			(has-object_x)
+		[disarm(x: x)]
+	->
+		(found-mine_x)
+		(found-target-to-report_x)
+		(in-comms-range_x)
+		[disarm(x: x)]
+	->
+		(found-target-to-report_x)
+		<!>
+			(has-object_x)
+		<!>
+			(in-comms-range_x)
+		[go-to-comms(x: x)]
+	->
+		(has-object_x)
+		<!>
+			(found-target-to-report_x)
+		[go-to-drop-off(x: x)]
+	->
+		(has-object_x)
+		<!>
+			(in-comms-range_x)
+		[go-to-drop-off(x: x)]
 	->
 		<!>
-			(dirty-at_right-cell)
-		<!>
-			(robot-at_left-cell)
-		[move(x: right-cell, y: left-cell)]
-	->
-		<!>
-			(robot-at_right-cell)
-		[clean(x: left-cell)]
-	[clean(x: right-cell)]
+			(found-target-to-report_x)
+		[explore(x: x)]
+	[report(x: x)]
