@@ -35,8 +35,8 @@ There are five main stages to this method:
 
 * Navigate to the following location: 
 ```~/your_workspace/src/policy_to_behavior_tree/mdp_to_bt/src/mdp_to_bt```
-* Locate your domain and problem file paths, which we will refer to as domain-path and problem-path
-* Open another terminal window and run ```roscore```
+* Locate your domain and problem file paths, which we will refer to as domain-path and problem-path.
+* Open another terminal window and run ```roscore```.
 * Run the main method:
 ```python3 ppddl_to_matrices.py domain-path problem-path```
 * The solved for policy and simplified policy will both be converted to and saved as behavior trees. You can access these .tree files in ```~/your_workspace/src/policy_to_behavior_tree/behavior_tree/config```.
@@ -44,7 +44,7 @@ There are five main stages to this method:
 
 ## Help
 
-* Remember to ```source devel/setup.bash``` in the root of your workspace with every new terminal window
+* Remember to ```source devel/setup.bash``` in the root of your workspace with every new terminal window if you haven't automated this.
 
 ## Acknowledgments
 
