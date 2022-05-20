@@ -41,11 +41,21 @@ import copy
 
 np.set_printoptions(threshold=sys.maxsize) # So you can see matrices without truncation
 
+def parse():
+    usage = 'python3 main.py <DOMAIN> <INSTANCE>'
+    description = 'pypddl-parser is a PDDL parser built on top of ply.'
+    parser = argparse.ArgumentParser(usage=usage, description=description)
+
+    parser.add_argument('domain',  type=str, help='path to PDDL domain file')
+    parser.add_argument('problem', type=str, help='path to PDDL problem file')
+
+    return parser.parse_args()
+
 def dictproduct(dct):
     for t in product(*dct.values()):
         yield dict(zip(dct.keys(), t))
 
-def getParamCombos(action,problem):
+def getParamCombos(action):
 
     combo_list = []
 
@@ -62,7 +72,7 @@ def getParamCombos(action,problem):
 
     return combo_list
 
-def getStateList(domain,problem):
+def getStateList():
 
     # Get all states (valid and invalid)
 
@@ -99,7 +109,7 @@ def getStateList(domain,problem):
 
     return states
 
-def removeInvalidStates(state_list,domain):
+def removeInvalidStates(state_list):
 
     # This would need to have more constraint types added to be entirely complete
 
@@ -163,9 +173,9 @@ def removeInvalidStates(state_list,domain):
     return valid_states_list
 
 
-def testRemoveInvalidStates(domain,problem):
+def testRemoveInvalidStates():
 
-    states = getStateList(domain,problem)
+    states = getStateList()
 
     for s in states:
         print(s)
@@ -318,9 +328,9 @@ def getStateIndex(state, states):
 
             return i
 
-def testGetStateIndex(domain,problem):
+def testGetStateIndex():
 
-    states = getStateList(domain,problem)
+    states = getStateList()
 
     state = [['robot-at', 'right-cell', 1], ['dirty-at', 'right-cell', 0], ['dirty-at', 'left-cell', 1], ['robot-at', 'left-cell', 0]]
 
@@ -491,7 +501,7 @@ def preconditionSatisfiedActionParams(action, combo_dict, test=False):
 
     return True
 
-def getActionsWithParamsList(domain,problem):
+def getActionsWithParamsList():
 
     # Get all action/param combos
 
@@ -502,7 +512,7 @@ def getActionsWithParamsList(domain,problem):
     for action in domain.operators:
 
         # Get all possible combos of action parameter values
-        param_combos = getParamCombos(action,problem)
+        param_combos = getParamCombos(action)
 
         for combo_dict in param_combos:
 
@@ -516,7 +526,7 @@ def getActionsWithParamsList(domain,problem):
     #print(actions_with_params)
     return actions_with_params
 
-def getActions(domain):
+def getActions():
 
     actions = []
 
@@ -527,13 +537,13 @@ def getActions(domain):
     return actions
 
 
-def getPandR(domain,problem):
+def getPandR():
 
     # Init main lists, NxN arrays will be added to (later converted to 3d numpy array)
     P,R = [],[]
 
     # Get valid states
-    states = getStateList(domain,problem)
+    states = getStateList()
 
     # Initialize actions with parameters list (used for reading policy)
     #actions_with_params = []
@@ -547,7 +557,7 @@ def getPandR(domain,problem):
         #print('Problem exists')
 
         # Get valid action/param combos
-        actions = getActionsWithParamsList(domain,problem) # old var name: actions_with_params
+        actions = getActionsWithParamsList() # old var name: actions_with_params
         #print('actions: ', actions)
         #print('actions: ')
         # for action in actions:
@@ -557,7 +567,7 @@ def getPandR(domain,problem):
 
     else:
         #print('Problem is None')
-        actions = getActions(domain)
+        actions = getActions()
         #print('actions: ', actions)
 
     for action_term in actions:
@@ -627,7 +637,7 @@ def getPandR(domain,problem):
 
     return P, R, states, actions
 
-def test_outcome(domain):
+def test_outcome():
 
     # Need to confirm this test is updated, so it can actually be used to test...
 
@@ -635,7 +645,7 @@ def test_outcome(domain):
 
     for action in domain.operators:
 
-        combos = getParamCombos(action,domain)
+        combos = getParamCombos(action)
 
         for start_state in states:
 
@@ -660,7 +670,7 @@ def test_outcome(domain):
                 print('\n')
 
 
-def precondSatisfiedTest(domain,problem):
+def precondSatisfiedTest():
 
     # Need to confirm this test is updated, so it can actually be used to test...
 
@@ -670,7 +680,7 @@ def precondSatisfiedTest(domain,problem):
     #action = domain.operators[0]
     #print('Action: ', action)
 
-        param_combos = getParamCombos(action,problem)
+        param_combos = getParamCombos(action)
 
         for i in range(len(states)):
             start_state = states[i]
@@ -739,6 +749,87 @@ def checkPolicyPreconditions(policy, states,actions_with_params):
         if not precondsatisfied:
             input('Found failure')
 
+def main():
+
+    # Convert to MDP, i.e. generate transition probability matrix P and reward matrix R
+    print('The follow matrices represent the transition probabilities\n and rewards for all state transitions: ')
+    P, R, states, actions_with_params = getPandR()
+
+    print('P:\n', P, '\n')
+    print('R:\n', R, '\n')
+
+    # print('actions_with_params: ')
+    # for action in actions_with_params:
+    #     print(action)
+
+    # Choose method of solving for a policy given P and R
+    #solver = input("Enter value iteration (v) or Q-learning (q): ") 
+    solver = 'v' # Q-learning does not work, so always use value iteration
+
+    print(type(P), shape(P))
+    print(type(R), shape(R))
+
+    input('wait')
+
+    # Solve for a policy
+    policy = solve(solver,P,R)
+    # if domain == prob_domain:
+    #     print('Probabilistic')
+    #     prob_policy = policy
+    # elif domain == det_domain:
+    #     print('Deterministic')
+    #     det_policy = policy
+
+    input('wait2')
+
+    # Convert policy to BT and save as
+    print('\n++++++++++++++++++\n')
+    print('Raw policy behavior tree:\n')
+    p2bt = PolicyToBT(states, actions_with_params, policy)
+    raw_policy_bt = p2bt.behavior_tree
+
+    # Translate policy to readable form
+    # choice = input('Press r to print policy in readable form. To skip press any other key.')
+    choice = 'nope'
+    if choice == 'r':
+        #readPolicy(policy,states,actions_with_params)
+        checkPolicyPreconditions(policy,states,actions_with_params) #Value iteration passes, Q-learning fails
+
+        input('Scroll up to read the policy. Press return to simplify and evaluate.')
+
+    # print('Simplifying policy...')
+    # print('old policy', policy)
+    # Simplify the policy using Boolean logic and the resulting behavior tree in a .tree file
+    print('Simplified policy behavior tree:\n')
+    print("COMMENTED OUT SIMPLIFICATION BC OF MARINE BUG with domain.ppddl")
+    # simplify = Simplify(states, actions_with_params, policy, domain, problem)
+    # simplified_policy_bt = simplify.bt
+
+    # Save the behavior trees in .tree files in behavior_tree/config
+    print('Saving behavior trees to files...\n')
+    raw_policy_bt.write_config('../../../behavior_tree/config/raw_policy_bt.tree')
+    # simplified_policy_bt.write_config('../../../behavior_tree/config/simplified_bt.tree')
+    
+    # Evaluate the policy (simplified policy is equivalent, by definition)
+    mdp_problem = MDP_Problem(P, R, states, actions_with_params)
+    # if domain == prob_domain:
+    #     prob_mdp_problem = mdp_problem # to use in fairly evaluating policies
+    reward = evaluate_mdp_policy(mdp_problem, policy)
+    print("\nReward: %f\n" % reward)
+
+
+    # print('Now lets compare performance of the policies learned from the deterministc vs the probabilistic domains')
+    # # print('Probabilistic: ', prob_policy)
+    # # print('Deterministic: ', det_policy)
+    # num_trials = 100
+    # getAverageRewardInSameWorld(prob_mdp_problem, prob_policy, det_policy)
+
+    #input('If you want to get the average reward, press return.')
+    # Get average reward over a certain number of runs
+    #num_trials = 100
+    #avg_reward = get_average_reward(num_trials, mdp_problem, policy)
+    #print('\nAverage reward over %d trials: %f' % (num_trials, avg_reward))
+    return mdp_problem # TO BE REMOVED
 
 def get_average_reward(num_runs, mdp_problem, policy):
 
@@ -755,6 +846,24 @@ def get_average_reward(num_runs, mdp_problem, policy):
 
     return sum(rewards)/len(rewards)
 
+def getAverageRewardInSameWorldTODO(num_runs, prob_mdp_problem, p_policy, d_policy):
+
+    # prob_mdp_problem is the probabilistic MDP (otherwise wrong test)
+    # p_policy is the policy learned from the probabilistic domain version
+    # d_policy is the policy learned from the deterministic domain version
+
+    # First define the MDP based on the probabilistic domain
+    # Hardcoding so command line input can't mess this up from user error
+    # domain = PDDLParser.parse('../../../pypddl-parser/pypddl-parser/pddl/marine/domain.ppddl')
+    # problem = PDDLParser.parse('../../../pypddl-parser/pypddl-parser/pddl/marine/problems/problem1.ppddl')
+
+    # THE BELOW IS HOW I WANT IT
+    # p_avg_reward = get_average_reward(num_runs, prob_mdp_problem, p_policy)
+    # print('\nAverage reward over %d trials for probabilistic policy: %f' % (num_trials, p_avg_reward))
+    # d_avg_reward = get_average_reward(num_runs, prob_mdp_problem, d_policy)
+    # print('\nAverage reward over %d trials for deterministic policy: %f' % (num_trials, d_avg_reward))
+
+    pass
 
 def getAverageRewardInSameWorld():
 
