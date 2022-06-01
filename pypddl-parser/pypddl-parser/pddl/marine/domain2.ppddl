@@ -1,4 +1,4 @@
-(define (domain marine-domain)
+(define (domain marine-domain-2)
 
 	(:requirements :equality :typing :probabilistic-effects)
 

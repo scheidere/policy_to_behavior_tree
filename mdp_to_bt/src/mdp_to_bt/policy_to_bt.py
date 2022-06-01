@@ -23,7 +23,7 @@ class PolicyToBT:
         # Add subtree for each action in policy
         self.behavior_tree.root = self.convert_policy_to_subtrees(self.behavior_tree.root)
 
-        self.printBT(self.behavior_tree)
+        #self.printBT(self.behavior_tree)
 
     def printBT(self, bt):
         print('++++++++++++++++++\n')

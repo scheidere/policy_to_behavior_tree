@@ -22,6 +22,7 @@ import copy
 
 np.set_printoptions(threshold=sys.maxsize) # So you can see matrices without truncation
 
+import pickle
 
 def parse():
     usage = 'python3 main.py <DOMAIN> <INSTANCE>'
@@ -35,40 +36,31 @@ def parse():
 
 def main(domain, problem):
 
+    test = False
+
+    domain_name = domain.name
+
     # Convert to MDP, i.e. generate transition probability matrix P and reward matrix R
-    print('The follow matrices represent the transition probabilities\n and rewards for all state transitions: ')
     P, R, states, actions_with_params = getPandR(domain,problem)
 
-    print('P:\n', P, '\n')
-    print('R:\n', R, '\n')
-
-    # print('actions_with_params: ')
-    # for action in actions_with_params:
-    #     print(action)
+    if test:
+        print('The follow matrices represent the transition probabilities\n and rewards for all state transitions: ')
+        print('P:\n', P, '\n')
+        print('R:\n', R, '\n')
 
     # Set value iteration as our method of solving the MDP for a policy, denoted by 'v'
     solver = 'v' # Note that Q-learning has bugs in the MDPToolbox, hence sticking to value iteration
 
-    print(type(P), shape(P))
-    print(type(R), shape(R))
-
-    input('wait')
+    if test:
+        print(type(P), shape(P))
+        print(type(R), shape(R))
 
     # Solve for a policy
     policy = matrices_to_policy.solve(solver,P,R)
-    #policy = solve(solver,P,R)
-    # if domain == prob_domain:
-    #     print('Probabilistic')
-    #     prob_policy = policy
-    # elif domain == det_domain:
-    #     print('Deterministic')
-    #     det_policy = policy
-
-    input('wait2')
 
     # Convert policy to BT and save as
-    print('\n++++++++++++++++++\n')
-    print('Raw policy behavior tree:\n')
+    # print('\n++++++++++++++++++\n')
+    # print('Raw policy behavior tree:\n')
     p2bt = PolicyToBT(states, actions_with_params, policy)
     raw_policy_bt = p2bt.behavior_tree
 
@@ -81,8 +73,6 @@ def main(domain, problem):
 
         input('Scroll up to read the policy. Press return to simplify and evaluate.')
 
-    # print('Simplifying policy...')
-    # print('old policy', policy)
     # Simplify the policy using Boolean logic and the resulting behavior tree in a .tree file
     print('Simplified policy behavior tree:\n')
     print("COMMENTED OUT SIMPLIFICATION BC OF MARINE BUG with domain.ppddl")
@@ -101,35 +91,28 @@ def main(domain, problem):
     reward = evaluate_mdp_policy(mdp_problem, policy)
     print("\nReward: %f\n" % reward)
 
+    path = "/home/scheidee/new_bt_generation_ws/src/bt_generation/policy_to_behavior_tree/mdp_to_bt/src/mdp_to_bt/policy_eval_output/"
+    pickle.dump(policy, open( path + "policy.p", "wb" ) )
 
-    # print('Now lets compare performance of the policies learned from the deterministc vs the probabilistic domains')
-    # # print('Probabilistic: ', prob_policy)
-    # # print('Deterministic: ', det_policy)
-    # num_trials = 100
-    # getAverageRewardInSameWorld(prob_mdp_problem, prob_policy, det_policy)
+    # Only save mdp problem for probabilistic world, 
+    # which will be used in evaluate_policy.py to compare probabilistic and deterministic policies
+    if 'deterministic' not in domain_name:
+        pickle.dump(mdp_problem, open( path + "mdp_problem.p", "wb" ) )
 
-    #input('If you want to get the average reward, press return.')
-    # Get average reward over a certain number of runs
-    #num_trials = 100
-    #avg_reward = get_average_reward(num_trials, mdp_problem, policy)
-    #print('\nAverage reward over %d trials: %f' % (num_trials, avg_reward))
-    return mdp_problem # TO BE REMOVED
-
-def test(domain):
-
-    print('test')
-    print(domain)
-
+    return mdp_problem, policy # TO BE REMOVED
 
 
 if __name__ == '__main__':
 
     # Define domain and problem to consider (they represent an MDP)
-    print('\nFor the following domain and problem: \n\n')
+    #print('\nFor the following domain and problem: \n\n')
     args = parse()
     domain  = PDDLParser.parse(args.domain)
     problem = PDDLParser.parse(args.problem)
 
-    print(domain)
+    #print(domain)
 
-    main(domain, problem)
+    print('Solving ', domain.name, '...')
+
+    mdp_problem, policy = main(domain, problem)
+

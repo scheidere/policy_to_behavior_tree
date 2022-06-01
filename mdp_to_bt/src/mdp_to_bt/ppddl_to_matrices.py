@@ -742,6 +742,8 @@ def checkPolicyPreconditions(policy, states,actions_with_params):
 
 def get_average_reward(num_runs, mdp_problem, policy):
 
+    # This might be redundant with evaluate_mdp_policy in evaluate_mdp_policy.py
+
     print('Getting average reward over %d trials... It should take about a minute.' % num_runs)
 
     rewards = []
