@@ -76,13 +76,13 @@ def main(domain, problem):
     # Simplify the policy using Boolean logic and the resulting behavior tree in a .tree file
     print('Simplified policy behavior tree:\n')
     print("COMMENTED OUT SIMPLIFICATION BC OF MARINE BUG with domain.ppddl")
-    # simplify = Simplify(states, actions_with_params, policy, domain, problem)
-    # simplified_policy_bt = simplify.bt
+    simplify = Simplify(states, actions_with_params, policy, domain, problem)
+    simplified_policy_bt = simplify.bt
 
     # Save the behavior trees in .tree files in behavior_tree/config
     print('Saving behavior trees to files...\n')
     raw_policy_bt.write_config('../../../behavior_tree/config/raw_policy_bt.tree')
-    # simplified_policy_bt.write_config('../../../behavior_tree/config/simplified_bt.tree')
+    simplified_policy_bt.write_config('../../../behavior_tree/config/simplified_bt.tree')
     
     # Evaluate the policy (simplified policy is equivalent, by definition)
     mdp_problem = MDP_Problem(P, R, states, actions_with_params)

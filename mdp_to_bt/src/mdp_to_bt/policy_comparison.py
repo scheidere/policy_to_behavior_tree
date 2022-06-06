@@ -4,6 +4,9 @@ import os
 import sys
 import pickle
 
+# This file is meant for comparing a probabilistic domain result and deterministic domain result
+# on the same probabilistic world, i.e. mdp problem
+
 
 def main(arg1, arg2):
 

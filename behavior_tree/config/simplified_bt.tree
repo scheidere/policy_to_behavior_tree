@@ -20,17 +20,9 @@
 	->
 		(at-drop-off_x)
 		(has-object_x)
-		[drop-off(x: x)]
-	->
-		(found-mine_x)
 		<!>
-			(has-object_x)
-		[disarm(x: x)]
-	->
-		(found-mine_x)
-		(found-target-to-report_x)
-		(in-comms-range_x)
-		[disarm(x: x)]
+			(found-mine_x)
+		[drop-off(x: x)]
 	->
 		(found-target-to-report_x)
 		<!>
