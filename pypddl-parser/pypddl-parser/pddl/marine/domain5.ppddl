@@ -1,6 +1,6 @@
-(define (domain marine-domain-2)
+(define (domain marine-domain-5)
 
-	; Action failure rate is higher than domain.ppddl
+	; domain2 except with lower success threshold, causes a bug if below 0.6
 
 	(:requirements :equality :typing :probabilistic-effects)
 
@@ -20,8 +20,8 @@
 
 		:parameters (?x - None)
 		:precondition (and (found-object ?x) (not (has-object ?x)))
-		:effect (probabilistic 0.7 (and (has-object ?x) (not (found-object ?x)) )
-							   0.3 (has-object ?x)
+		:effect (probabilistic 0.4 (and (has-object ?x) (not (found-object ?x)) )
+							   0.6 (has-object ?x)
 				)
 	)
 

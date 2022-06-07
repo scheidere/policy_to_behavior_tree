@@ -1,5 +1,6 @@
 from ppddl_to_matrices import *
 #from matrices_to_policy import solve
+from matrices_to_policy import *
 import matrices_to_policy
 from policy_to_bt import *
 from simplify import * # NEW WAY
@@ -43,6 +44,8 @@ def main(domain, problem):
     # Convert to MDP, i.e. generate transition probability matrix P and reward matrix R
     P, R, states, actions_with_params = getPandR(domain,problem)
 
+    # print('actions_with_params', actions_with_params)
+
     if test:
         print('The follow matrices represent the transition probabilities\n and rewards for all state transitions: ')
         print('P:\n', P, '\n')
@@ -55,7 +58,7 @@ def main(domain, problem):
         print(type(P), shape(P))
         print(type(R), shape(R))
 
-    # Solve for a policy
+    # Solve for a policy (and also return updated action list, only including those actions that actually appear in the policy)
     policy = matrices_to_policy.solve(solver,P,R)
 
     # Convert policy to BT and save as

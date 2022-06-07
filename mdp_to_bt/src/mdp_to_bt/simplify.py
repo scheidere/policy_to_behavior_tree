@@ -15,8 +15,9 @@ class Simplify:
     def __init__(self, states, actions_with_params, policy, domain, problem):
 
         self.states = states
-        self.actions = actions_with_params # action names with parameters
+        self.actions = actions_with_params # all possible actions in the domain
         self.policy = policy
+        self.action_nums_in_policy = list(np.unique(self.policy))
         self.domain = domain
         self.problem = problem
 
@@ -156,6 +157,8 @@ class Simplify:
 
     def getActionNum(self, action):
 
+        # Get correct indices from the original action list, which was used to denote the policy with action nums
+
         for i in range(len(self.actions)):
 
             action_with_params = self.actions[i]
@@ -163,7 +166,6 @@ class Simplify:
             if action_with_params == action:
 
                 return i
-
 
     def getActionStates(self, action_num):
 
@@ -177,7 +179,7 @@ class Simplify:
 
         # Find all state indexes in policy that have action num
         state_indices = [index for index, element in enumerate(self.policy) if element == action_num]
-
+        
         for idx in state_indices:
 
             states_with_given_action.append(self.getNumericalState(self.states[idx]))
@@ -455,24 +457,33 @@ class Simplify:
 
         # dontcares = []
         dontcares = self.findInitialDontCares()
+        print('init dontcares', dontcares)
 
         #print('self.actions', self.actions)
 
         ##for i in range(len(self.policy)):
-        for i in range(len(self.actions)):
+        #for i in range(len(self.actions)):
+        first_iter = True
+        for action_num in self.action_nums_in_policy:
 
             #print('i ', i)
 
-            action = self.actions[i]
+            #action = self.actions[i]
+            # print('action', action)
+            action = self.actions[action_num]
 
-            #print('action: ', action)
+            print('action: ', action)
 
-            action_num = self.getActionNum(action)
+            # action_num = self.getActionNum(action)
+            print('action_num', action_num)
 
             #print('action num', action_num)
 
-            if i >= 1:
+            #if i >= 1:
+            if not first_iter:
                 dontcares += prev_minterms
+
+            print('new dontcares', dontcares)
 
             #action_num = self.policy[i]
             #print(self.policy)
@@ -480,6 +491,7 @@ class Simplify:
 
             # Get list of numeric states the policy states action a should be taken in
             minterms = self.getActionStates(action_num) # switch to take action num
+            print('minterms', minterms)
 
             prev_minterms = minterms
 
@@ -489,11 +501,13 @@ class Simplify:
             # Get the sum-of-product representation
             sop = SOPform(c, minterms, dontcares)
             # print('sop', sop)
+            print('sop', sop)
 
             # Simplify it
             sop_simplify = to_dnf(sop,simplify=True)
             #print('sop_simplify', sop_simplify)
             # print('sop_simplify', sop_simplify)
+            print('sop_simplify',sop_simplify)
 
             subtree_list = self.buildSubtree(sop_simplify,action)
             #print('out', subtree_list)
@@ -506,6 +520,8 @@ class Simplify:
                 subtrees.append(s)
                 print(subtrees)
                 print(len(subtrees))
+
+            first_iter = False
 
         self.bt = self.buildFullTree(subtrees)
         self.printBT(self.bt)

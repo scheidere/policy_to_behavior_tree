@@ -1,5 +1,8 @@
 (define (domain marine-domain-3)
 
+	; This domain has lower action success rates (like domain2)
+	; However, it also has small penalties (-1) for action failures
+
 	(:requirements :equality :typing :probabilistic-effects)
 
 	(:types None)

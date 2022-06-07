@@ -1,6 +1,7 @@
-(define (domain marine-domain-2)
+(define (domain marine-domain-3)
 
-	; Action failure rate is higher than domain.ppddl
+	; This is identical to domain-3, but with all -1 rewards changed to 1 because it prevents simplification from failing...
+	; Finding a way around this in progress - DONE
 
 	(:requirements :equality :typing :probabilistic-effects)
 
@@ -21,7 +22,7 @@
 		:parameters (?x - None)
 		:precondition (and (found-object ?x) (not (has-object ?x)))
 		:effect (probabilistic 0.7 (and (has-object ?x) (not (found-object ?x)) )
-							   0.3 (has-object ?x)
+							   0.3 (and (has-object ?x) (increase reward 1))
 				)
 	)
 
@@ -30,7 +31,7 @@
 		:parameters (?x - None)
 		:precondition (and (has-object ?x) (at-drop-off ?x))
 		:effect (probabilistic 0.65 (and (not (has-object ?x)) (increase reward 2))
-							   0.35 (has-object ?x)
+							   0.35 (and (has-object ?x) (increase reward 1))
 				)
 
 	)
@@ -40,7 +41,7 @@
 		:parameters (?x - None)
 		:precondition (found-mine ?x)
 		:effect (probabilistic 0.75 (and (increase reward 3) (not (found-mine ?x)))
-							   0.25 (has-object ?x)
+							   0.25 (and (has-object ?x) (increase reward 1))
 				)
 	)
 
