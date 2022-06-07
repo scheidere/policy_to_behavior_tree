@@ -38,9 +38,11 @@ There are five main stages to this method:
 * Locate your domain and problem file paths, which we will refer to as domain-path and problem-path.
 * Open another terminal window and run ```roscore```.
 * Run the main method:
-```python3 ppddl_to_matrices.py domain-path problem-path```
-* The solved for policy and simplified policy will both be converted to and saved as behavior trees. You can access these .tree files in ```~/your_workspace/src/policy_to_behavior_tree/behavior_tree/config```.
+```python3 main.py domain-path problem-path```
+* The solved for policy and simplified policy will both be converted to and saved as behavior trees. You can access these .tree files in ```~/your_workspace/src/policy_to_behavior_tree/behavior_tree/config```. They are raw_policy_bt.tree and simplified_bt.tree.
 * To visualize these trees, ```rosrun behavior_tree show_tree.py file_name```, where ```file_name``` is the .tree file you want to show. Once this is running, run ```rqt``` in a new terminal window.
+* To evaluate a probabilistic domain against the deterministic version (given ```roscore``` is running) run:
+```python3 policy_comparison.py```
 
 ## Help
 
