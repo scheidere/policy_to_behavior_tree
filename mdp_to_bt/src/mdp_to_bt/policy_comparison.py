@@ -55,11 +55,21 @@ def main(arg1, arg2):
     avg_reward_det = get_average_reward(num_trials, mdp_problem, det_policy)
     print('\nAverage reward over %d trials: %f' % (num_trials, avg_reward_det))
 
+    percentIncrease(avg_reward_prob, avg_reward_det)
+
+def percentIncrease(prob_avg_rew, det_avg_rew):
+
+    small = min(prob_avg_rew,det_avg_rew)
+    less_small = max(prob_avg_rew,det_avg_rew)
+
+    percent =  100*(less_small - small)/small
+    print('%f is %f percent higher than %f' %(less_small,percent,small))
+
 
 if __name__ == "__main__":
 
     # Input probabilistic domain
-    prob_domain = input("Choose one of the marine domains: domain, domain2, domain3... ")
+    prob_domain = input("Choose one of the marine domains: domain, domain2, domain3, etc... ")
     problem = 'problem1' # This is irrelevant
 
     main(prob_domain, problem)
