@@ -1,11 +1,18 @@
 
+
+
 from main import *
 import os
 import sys
 import pickle
 
-# This file is meant for comparing a probabilistic domain result and deterministic domain result
-# on the same probabilistic world, i.e. mdp problem
+
+
+
+def plot(domain1,domain2):
+
+	avg_reward_prob, avg_reward_det = compare_policies()
+
 
 
 def compare_policies(arg1, arg2, do_prints = False):
@@ -69,17 +76,11 @@ def percentIncrease(prob_avg_rew, det_avg_rew):
 
     return percent
 
+def main():
 
-if __name__ == "__main__":
+	pddl_path = "/home/scheidee/new_bt_generation_ws/src/bt_generation/policy_to_behavior_tree/pypddl-parser/pypddl-parser/pddl/marine/"
 
-    # Input probabilistic domain
-    prob_domain = input("Choose one of the marine domains: domain, domain2, domain3, etc... ")
-    problem = 'problem1' # This is irrelevant
-
-    compare_policies(prob_domain, problem, do_prints = True)
-
-    # OLD
-    # Run like this, for example: "python3 evaluate_policy.py domain_deterministic.ppddl problem1.ppddl"
-    # main(sys.argv[1],sys.argv[2])
-
-
+	test_fp_penalty = "false_positive_penalty_range" # constant probability
+	test_np_penalty = "false_negative_penalty_range" # constant probability
+	test_fp_probability = "false_positive_probability_range" # constant penalty
+	test_np_probability = "false_negative_probability_range" # constant penalty

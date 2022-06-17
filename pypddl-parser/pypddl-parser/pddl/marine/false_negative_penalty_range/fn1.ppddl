@@ -1,12 +1,4 @@
-(define (domain marine-domain-6)
-
-	; Domain3 probabilities, with relative reward magnitude of 4 for every action with rewards
-	; This one tests rel mag with positive reward the same as domain3 (so decreased negative)
-	; Domain7 tests same rel mag with negative reward same as domain3 (so increased positive)
-
-	; Probabilistic result: 45.608000
-	; Deterministic result: 41.574300
-	; >10% increase from deterministic
+(define (domain marine-false-negative-1)
 
 	(:requirements :equality :typing :probabilistic-effects)
 
@@ -26,8 +18,8 @@
 
 		:parameters (?x - None)
 		:precondition (and (found-object ?x) (not (has-object ?x)))
-		:effect (probabilistic 0.7 (and (has-object ?x) (not (found-object ?x)) )
-							   0.3 (and (has-object ?x) (increase reward -1))
+		:effect (probabilistic 0.7 (and (has-object ?x) (not (found-object ?x)) (increase reward 1)) # True negative
+							   0.3 (and (not (has-object ?x)) (not (found-object ?x)) (increase reward -1)) # False negative
 				)
 	)
 
@@ -35,8 +27,8 @@
 
 		:parameters (?x - None)
 		:precondition (and (has-object ?x) (at-drop-off ?x))
-		:effect (probabilistic 0.65 (and (not (has-object ?x)) (increase reward 1)) ;2
-							   0.35 (and (has-object ?x) (increase reward -2)) ;-2
+		:effect (probabilistic 0.7 (and (not (has-object ?x)) (increase reward 1))
+							   0.3 (and (has-object ?x) (increase reward -2))
 				)
 
 	)
@@ -45,8 +37,8 @@
 
 		:parameters (?x - None)
 		:precondition (found-mine ?x)
-		:effect (probabilistic 0.75 (and (increase reward 3) (not (found-mine ?x)))
-							   0.25 (and (has-object ?x) (increase reward -1)) ;-1
+		:effect (probabilistic 0.7 (and (increase reward 3) (not (found-mine ?x)))
+							   0.3 (and (has-object ?x) (increase reward -1))
 				)
 	)
 
@@ -80,6 +72,9 @@
 		:parameters (?x - None)
 		:precondition (and (found-target-to-report ?x) (in-comms-range ?x))
 		:effect (and (not (found-target-to-report ?x)) (increase reward 1))
+		:effect (probabilistic 0.7 (and (not (found-target-to-report ?x)) (increase reward 1)) ; True negative
+							   0.3 (and (found-target-to-report ?x) (increase reward -1)) ; False negative
+				)
 	)
 	
 	; ??? Look at IROS necessities doc for other actions, and add them here
