@@ -1,4 +1,4 @@
-(define (domain marine-false-negative-1)
+(define (domain marine-false-negative-2)
 
 	(:requirements :equality :typing :probabilistic-effects)
 
@@ -19,7 +19,7 @@
 		:parameters (?x - None)
 		:precondition (and (found-object ?x) (not (has-object ?x)))
 		:effect (probabilistic 0.7 (and (has-object ?x) (not (found-object ?x)) (increase reward 1)) ; True negative
-							   0.3 (and (not (has-object ?x)) (not (found-object ?x)) (increase reward -1)) ; False negative
+							   0.3 (and (not (has-object ?x)) (not (found-object ?x)) (increase reward -2)) ; False negative
 				)
 	)
 
@@ -27,8 +27,8 @@
 
 		:parameters (?x - None)
 		:precondition (and (has-object ?x) (at-drop-off ?x))
-		:effect (probabilistic 0.7 (and (not (has-object ?x)) (increase reward 2)) ; True negative
-							   0.3 (and (has-object ?x) (increase reward -1)) ; False negative
+		:effect (probabilistic 0.7 (and (not (has-object ?x)) (increase reward 2))
+							   0.3 (and (has-object ?x) (increase reward -2))
 				)
 
 	)
@@ -38,7 +38,7 @@
 		:parameters (?x - None)
 		:precondition (found-mine ?x)
 		:effect (probabilistic 0.7 (and (increase reward 4) (not (found-mine ?x))) ; True negative
-							   0.3 (and (found-mine ?x) (increase reward -1)) ; False negative
+							   0.3 (and (found-mine ?x) (increase reward -2)) ; False negative
 				)
 	)
 
@@ -72,7 +72,7 @@
 		:parameters (?x - None)
 		:precondition (and (found-target-to-report ?x) (in-comms-range ?x))
 		:effect (probabilistic 0.7 (and (not (found-target-to-report ?x)) (increase reward 3)) ; True negative
-							   0.3 (and (found-target-to-report ?x) (increase reward -1)) ; False negative
+							   0.3 (and (found-target-to-report ?x) (increase reward -2)) ; False negative
 				)
 	)
 
