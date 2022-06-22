@@ -11,7 +11,6 @@
 		(at-drop-off ?x - None) ;Group 1
 		(found-target-to-report ?x - None) ;Group 3
 		(in-comms-range ?x - None) ;Group 3
-		;(garbage ?x - None)
 	)
 
 	(:action pick-up
@@ -30,7 +29,7 @@
 		:precondition (and (has-object ?x) (at-drop-off ?x))
 		:effect (probabilistic 0.7 (and (not (has-object ?x)) (increase reward 2)) ; True negative
 							   0.15 (and (has-object ?x) (increase reward -1)) ; False negative
-							   0.15 (increase reward -1) ; False positive
+							   0.15 (and (not (at-drop-off ?x)) (increase reward -1)) ; False positive
 				)
 
 	)
@@ -76,7 +75,7 @@
 		:precondition (and (found-target-to-report ?x) (in-comms-range ?x))
 		:effect (probabilistic 0.7 (and (not (found-target-to-report ?x)) (increase reward 3)) ; True negative
 							   0.15 (and (found-target-to-report ?x) (increase reward -1)) ; False negative
-							   0.15 (increase reward -1) ; False positive
+							   0.15 (and (not (in-comms-range ?x)) (increase reward -1)) ; False positive
 				)
 	)
 
