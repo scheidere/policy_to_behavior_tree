@@ -1,5 +1,7 @@
 (define (domain marine-domain-deterministic)
 
+	; Reward magnitudes match probabilistic domains in false penalty folders
+
 	(:requirements :equality :typing :probabilistic-effects)
 
 	(:types None)
@@ -18,7 +20,7 @@
 
 		:parameters (?x - None)
 		:precondition (and (found-object ?x) (not (has-object ?x)))
-		:effect (probabilistic 1.0 (and (has-object ?x) (not (found-object ?x))))
+		:effect (probabilistic 1.0 (and (has-object ?x) (not (found-object ?x)) (increase reward 1)))
 	)
 
 	(:action drop-off
@@ -33,7 +35,7 @@
 
 		:parameters (?x - None)
 		:precondition (found-mine ?x)
-		:effect (probabilistic 1.0 (and (increase reward 3) (not (found-mine ?x))))
+		:effect (probabilistic 1.0 (and (increase reward 4) (not (found-mine ?x))))
 	)
 
 	(:action go-to-comms
@@ -65,7 +67,7 @@
 
 		:parameters (?x - None)
 		:precondition (and (found-target-to-report ?x) (in-comms-range ?x))
-		:effect (and (not (found-target-to-report ?x)) (increase reward 1))
+		:effect (and (not (found-target-to-report ?x)) (increase reward 3))
 	)
 	
 	; ??? Look at IROS necessities doc for other actions, and add them here

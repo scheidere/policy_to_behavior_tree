@@ -47,9 +47,22 @@ def main(domain, problem):
     # print('actions_with_params', actions_with_params)
 
     if test:
-        print('The follow matrices represent the transition probabilities\n and rewards for all state transitions: ')
-        print('P:\n', P, '\n')
-        print('R:\n', R, '\n')
+        # print('The follow matrices represent the transition probabilities\n and rewards for all state transitions: ')
+        # print('P:\n', P, '\n')
+        # print('R:\n', R, '\n')
+
+        #print(P.shape)
+        #return
+        for i in range(P.shape[0]):
+            for j in range(P.shape[1]):
+                row = P[i][j]
+                #print(row)
+                check = sum(row)
+                #print(check)
+                if check != 1:
+                    print('oh no, sum is not 1!', check, i, j)
+
+        return
 
     # Set value iteration as our method of solving the MDP for a policy, denoted by 'v'
     solver = 'v' # Note that Q-learning has bugs in the MDPToolbox, hence sticking to value iteration

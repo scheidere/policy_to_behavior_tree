@@ -355,10 +355,14 @@ def outcome(start_state, action, param_values = None, test=False):
 
     else:
 
+        print('precond satisfied')
+
         replacement_state_terms = [] # [state,p,r]
 
         action_effects = action.effects[0]
         #print('action effects ', action_effects)
+
+        probs = [] # checking sum to 1
 
         for i in range(len(action_effects)):
 
@@ -370,6 +374,9 @@ def outcome(start_state, action, param_values = None, test=False):
 
             if isinstance(term, float):
                 prob = term
+
+                probs.append(prob)
+
                 #print('prob: ', prob)
 
                 effects = action_effects[i+1]
@@ -391,6 +398,15 @@ def outcome(start_state, action, param_values = None, test=False):
                 # print('1 ', start_state)
                 # print('2 ', outcome_sublist)
                 outcome_list.append(outcome_sublist)
+
+        print('prob check list', probs)
+        if sum(probs) != 1:
+            print('error found with probs above')
+            input('wait')
+        print('outcome list', outcome_list)
+        if len(outcome_list) != len(probs):
+            print('FOUND ERROR')
+            input('wait')
 
     # if precond_satisfied:
     #     input('Wait')
@@ -582,34 +598,62 @@ def getPandR(domain,problem):
             # Get list of [end state, prob, reward] terms, given action and start state
             # Also return only the actions_with_params that satisfy preconds
             if combo_dict:
+                #print('combo_dict')
                 outcome_list, precond_satisfied = outcome(start_state,action,param_values=combo_dict)
             else: # no parameters
+                #print('no params')
                 outcome_list, precond_satisfied = outcome(start_state,action)
             #print("outcome_list: ",outcome_list)
 
-            # if precond_satisfied: # i.e. list not empty
-            #     print(action.name, combo_dict)
-            #     actions_with_params.append([action.name,combo_dict])
-
             # Update NxN matrices, p and r according to outcome
             #print('outcome_list ', outcome_list)
-            for outcome_sublist in outcome_list:
+            all_js = [] #debugging
+            j_duplicate_tracker = {} # Init tracker that sorts outcome_sublists together, by their associated j (same outcome state)
+            for idx in range(len(outcome_list)):
 
-                #print('outcome_sublist ', outcome_sublist)
-
-                #print('outcome_sublist', outcome_sublist)
+                outcome_sublist = outcome_list[idx]
 
                 # Get index of end state where outcome_sublist = [end state, prob, reward]
                 #print(outcome_sublist[0])
                 j = getStateIndex(outcome_sublist[0],states)
-                # print('j', j, type(j))
-                # print('i', i, type(i))
-                # print(outcome_sublist[1]) # expected to be a probability, but some probs are associated with certain components so its a tuple
+                all_js.append(j)
+                if j not in j_duplicate_tracker.keys():
+                    j_duplicate_tracker[j] = [outcome_sublist]
+                else:
+                    j_duplicate_tracker[j].append(outcome_sublist)
 
-                p[j,i] = outcome_sublist[1]
-                r[j,i] = outcome_sublist[2]
+            print('j track', j_duplicate_tracker)
+            p_sum_check = []
+            r_sum_check = []
+            # Make sure to count all outcome_sublists, which may have the same outcome state, indexed by j
+            for j in j_duplicate_tracker.keys():
 
+                outcome_sublist_j_group = j_duplicate_tracker[j]
+
+                # Sum probability and reward for outcomes that share j
+                p_sum = 0
+                r_sum = 0
+                for outcome_sublist in outcome_sublist_j_group:
+
+                    p_sum += outcome_sublist[1]
+                    r_sum += outcome_sublist[2]
+              
+                p[j,i] = p_sum
+                r[j,i] = r_sum
+                p_sum_check.append(p_sum)
+                r_sum_check.append(r_sum)
+            print('p', p_sum_check)
+            print('r', r_sum_check)
                 #input('Wait')
+
+            # if len(np.unique(all_js)) != len(all_js):
+            #     print(all_js)
+            #     print(np.unique(all_js))
+            #     input('found overwrite issue')
+
+        # Check for p row that does not sum to 1 (it should because it is a probability distribution)!
+        # if sum(p) != 1:
+        #     input('shooooot', sum(p))
                 
         # Add NxN matrices to lists P and R
         P.append(p)

@@ -448,7 +448,7 @@
 		(found-target-to-report{x})
 		<!>
 			(in-comms-range{x})
-		[go-to-comms(x: x)]
+		[drop-off(x: x)]
 	->
 		(has-object{x})
 		<!>
@@ -617,7 +617,7 @@
 		(found-target-to-report{x})
 		<!>
 			(in-comms-range{x})
-		[go-to-comms(x: x)]
+		[drop-off(x: x)]
 	->
 		(has-object{x})
 		(found-object{x})

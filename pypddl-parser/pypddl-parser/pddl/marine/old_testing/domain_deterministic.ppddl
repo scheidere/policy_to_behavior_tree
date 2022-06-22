@@ -1,4 +1,4 @@
-(define (domain marine-fn1fp2)
+(define (domain marine-domain-deterministic)
 
 	(:requirements :equality :typing :probabilistic-effects)
 
@@ -18,20 +18,14 @@
 
 		:parameters (?x - None)
 		:precondition (and (found-object ?x) (not (has-object ?x)))
-		:effect (probabilistic 0.7 (and (has-object ?x) (not (found-object ?x)) (increase reward 1)) ; True negative
-							   0.15 (and (not (has-object ?x)) (not (found-object ?x)) (increase reward -1)) ; False negative
-							   0.15 (increase reward -2) ; False positive, i.e. precondition(s) not True 
-				)
+		:effect (probabilistic 1.0 (and (has-object ?x) (not (found-object ?x))))
 	)
 
 	(:action drop-off
 
 		:parameters (?x - None)
 		:precondition (and (has-object ?x) (at-drop-off ?x))
-		:effect (probabilistic 0.7 (and (not (has-object ?x)) (increase reward 2)) ; True negative
-							   0.15 (and (has-object ?x) (increase reward -1)) ; False negative
-							   0.15 (and (not (at-drop-off ?x)) (increase reward -2)) ; False positive
-				)
+		:effect (probabilistic 1.0 (and (not (has-object ?x)) (increase reward 2)))
 
 	)
 
@@ -39,10 +33,7 @@
 
 		:parameters (?x - None)
 		:precondition (found-mine ?x)
-		:effect (probabilistic 0.7 (and (increase reward 4) (not (found-mine ?x))) ; True negative
-							   0.15 (and (found-mine ?x) (increase reward -1)) ; False negative
-							   0.15 (increase reward -2) ; False positive
-				)
+		:effect (probabilistic 1.0 (and (increase reward 3) (not (found-mine ?x))))
 	)
 
 	(:action go-to-comms
@@ -65,7 +56,7 @@
 		:precondition (and (not (has-object ?x)) (not (found-mine ?x)) (not (found-target-to-report ?x)))
 		:effect (probabilistic 0.2 (found-target-to-report ?x)
 							   0.15 (found-object ?x)
-							   0.1 (found-mine ?x)
+							   0.1 (found-mine ?x) ;what about mine-live?
 							   0.55 (has-object ?x)
 				)
 	)
@@ -74,10 +65,22 @@
 
 		:parameters (?x - None)
 		:precondition (and (found-target-to-report ?x) (in-comms-range ?x))
-		:effect (probabilistic 0.7 (and (not (found-target-to-report ?x)) (increase reward 3)) ; True negative
-							   0.15 (and (found-target-to-report ?x) (increase reward -1)) ; False negative
-							   0.15 (and (not (in-comms-range ?x)) (increase reward -2)) ; False positive
-				)
+		:effect (and (not (found-target-to-report ?x)) (increase reward 1))
 	)
+	
+	; ??? Look at IROS necessities doc for other actions, and add them here
+	; test one by one
+
+	; Next check by running with method and debug any issues with conditions expecting parameters always
+
+	; Get a reward from this probabilistic domain
+
+	; make deterministic version of this domain so pddl
+
+	; run with method and get a reward from that
+
+	; goal for tonight: compare rewards for prob and det domain
+
+	; After: revisit simplification code (add BT conversion)
 
 )

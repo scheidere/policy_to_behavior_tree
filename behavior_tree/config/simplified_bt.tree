@@ -8,6 +8,14 @@
 			(found-target-to-report_x)
 		[drop-off(x: x)]
 	->
+		(at-drop-off_x)
+		(has-object_x)
+		<!>
+			(found-mine_x)
+		<!>
+			(in-comms-range_x)
+		[drop-off(x: x)]
+	->
 		(found-target-to-report_x)
 		<!>
 			(in-comms-range_x)
