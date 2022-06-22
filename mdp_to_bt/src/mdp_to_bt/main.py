@@ -91,7 +91,6 @@ def main(domain, problem):
 
     # Simplify the policy using Boolean logic and the resulting behavior tree in a .tree file
     print('Simplified policy behavior tree:\n')
-    print("COMMENTED OUT SIMPLIFICATION BC OF MARINE BUG with domain.ppddl")
     simplify = Simplify(states, actions_with_params, policy, domain, problem)
     simplified_policy_bt = simplify.bt
 

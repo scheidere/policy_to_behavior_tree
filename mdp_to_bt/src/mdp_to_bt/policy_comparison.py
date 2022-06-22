@@ -18,8 +18,10 @@ def compare_policies(arg1, arg2, do_prints = False):
     # domain_path = partial_path + "/marine/" + arg1 # OLD
     # problem_path = partial_path + "/marine/problems/" + arg2 # OLD
 
-    prob_domain_path = partial_path + "/marine/" + arg1 + '.ppddl'
-    det_domain_path = partial_path + "/marine/domain_deterministic.ppddl"
+    # prob_domain_path = partial_path + "/marine/old_testing/" + arg1 + '.ppddl'
+    # det_domain_path = partial_path + "/marine/old_testing/domain_deterministic.ppddl"
+    prob_domain_path = partial_path + '/marine/both_false_penalty/' + arg1 + '.ppddl'
+    det_domain_path = partial_path + '/marine/both_false_penalty/domain_deterministic.ppddl'
     problem_path = partial_path + "/marine/problems/" + arg2 + '.ppddl'
 
     # Run main with deterministic domain; Save policy
@@ -73,7 +75,8 @@ def percentIncrease(prob_avg_rew, det_avg_rew):
 if __name__ == "__main__":
 
     # Input probabilistic domain
-    prob_domain = input("Choose one of the marine domains: domain, domain2, domain3, etc... ")
+    #prob_domain = input("Choose one of the marine domains: domain, domain2, domain3, etc... ")
+    prob_domain = input('Type domain name (without .ppddl) ')
     problem = 'problem1' # This is irrelevant
 
     compare_policies(prob_domain, problem, do_prints = True)
@@ -83,3 +86,4 @@ if __name__ == "__main__":
     # main(sys.argv[1],sys.argv[2])
 
 
+    # fn2fp2 2.7% better than det

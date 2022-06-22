@@ -135,7 +135,7 @@
 		(found-target-to-report{x})
 		<!>
 			(in-comms-range{x})
-		[disarm(x: x)]
+		[go-to-comms(x: x)]
 	->
 		<!>
 			(has-object{x})
@@ -146,7 +146,7 @@
 			(at-drop-off{x})
 		(found-target-to-report{x})
 		(in-comms-range{x})
-		[disarm(x: x)]
+		[report(x: x)]
 	->
 		<!>
 			(has-object{x})
@@ -180,7 +180,7 @@
 		(found-target-to-report{x})
 		<!>
 			(in-comms-range{x})
-		[disarm(x: x)]
+		[go-to-comms(x: x)]
 	->
 		<!>
 			(has-object{x})
@@ -190,7 +190,7 @@
 		(at-drop-off{x})
 		(found-target-to-report{x})
 		(in-comms-range{x})
-		[disarm(x: x)]
+		[report(x: x)]
 	->
 		<!>
 			(has-object{x})
@@ -316,7 +316,7 @@
 		(found-target-to-report{x})
 		<!>
 			(in-comms-range{x})
-		[disarm(x: x)]
+		[go-to-comms(x: x)]
 	->
 		<!>
 			(has-object{x})
@@ -326,7 +326,7 @@
 			(at-drop-off{x})
 		(found-target-to-report{x})
 		(in-comms-range{x})
-		[disarm(x: x)]
+		[report(x: x)]
 	->
 		<!>
 			(has-object{x})
@@ -357,7 +357,7 @@
 		(found-target-to-report{x})
 		<!>
 			(in-comms-range{x})
-		[disarm(x: x)]
+		[go-to-comms(x: x)]
 	->
 		<!>
 			(has-object{x})
@@ -366,7 +366,7 @@
 		(at-drop-off{x})
 		(found-target-to-report{x})
 		(in-comms-range{x})
-		[disarm(x: x)]
+		[report(x: x)]
 	->
 		(has-object{x})
 		<!>
@@ -448,7 +448,7 @@
 		(found-target-to-report{x})
 		<!>
 			(in-comms-range{x})
-		[drop-off(x: x)]
+		[go-to-comms(x: x)]
 	->
 		(has-object{x})
 		<!>
@@ -492,7 +492,7 @@
 		(found-target-to-report{x})
 		<!>
 			(in-comms-range{x})
-		[disarm(x: x)]
+		[go-to-comms(x: x)]
 	->
 		(has-object{x})
 		<!>
@@ -502,7 +502,7 @@
 			(at-drop-off{x})
 		(found-target-to-report{x})
 		(in-comms-range{x})
-		[disarm(x: x)]
+		[report(x: x)]
 	->
 		(has-object{x})
 		<!>
@@ -533,7 +533,7 @@
 		(found-target-to-report{x})
 		<!>
 			(in-comms-range{x})
-		[disarm(x: x)]
+		[go-to-comms(x: x)]
 	->
 		(has-object{x})
 		<!>
@@ -542,7 +542,7 @@
 		(at-drop-off{x})
 		(found-target-to-report{x})
 		(in-comms-range{x})
-		[disarm(x: x)]
+		[report(x: x)]
 	->
 		(has-object{x})
 		(found-object{x})
@@ -617,7 +617,7 @@
 		(found-target-to-report{x})
 		<!>
 			(in-comms-range{x})
-		[drop-off(x: x)]
+		[go-to-comms(x: x)]
 	->
 		(has-object{x})
 		(found-object{x})
@@ -657,7 +657,7 @@
 		(found-target-to-report{x})
 		<!>
 			(in-comms-range{x})
-		[disarm(x: x)]
+		[go-to-comms(x: x)]
 	->
 		(has-object{x})
 		(found-object{x})
@@ -666,7 +666,7 @@
 			(at-drop-off{x})
 		(found-target-to-report{x})
 		(in-comms-range{x})
-		[disarm(x: x)]
+		[report(x: x)]
 	->
 		(has-object{x})
 		(found-object{x})
@@ -694,7 +694,7 @@
 		(found-target-to-report{x})
 		<!>
 			(in-comms-range{x})
-		[disarm(x: x)]
+		[go-to-comms(x: x)]
 	->
 		(has-object{x})
 		(found-object{x})
@@ -702,4 +702,4 @@
 		(at-drop-off{x})
 		(found-target-to-report{x})
 		(in-comms-range{x})
-		[disarm(x: x)]
+		[report(x: x)]

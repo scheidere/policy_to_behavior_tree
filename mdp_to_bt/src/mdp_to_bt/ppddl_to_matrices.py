@@ -622,7 +622,7 @@ def getPandR(domain,problem):
                 else:
                     j_duplicate_tracker[j].append(outcome_sublist)
 
-            print('j track', j_duplicate_tracker)
+            #print('j track', j_duplicate_tracker)
             p_sum_check = []
             r_sum_check = []
             # Make sure to count all outcome_sublists, which may have the same outcome state, indexed by j
@@ -642,8 +642,8 @@ def getPandR(domain,problem):
                 r[j,i] = r_sum
                 p_sum_check.append(p_sum)
                 r_sum_check.append(r_sum)
-            print('p', p_sum_check)
-            print('r', r_sum_check)
+            #print('p', p_sum_check)
+            #print('r', r_sum_check)
                 #input('Wait')
 
             # if len(np.unique(all_js)) != len(all_js):
