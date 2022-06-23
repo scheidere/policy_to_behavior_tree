@@ -17,12 +17,16 @@ def plot(domain1,domain2):
 
 def compare_policies(probabilistic_domain_path, do_prints = False):
 
+    input('in compare_policies! Press enter')
+
     # Path to policy and mdp_problem pickle files
     output_path = "/home/scheidee/new_bt_generation_ws/src/bt_generation/policy_to_behavior_tree/mdp_to_bt/src/mdp_to_bt/policy_eval_output/"
+
+    partial_path = "/home/scheidee/new_bt_generation_ws/src/bt_generation/policy_to_behavior_tree/pypddl-parser/pypddl-parser/pddl"
     
     # Path to PPDDL domain and problem files
     prob_domain_path = probabilistic_domain_path
-    det_domain_path = partial_path + "/marine/domain_deterministic.ppddl"
+    det_domain_path = partial_path + '/marine/both_false_penalty/domain_deterministic.ppddl'
     problem_path = partial_path + "/marine/problems/problem1.ppddl"
 
     # Run main with deterministic domain; Save policy
@@ -51,16 +55,30 @@ def compare_policies(probabilistic_domain_path, do_prints = False):
 
     # Compare probabilistic and deterministic policies on same world (i.e. mdp problem)
     num_trials = 100
+    print('Probabilistic path', prob_domain_path)
     print('Probabilistic: ', prob_policy)
     avg_reward_prob = get_average_reward(num_trials, mdp_problem, prob_policy)
     print('\nAverage reward over %d trials: %f' % (num_trials, avg_reward_prob))
+    print('Deterministic path', det_domain_path)
     print('Deterministic: ', det_policy)
     avg_reward_det = get_average_reward(num_trials, mdp_problem, det_policy)
     print('\nAverage reward over %d trials: %f' % (num_trials, avg_reward_det))
 
-    percentIncrease(avg_reward_prob, avg_reward_det)
+    #percentIncrease(avg_reward_prob, avg_reward_det)
+    per_diff = percentDifference(avg_reward_prob, avg_reward_det) # + if prob better, - if det better
 
-    return avg_reward_prob, avg_reward_det
+    #return avg_reward_prob, avg_reward_det
+    return per_diff
+
+def percentIncrease(prob_avg_rew, det_avg_rew):
+
+    small = min(prob_avg_rew,det_avg_rew)
+    less_small = max(prob_avg_rew,det_avg_rew)
+
+    percent =  100*(less_small - small)/small
+    print('%f is %f percent higher than %f' %(less_small,percent,small))
+
+    return percent
 
 def get_policies_rewards(det_policy, prob_policy, mdp_problem):
 
@@ -78,6 +96,8 @@ def get_policies_rewards(det_policy, prob_policy, mdp_problem):
 
 def get_deterministic_policy(domain_path, problem_path, output_path):
 
+    output_path = "/home/scheidee/new_bt_generation_ws/src/bt_generation/policy_to_behavior_tree/mdp_to_bt/src/mdp_to_bt/policy_eval_output/"
+
     # Run main with deterministic domain; Save policy
     os.system("python3 main.py " + domain_path + " " + problem_path)
 
@@ -90,6 +110,8 @@ def get_deterministic_policy(domain_path, problem_path, output_path):
     return det_policy
 
 def get_probabilistic_policy(domain_path, problem_path, output_path):
+
+    output_path = "/home/scheidee/new_bt_generation_ws/src/bt_generation/policy_to_behavior_tree/mdp_to_bt/src/mdp_to_bt/policy_eval_output/"
 
     # Also returns mdp problem both the probabilistic and deterministic policy
 
@@ -123,6 +145,8 @@ def percentDifference(prob_avg_rew, det_avg_rew):
 
     per_diff = 100*dec_per_diff
 
+    print('diff (+ if prob higher) ', per_diff)
+
     return per_diff
 
 def main():
@@ -137,7 +161,8 @@ def main():
 
     path_to_prob_domains = pddl_path + test_both_penalty
 
-    domain_files = os.listdir(path_to_prob_domains)
+    #domain_files = os.listdir(path_to_prob_domains)
+    domain_files = ['fn1fp1.ppddl']#,'fn2fp2.ppddl'] # for testing
 
     # Init array to be plotted to show percent increase for each false positive/negative magnitude combination
     percent_increase_array = np.zeros((4,4))
@@ -146,10 +171,8 @@ def main():
     output_path = "/home/scheidee/new_bt_generation_ws/src/bt_generation/policy_to_behavior_tree/mdp_to_bt/src/mdp_to_bt/policy_eval_output/"
     
     # Path to PPDDL domain and problem files
-    det_domain_path = pddl_path + "domain_deterministic.ppddl"
+    det_domain_path = pddl_path + test_both_penalty + "domain_deterministic.ppddl"
     problem_path = pddl_path + "problems/problem1.ppddl"
-
-    det_policy = get_deterministic_policy(det_domain_path, problem_path, output_path)
 
     for file in domain_files:
         
@@ -158,26 +181,32 @@ def main():
 
         prob_domain_path = path_to_prob_domains + file
 
-        prob_policy, mdp_problem = get_probabilistic_policy(prob_domain_path, problem_path, output_path)
+        # det_policy = get_deterministic_policy(det_domain_path, problem_path, output_path)
+        # prob_policy, mdp_problem = get_probabilistic_policy(prob_domain_path, problem_path, output_path)
 
-        avg_reward_prob, avg_reward_det = get_policies_rewards(det_policy, prob_policy, mdp_problem)
+        # avg_reward_prob, avg_reward_det = get_policies_rewards(det_policy, prob_policy, mdp_problem)
 
-        percent_diff_wrt_det = percentDifference(avg_reward_prob, avg_reward_det)
+        per_diff = compare_policies(prob_domain_path)
 
-        if avg_reward_prob > avg_reward_det:
-            percent = percent_diff_wrt_det
-        else: # percent decrease, deterministic does better
-            print('deterministic doing better...')
-            percent = -percent_diff_wrt_det
-            #input('wut')
+        # percent_diff_wrt_det = percentDifference(avg_reward_prob, avg_reward_det)
+
+        # print('diff', percent_diff_wrt_det)
+        # print('prob > det', avg_reward_prob > avg_reward_det)
+
+        # if avg_reward_prob > avg_reward_det:
+        #     percent = percent_diff_wrt_det
+        # else: # percent decrease, deterministic does better
+        #     print('deterministic doing better...')
+        #     percent = -percent_diff_wrt_det
+        #     #input('wut')
 
         # Add percent to unflipped array
-        percent_increase_array[i][j] = percent
+        # percent_increase_array[i][j] = percent
 
     # Flip i's so that plot increases from lower left, not upper left corner
-    percent_increase_array = np.flip(percent_increase_array)
+    # percent_increase_array = np.flip(percent_increase_array)
 
-    print(percent_increase_array)
+    # print(percent_increase_array)
 
 
 def test():
@@ -233,5 +262,5 @@ def test():
 if __name__ == "__main__":
 
 
-    #main()
-    test()
+    main()
+    #test()
