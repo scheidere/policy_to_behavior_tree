@@ -5,6 +5,9 @@ from main import *
 import os
 import sys
 import pickle
+import time
+
+import matplotlib.pyplot as plt
 
 
 
@@ -16,8 +19,6 @@ def plot(domain1,domain2):
 
 
 def compare_policies(probabilistic_domain_path, do_prints = False):
-
-    input('in compare_policies! Press enter')
 
     # Path to policy and mdp_problem pickle files
     output_path = "/home/scheidee/new_bt_generation_ws/src/bt_generation/policy_to_behavior_tree/mdp_to_bt/src/mdp_to_bt/policy_eval_output/"
@@ -151,6 +152,8 @@ def percentDifference(prob_avg_rew, det_avg_rew):
 
 def main():
 
+    start_time = round(time.time())
+
     pddl_path = "/home/scheidee/new_bt_generation_ws/src/bt_generation/policy_to_behavior_tree/pypddl-parser/pypddl-parser/pddl/marine/"
 
     test_fp_penalty = "false_positive_penalty/" # constant probability
@@ -161,11 +164,12 @@ def main():
 
     path_to_prob_domains = pddl_path + test_both_penalty
 
-    #domain_files = os.listdir(path_to_prob_domains)
-    domain_files = ['fn1fp1.ppddl']#,'fn2fp2.ppddl'] # for testing
+    domain_files = os.listdir(path_to_prob_domains)
+    ###domain_files = ['fn1fp1.ppddl']#,'fn2fp2.ppddl']#,'fn2fp2.ppddl'] # for testing
 
     # Init array to be plotted to show percent increase for each false positive/negative magnitude combination
-    percent_increase_array = np.zeros((4,4))
+    n = 4
+    percent_increase_array = np.zeros((n,n))
 
     # Path to policy and mdp_problem pickle files
     output_path = "/home/scheidee/new_bt_generation_ws/src/bt_generation/policy_to_behavior_tree/mdp_to_bt/src/mdp_to_bt/policy_eval_output/"
@@ -175,38 +179,43 @@ def main():
     problem_path = pddl_path + "problems/problem1.ppddl"
 
     for file in domain_files:
-        
-        fn_num,fp_num = int(file[2]), int(file[5]) # fn will be x-axis, fp will be y-axis (i in array)
-        j,i = fn_num - 1, fp_num - 1
 
-        prob_domain_path = path_to_prob_domains + file
+        if file != 'domain_deterministic.ppddl':
 
-        # det_policy = get_deterministic_policy(det_domain_path, problem_path, output_path)
-        # prob_policy, mdp_problem = get_probabilistic_policy(prob_domain_path, problem_path, output_path)
+            print(file)
+            
+            fn_num,fp_num = int(float(file[2])), int(float(file[5])) # fn will be x-axis, fp will be y-axis (i in array)
+            j,i = fn_num - 1, fp_num - 1
 
-        # avg_reward_prob, avg_reward_det = get_policies_rewards(det_policy, prob_policy, mdp_problem)
+            prob_domain_path = path_to_prob_domains + file
 
-        per_diff = compare_policies(prob_domain_path)
+            per_diff = compare_policies(prob_domain_path)
 
-        # percent_diff_wrt_det = percentDifference(avg_reward_prob, avg_reward_det)
-
-        # print('diff', percent_diff_wrt_det)
-        # print('prob > det', avg_reward_prob > avg_reward_det)
-
-        # if avg_reward_prob > avg_reward_det:
-        #     percent = percent_diff_wrt_det
-        # else: # percent decrease, deterministic does better
-        #     print('deterministic doing better...')
-        #     percent = -percent_diff_wrt_det
-        #     #input('wut')
-
-        # Add percent to unflipped array
-        # percent_increase_array[i][j] = percent
+            # Add percent to unflipped array
+            percent_increase_array[i][j] = per_diff
 
     # Flip i's so that plot increases from lower left, not upper left corner
-    # percent_increase_array = np.flip(percent_increase_array)
+    # SKIPPING FLIP FOR NOW BECAUSE IMSHOW EXPECTS ARRAY INDEXING ALREADY
+    #percent_increase_array = np.flip(percent_increase_array,axis=0) 
 
-    # print(percent_increase_array)
+    print(percent_increase_array)
+
+    plt.figure(figsize=(12,4))
+
+    plt.subplot(132)
+    im=plt.imshow(percent_increase_array, cmap = 'viridis', interpolation='nearest')
+    plt.title('Percent Increase of Our Method over Baseline', y=1.02, fontsize=12)
+    plt.xlabel('False Negative Penalty')
+    plt.ylabel('False Positive Penalty')
+    plt.xticks(range(n))
+    plt.yticks(range(n))
+    clb = plt.colorbar(im,fraction=0.046, pad=0.04)
+    #clb.ax.set_title('Percent Increase') # needs to be vertical to not overlap with main title
+    plt.savefig(str(start_time) + '_fnfp_penalty_results')
+    #plt.show() #only this or savefig works, one at a time
+
+
+
 
 
 def test():
