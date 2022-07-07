@@ -1,0 +1,102 @@
+(define (domain infant-p30)
+
+	(:requirements :equality :typing :probabilistic-effects)
+
+	(:types None)
+
+	(:predicates
+		(has-bubble-juice)
+		; Only one of the following three can be true at a time
+		(child-moving-away) ;?? should all these have robot and child location params
+		(child-moving-toward)
+		(child-stationary)
+		; Only one of the following three can be true at a time
+		(direct-social-interaction)
+		(social-interaction)
+		(solitary-play)
+	)
+
+	; THE BELOW IS COMMENTED OUT BECAUSE FOR TESTING PURPOSES ALL THESE ACTIONS WILL HAVE SAME PROBABILITY
+	; So we can just have one action, although the data shows different likelihoods for child movement in reality
+	; Based on DSI, SI, or SP distances
+
+	; (:action spin_dsi
+
+	; 	:parameters (?x - None)
+	; 	:precondition (direct-social-interaction)
+	; 	:effect (probabilistic 0.9 (and (child-moving-toward) (increase reward 1))
+	; 					       0.1 (and (not (child-moving-toward)) (increase reward -1))
+	; 			)
+	; )
+
+	; (:action spin_si
+
+	; 	:parameters (?x - None)
+	; 	:precondition (social-interaction)
+	; 	:effect (probabilistic 0.9 (and (child-moving-toward) (increase reward 1))
+	; 					       0.1 (and (not (child-moving-toward)) (increase reward -1))
+	; 			)
+	; )
+
+	; (:action spin_sp
+
+	; 	:parameters (?x - None)
+	; 	:precondition (solitary-play)
+	; 	:effect (probabilistic 0.9 (and (child-moving-toward) (increase reward 1))
+	; 					       0.1 (and (not (child-moving-toward)) (increase reward -1))
+	; 			)
+	; )
+
+	(:action spin
+
+		:parameters (?x - None)
+		:precondition ()
+		:effect (probabilistic 0.7 (and (child-moving-toward) (increase reward 1))
+						       0.3 (and (not (child-moving-toward)) (increase reward -1))
+				)
+	)
+
+	(:action move-toward
+		:parameters (?x - None)
+		:precondition (and (not (direct-social-interaction)) (not (child-moving-away)))
+		:effect (probabilistic 0.7 (and (child-moving-toward) (increase reward 1))
+							   0.3 (and (not (child-moving-toward)) (increase reward -1))
+				)
+			
+	)
+
+	(:action move-away
+		:parameters (?x - None)
+		:precondition ()
+		:effect (probabilistic 0.7 (and (child-moving-toward) (increase reward 1))
+							   0.3 (and (not (child-moving-toward)) (increase reward -1))
+				)
+			
+	)
+
+	(:action blow-bubbles
+		:parameters (?x - None)
+		:precondition (and (direct-social-interaction) (has-bubbles))
+		:effect (probabilistic 0.7 (and (child-moving-toward) (increase reward 1))
+							   0.3 (and (not (child-moving-toward)) (increase reward -1))
+				)
+	)
+
+	(:action play-sounds
+		:parameters (?x - None)
+		:precondition (not (child-moving-away))
+		:effect (probabilistic 0.7 (and (child-moving-toward) ( increase reward 1 ))
+							   0.3 (and (not (child-moving-toward)) (increase reward -1))
+				)
+	)
+
+	(:action lights-and-sounds
+		:parameters (?x - None)
+		:precondition ()
+		:effect (probabilistic 0.7 (and (child-moving-toward) ( increase reward 1 ))
+							   0.3 (and (not (child-moving-toward)) (increase reward -1))
+				)
+	)
+	
+
+)

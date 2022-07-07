@@ -11,14 +11,7 @@ import matplotlib.pyplot as plt
 
 
 
-
-def plot(domain1,domain2):
-
-    avg_reward_prob, avg_reward_det = compare_policies()
-
-
-
-def compare_policies(probabilistic_domain_path, do_prints = False):
+def compare_policies(prob_domain_path, det_domain_path, do_prints = False):
 
     # Path to policy and mdp_problem pickle files
     output_path = "/home/scheidee/new_bt_generation_ws/src/bt_generation/policy_to_behavior_tree/mdp_to_bt/src/mdp_to_bt/policy_eval_output/"
@@ -26,8 +19,8 @@ def compare_policies(probabilistic_domain_path, do_prints = False):
     partial_path = "/home/scheidee/new_bt_generation_ws/src/bt_generation/policy_to_behavior_tree/pypddl-parser/pypddl-parser/pddl"
     
     # Path to PPDDL domain and problem files
-    prob_domain_path = probabilistic_domain_path
-    det_domain_path = partial_path + '/marine/both_false_penalty/domain_deterministic.ppddl'
+    #prob_domain_path = probabilistic_domain_path
+    #det_domain_path = partial_path + '/marine/both_false_penalty/domain_deterministic.ppddl'
     problem_path = partial_path + "/marine/problems/problem1.ppddl"
 
     # Run main with deterministic domain; Save policy
@@ -150,7 +143,7 @@ def percentDifference(prob_avg_rew, det_avg_rew):
 
     return per_diff
 
-def main():
+def get_penalty_results():
 
     start_time = round(time.time())
 
@@ -189,7 +182,7 @@ def main():
 
             prob_domain_path = path_to_prob_domains + file
 
-            per_diff = compare_policies(prob_domain_path)
+            per_diff = compare_policies(prob_domain_path, det_domain_path)
 
             # Add percent to unflipped array
             percent_increase_array[i][j] = per_diff
@@ -200,76 +193,103 @@ def main():
 
     print(percent_increase_array)
 
-    plt.figure(figsize=(12,4))
+    # OLD PLOTTING WAY
+    # plt.figure(figsize=(12,4))
+    # plt.subplot(132)
+    # im=plt.imshow(percent_increase_array, cmap = 'viridis', interpolation='nearest')
+    # plt.title('Percent Increase of Our Method over Baseline', y=1.02, fontsize=12)
+    # plt.xlabel('False Negative Penalty')
+    # plt.ylabel('False Positive Penalty')
+    # plt.xticks(range(n))
+    # plt.yticks(range(n))
+    # clb = plt.colorbar(im,fraction=0.046, pad=0.04)
+    #clb.ax.set_title('Percent Increase') # needs to be vertical to not overlap with main title
 
-    plt.subplot(132)
-    im=plt.imshow(percent_increase_array, cmap = 'viridis', interpolation='nearest')
-    plt.title('Percent Increase of Our Method over Baseline', y=1.02, fontsize=12)
+    # NEW PLOTTING WAY (Also in plot_penalty.py)
+    fig, ax = plt.subplots(1,1)
+
+    img = ax.imshow(percent_increase_array,extent=[.5, 4.5, 0.5, 4.5],origin='lower')
+
+    x_label_list = ['1', '2', '3', '4']
+    y_label_list = ['1', '2', '3', '4']
+
+    ax.set_xticks([1, 2, 3, 4])
+    ax.set_yticks([1, 2, 3, 4])
+
+    ax.set_xticklabels(x_label_list)
+    ax.set_yticklabels(y_label_list)
+
     plt.xlabel('False Negative Penalty')
     plt.ylabel('False Positive Penalty')
-    plt.xticks(range(n))
-    plt.yticks(range(n))
-    clb = plt.colorbar(im,fraction=0.046, pad=0.04)
-    #clb.ax.set_title('Percent Increase') # needs to be vertical to not overlap with main title
+
+    fig.colorbar(img)
+
     plt.savefig(str(start_time) + '_fnfp_penalty_results')
     #plt.show() #only this or savefig works, one at a time
 
 
+def get_probability_results():
 
+    start_time = round(time.time())
 
+    pddl_path = "/home/scheidee/new_bt_generation_ws/src/bt_generation/policy_to_behavior_tree/pypddl-parser/pypddl-parser/pddl/infant_mobility/"
 
-def test():
-
-
-    pddl_path = "/home/scheidee/new_bt_generation_ws/src/bt_generation/policy_to_behavior_tree/pypddl-parser/pypddl-parser/pddl/marine/"
-
-    test_fp_penalty = "false_positive_penalty/" # constant probability
-    test_np_penalty = "false_negative_penalty/" # constant probability
-    test_both_penalty = "both_false_penalty/" # constant probability
-    # test_fp_probability = "false_positive_probability_range" # constant penalty
-    # test_np_probability = "false_negative_probability_range" # constant penalty
-
-    ####path_to_prob_domains = pddl_path + test_both_penalty
-
-    # Reverting to old for testing
-    path_to_prob_domains = pddl_path + 'old_testing/'
-    det_domain_path = pddl_path + 'old_testing/domain_deterministic.ppddl'
+    path_to_prob_domains = pddl_path + "both_false_probability/"
 
     domain_files = os.listdir(path_to_prob_domains)
+    ###domain_files = ['fn1fp1.ppddl']#,'fn2fp2.ppddl']#,'fn2fp2.ppddl'] # for testing
 
-    # Init array to be plotted to show percent increase for each false positive/negative magnitude combination
-    percent_increase_array = np.zeros((4,4))
+    # Init list to be plotted in histogram (y axis)
+    percent_increase_list = []
+    labels = []
 
     # Path to policy and mdp_problem pickle files
     output_path = "/home/scheidee/new_bt_generation_ws/src/bt_generation/policy_to_behavior_tree/mdp_to_bt/src/mdp_to_bt/policy_eval_output/"
     
     # Path to PPDDL domain and problem files
-    ####det_domain_path = pddl_path + "domain_deterministic.ppddl"
+    det_domain_path = pddl_path + "both_false_probability/domain_deterministic.ppddl"
     problem_path = pddl_path + "problems/problem1.ppddl"
 
-    det_policy = get_deterministic_policy(det_domain_path, problem_path, output_path)
-    print('det', det_policy)
+    for file in domain_files:
 
-    ##file = 'fn4fp4.ppddl' #23% worse than det
-    #file = 'fn1fp1.ppddl' #0.6% worse
-    file = 'domain6.ppddl'
+        if file != 'domain_deterministic.ppddl':
 
-    prob_domain_path = path_to_prob_domains + file
+            print(file)
+            label = file[1:3]
+            
+            prob_domain_path = path_to_prob_domains + file
 
-    prob_policy, mdp_problem = get_probabilistic_policy(prob_domain_path, problem_path, output_path)
-    print('prob', prob_policy)
+            per_diff = compare_policies(prob_domain_path, det_domain_path)
 
-    avg_reward_prob, avg_reward_det = get_policies_rewards(det_policy, prob_policy, mdp_problem)
-    print('det r', avg_reward_det, '\nprob r', avg_reward_prob)
+            percent_increase_list.append(per_diff)
+            labels.append(label)
 
-    percent_diff_wrt_det = percentDifference(avg_reward_prob, avg_reward_det)
-    print('percent above (+) or below (-) prob rew is above det rew', percent_diff_wrt_det)
+    print(percent_increase_list)
+    print(labels)
 
 
+    # NEW PLOTTING WAY (Also in plot_penalty.py)
+    plt.bar(labels, percent_increase_list, align='center')
+    plt.gca().set_xticks(labels)
+
+    plt.xlabel('Action Effect Uncertainty') # Likelihood of action failure
+    plt.ylabel('Percent Increase')
+
+    #plt.savefig(str(start_time) + '_probability_results')
+    plt.show() #only this or savefig works, one at a time
+
+
+
+def main():
+
+    method = input('To generate penalty or probability plots, respectively, type pen or prob: ')
+
+    if method == "pen":
+        get_penalty_results()
+    elif method == "prob":
+        get_probability_results()
 
 
 if __name__ == "__main__":
 
-
     main()
-    #test()

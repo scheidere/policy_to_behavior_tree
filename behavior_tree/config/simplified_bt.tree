@@ -13,6 +13,11 @@
 			(found-target-to-report_x)
 		[disarm(x: x)]
 	->
+		(found-mine_x)
+		<!>
+			(in-comms-range_x)
+		[disarm(x: x)]
+	->
 		(found-target-to-report_x)
 		<!>
 			(in-comms-range_x)
