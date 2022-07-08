@@ -11,17 +11,17 @@ import matplotlib.pyplot as plt
 
 
 
-def compare_policies(prob_domain_path, det_domain_path, do_prints = False):
+def compare_policies(prob_domain_path, det_domain_path, problem_path, output_path, do_prints = False):
 
     # Path to policy and mdp_problem pickle files
-    output_path = "/home/scheidee/new_bt_generation_ws/src/bt_generation/policy_to_behavior_tree/mdp_to_bt/src/mdp_to_bt/policy_eval_output/"
+    #output_path = "/home/scheidee/new_bt_generation_ws/src/bt_generation/policy_to_behavior_tree/mdp_to_bt/src/mdp_to_bt/policy_eval_output/"
 
-    partial_path = "/home/scheidee/new_bt_generation_ws/src/bt_generation/policy_to_behavior_tree/pypddl-parser/pypddl-parser/pddl"
+    #partial_path = "/home/scheidee/new_bt_generation_ws/src/bt_generation/policy_to_behavior_tree/pypddl-parser/pypddl-parser/pddl"
     
     # Path to PPDDL domain and problem files
     #prob_domain_path = probabilistic_domain_path
     #det_domain_path = partial_path + '/marine/both_false_penalty/domain_deterministic.ppddl'
-    problem_path = partial_path + "/marine/problems/problem1.ppddl"
+    #problem_path = partial_path + "/marine/problems/problem1.ppddl"
 
     # Run main with deterministic domain; Save policy
     os.system("python3 main.py " + det_domain_path + " " + problem_path)
@@ -232,20 +232,22 @@ def get_probability_results():
 
     start_time = round(time.time())
 
-    pddl_path = "/home/scheidee/new_bt_generation_ws/src/bt_generation/policy_to_behavior_tree/pypddl-parser/pypddl-parser/pddl/infant_mobility/"
+    #pddl_path = "/home/scheidee/new_bt_generation_ws/src/bt_generation/policy_to_behavior_tree/pypddl-parser/pypddl-parser/pddl/infant_mobility/"
+    pddl_path = "/home/scheidee/bt_synthesis_ws/src/policy_to_behavior_tree/pypddl-parser/pypddl-parser/pddl/infant_mobility/"
 
     path_to_prob_domains = pddl_path + "both_false_probability/"
 
     domain_files = os.listdir(path_to_prob_domains)
-    ###domain_files = ['fn1fp1.ppddl']#,'fn2fp2.ppddl']#,'fn2fp2.ppddl'] # for testing
+    domain_files.sort()
 
     # Init list to be plotted in histogram (y axis)
     percent_increase_list = []
     labels = []
 
     # Path to policy and mdp_problem pickle files
-    output_path = "/home/scheidee/new_bt_generation_ws/src/bt_generation/policy_to_behavior_tree/mdp_to_bt/src/mdp_to_bt/policy_eval_output/"
-    
+    #output_path = "/home/scheidee/new_bt_generation_ws/src/bt_generation/policy_to_behavior_tree/mdp_to_bt/src/mdp_to_bt/policy_eval_output/"
+    output_path = "/home/scheidee/bt_synthesis_ws/src/policy_to_behavior_tree/mdp_to_bt/src/mdp_to_bt/policy_eval_output/"
+
     # Path to PPDDL domain and problem files
     det_domain_path = pddl_path + "both_false_probability/domain_deterministic.ppddl"
     problem_path = pddl_path + "problems/problem1.ppddl"
@@ -259,7 +261,7 @@ def get_probability_results():
             
             prob_domain_path = path_to_prob_domains + file
 
-            per_diff = compare_policies(prob_domain_path, det_domain_path)
+            per_diff = compare_policies(prob_domain_path, det_domain_path, problem_path, output_path)
 
             percent_increase_list.append(per_diff)
             labels.append(label)

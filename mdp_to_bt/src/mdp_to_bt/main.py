@@ -126,6 +126,7 @@ if __name__ == '__main__':
     problem = PDDLParser.parse(args.problem)
 
     #print(domain)
+    #input('wait to look at domain')
 
     print('Solving ', domain.name, '...')
 

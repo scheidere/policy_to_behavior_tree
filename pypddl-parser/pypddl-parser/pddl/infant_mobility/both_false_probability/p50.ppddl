@@ -1,6 +1,6 @@
 (define (domain infant-p50)
 
-	(:requirements :equality :typing :probabilistic-effects)
+	(:requirements :equality :typing :probabilistic-effects :disjunctive-preconditions)
 
 	(:types None)
 
@@ -16,43 +16,12 @@
 		(solitary-play)
 	)
 
-	; THE BELOW IS COMMENTED OUT BECAUSE FOR TESTING PURPOSES ALL THESE ACTIONS WILL HAVE SAME PROBABILITY
-	; So we can just have one action, although the data shows different likelihoods for child movement in reality
-	; Based on DSI, SI, or SP distances
-
-	; (:action spin_dsi
-
-	; 	:parameters (?x - None)
-	; 	:precondition (direct-social-interaction)
-	; 	:effect (probabilistic 0.9 (and (child-moving-toward) (increase reward 1))
-	; 					       0.1 (and (not (child-moving-toward)) (increase reward -1))
-	; 			)
-	; )
-
-	; (:action spin_si
-
-	; 	:parameters (?x - None)
-	; 	:precondition (social-interaction)
-	; 	:effect (probabilistic 0.9 (and (child-moving-toward) (increase reward 1))
-	; 					       0.1 (and (not (child-moving-toward)) (increase reward -1))
-	; 			)
-	; )
-
-	; (:action spin_sp
-
-	; 	:parameters (?x - None)
-	; 	:precondition (solitary-play)
-	; 	:effect (probabilistic 0.9 (and (child-moving-toward) (increase reward 1))
-	; 					       0.1 (and (not (child-moving-toward)) (increase reward -1))
-	; 			)
-	; )
-
 	(:action spin
 
 		:parameters (?x - None)
-		:precondition ()
+		:precondition (not (child-moving-toward));(or (direct-social-interaction) (social-interaction) (solitary-play))
 		:effect (probabilistic 0.5 (and (child-moving-toward) (increase reward 1))
-						       0.5 (and (not (child-moving-toward)) (increase reward -1))
+						       0.5 (and (not (child-moving-toward)) (increase reward -2))
 				)
 	)
 
@@ -60,16 +29,16 @@
 		:parameters (?x - None)
 		:precondition (and (not (direct-social-interaction)) (not (child-moving-away)))
 		:effect (probabilistic 0.5 (and (child-moving-toward) (increase reward 1))
-							   0.5 (and (not (child-moving-toward)) (increase reward -1))
+							   0.5 (and (not (child-moving-toward)) (increase reward -2))
 				)
 			
 	)
 
 	(:action move-away
 		:parameters (?x - None)
-		:precondition ()
+		:precondition (not (child-moving-toward));(or (direct-social-interaction) (social-interaction) (solitary-play))
 		:effect (probabilistic 0.5 (and (child-moving-toward) (increase reward 1))
-							   0.5 (and (not (child-moving-toward)) (increase reward -1))
+							   0.5 (and (not (child-moving-toward)) (increase reward -2))
 				)
 			
 	)
@@ -78,7 +47,7 @@
 		:parameters (?x - None)
 		:precondition (and (direct-social-interaction) (has-bubbles))
 		:effect (probabilistic 0.5 (and (child-moving-toward) (increase reward 1))
-							   0.5 (and (not (child-moving-toward)) (increase reward -1))
+							   0.5 (and (not (child-moving-toward)) (increase reward -2))
 				)
 	)
 
@@ -86,15 +55,15 @@
 		:parameters (?x - None)
 		:precondition (not (child-moving-away))
 		:effect (probabilistic 0.5 (and (child-moving-toward) ( increase reward 1 ))
-							   0.5 (and (not (child-moving-toward)) (increase reward -1))
+							   0.5 (and (not (child-moving-toward)) (increase reward -2))
 				)
 	)
 
 	(:action lights-and-sounds
 		:parameters (?x - None)
-		:precondition ()
+		:precondition (not (child-moving-toward));(or (direct-social-interaction) (social-interaction) (solitary-play))
 		:effect (probabilistic 0.5 (and (child-moving-toward) ( increase reward 1 ))
-							   0.5 (and (not (child-moving-toward)) (increase reward -1))
+							   0.5 (and (not (child-moving-toward)) (increase reward -2))
 				)
 	)
 	

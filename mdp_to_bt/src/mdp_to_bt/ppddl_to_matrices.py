@@ -190,6 +190,8 @@ def getComboArgValues(args,combo_dict):
 
 def preconditionSatisfied(start_state,action,combo_dict=None,test=False):
 
+    # NEED TO UPDATE TO DEAL WITH 'OR'
+
     # Check that parameter values in combo match start state per action precondition 
     for precond in action.precond:
 
@@ -479,31 +481,72 @@ def getOutcomeSublist(literals, prob, reward, start_state, param_values, is_prob
 
 def preconditionSatisfiedActionParams(action, combo_dict, test=False):
 
-    #Need to remove things like move(left,left) and move(right,right) by checking preconditions
 
-    #Might also be able to merge with preconditionSatisfied, but not sure what is most elegant option
+    # TODO: DOUBLE CHECK THAT 'OR' LOGIC WORKS CORRECTLY
 
-    #use this in getPandR to ammend the actions_with_params list to only contain valid actions_with_params
+    # Need to remove things like move(left,left) and move(right,right) by checking preconditions
+    # Might also be able to merge with preconditionSatisfied, but not sure what is most elegant option
+    # use this in getPandR to ammend the actions_with_params list to only contain valid actions_with_params
+    # then update loops so you only consider those actions for p and r
 
-    #then update loops so you only consider those actions for p and r
+    #print(action,'\n',combo_dict)
+    #input('hi')
 
+    # First consider OR case (Need ANY)
+    # if action.precond[0] == 'or': # precond = ['or', [predicate1, predicate2, ...]]
+
+    #     for precond in action.precond[1]:
+
+    #         if precond._predicate.name == '=':
+    #             args = precond._predicate.args
+
+    #             if precond.is_positive(): # =
+
+    #                 if combo_dict[args[0]] == combo_dict[args[1]]:
+
+    #                     print('True')
+    #                     return True
+
+    #             else:
+
+    #                 if combo_dict[args[0]] != combo_dict[args[1]]:
+
+    #                     print('True')
+    #                     return True
+
+    #         print('False')
+    #         return False
+
+
+
+    # Next consider the SINGLE or AND case (original method, OR lines added above)
+    #else: # (Need ALL)
     # Check equation preconditions with combo parameter values
-    for precond in action.precond:
-        if precond._predicate.name == '=':
-            args = precond._predicate.args
+    if action.precond[0]== 'or':
 
-            if precond.is_positive(): # =
+        precond_list = action.precond[1]
 
-                if combo_dict[args[0]] != combo_dict[args[1]]:
-                    if test:
-                        print('Failure due to params not being equal...')
-                    return False
-            else: # !=
+    else:
 
-                if combo_dict[args[0]] == combo_dict[args[1]]:
-                    if test:
-                        print('Failure due to params being equal...')
-                    return False
+        precond_list = action.precond
+
+    for precond in precond_list:
+
+            if precond._predicate.name == '=':
+                args = precond._predicate.args
+
+                if precond.is_positive(): # =
+
+                    if combo_dict[args[0]] != combo_dict[args[1]]:
+                        if test:
+                            print('Failure due to params not being equal...')
+                        return False
+                else: # !=
+
+                    if combo_dict[args[0]] == combo_dict[args[1]]:
+                        if test:
+                            print('Failure due to params being equal...')
+                        return False
 
     return True
 
