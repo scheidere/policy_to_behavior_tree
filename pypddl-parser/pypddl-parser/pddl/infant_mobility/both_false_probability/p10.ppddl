@@ -51,7 +51,7 @@
 
 		:parameters (?x - None)
 		:precondition (not (child-moving-toward));(or (direct-social-interaction) (social-interaction) (solitary-play) );testing purposes, should be empty
-		:effect (probabilistic 0.9 (and (child-moving-toward) (increase reward 1))
+		:effect (probabilistic 0.9 (and (child-moving-toward) (increase reward 2))
 						       0.1 (and (not (child-moving-toward)) (increase reward -2))
 				)
 	)
@@ -59,7 +59,7 @@
 	(:action move-toward
 		:parameters (?x - None)
 		:precondition (and (not (direct-social-interaction)) (not (child-moving-away)))
-		:effect (probabilistic 0.9 (and (child-moving-toward) (increase reward 1))
+		:effect (probabilistic 0.9 (and (child-moving-toward) (increase reward 2))
 							   0.1 (and (not (child-moving-toward)) (increase reward -2))
 				)
 			
@@ -68,7 +68,7 @@
 	(:action move-away
 		:parameters (?x - None)
 		:precondition (not (child-moving-toward));(or (direct-social-interaction) (social-interaction) (solitary-play))
-		:effect (probabilistic 0.9 (and (child-moving-toward) (increase reward 1))
+		:effect (probabilistic 0.9 (and (child-moving-toward) (increase reward 2))
 							   0.1 (and (not (child-moving-toward)) (increase reward -2))
 				)
 			
@@ -77,7 +77,7 @@
 	(:action blow-bubbles
 		:parameters (?x - None)
 		:precondition (and (direct-social-interaction) (has-bubbles))
-		:effect (probabilistic 0.9 (and (child-moving-toward) (increase reward 1))
+		:effect (probabilistic 0.9 (and (child-moving-toward) (increase reward 2))
 							   0.1 (and (not (child-moving-toward)) (increase reward -2))
 				)
 	)
@@ -85,7 +85,7 @@
 	(:action play-sounds
 		:parameters (?x - None)
 		:precondition (not (child-moving-away))
-		:effect (probabilistic 0.9 (and (child-moving-toward) ( increase reward 1 ))
+		:effect (probabilistic 0.9 (and (child-moving-toward) ( increase reward 2 ))
 							   0.1 (and (not (child-moving-toward)) (increase reward -2))
 				)
 	)
@@ -93,7 +93,7 @@
 	(:action lights-and-sounds
 		:parameters (?x - None)
 		:precondition (not (child-moving-toward));(or (direct-social-interaction) (social-interaction) (solitary-play))
-		:effect (probabilistic 0.9 (and (child-moving-toward) ( increase reward 1 ))
+		:effect (probabilistic 0.9 (and (child-moving-toward) ( increase reward 2 ))
 							   0.1 (and (not (child-moving-toward)) (increase reward -2))
 				)
 	)
