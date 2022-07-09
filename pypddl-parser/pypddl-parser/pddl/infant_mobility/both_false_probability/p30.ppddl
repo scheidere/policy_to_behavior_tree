@@ -19,7 +19,7 @@
 	(:action spin
 
 		:parameters (?x - None)
-		:precondition (not (child-moving-toward));(or (direct-social-interaction) (social-interaction) (solitary-play))
+		:precondition (or (direct-social-interaction) (social-interaction) (solitary-play) );testing purposes, should be empty ;;(not (child-moving-toward))
 		:effect (probabilistic 0.7 (and (child-moving-toward) (increase reward 2))
 						       0.3 (and (not (child-moving-toward)) (increase reward -2))
 				)
@@ -36,7 +36,7 @@
 
 	(:action move-away
 		:parameters (?x - None)
-		:precondition (not (child-moving-toward));(or (direct-social-interaction) (social-interaction) (solitary-play))
+		:precondition (or (direct-social-interaction) (social-interaction) (solitary-play) );testing purposes, should be empty ;;(not (child-moving-toward))
 		:effect (probabilistic 0.7 (and (child-moving-toward) (increase reward 2))
 							   0.3 (and (not (child-moving-toward)) (increase reward -2))
 				)
@@ -61,7 +61,7 @@
 
 	(:action lights-and-sounds
 		:parameters (?x - None)
-		:precondition (not (child-moving-toward));(or (direct-social-interaction) (social-interaction) (solitary-play))
+		:precondition (or (direct-social-interaction) (social-interaction) (solitary-play) );testing purposes, should be empty ;;(not (child-moving-toward))
 		:effect (probabilistic 0.7 (and (child-moving-toward) ( increase reward 2))
 							   0.3 (and (not (child-moving-toward)) (increase reward -2))
 				)

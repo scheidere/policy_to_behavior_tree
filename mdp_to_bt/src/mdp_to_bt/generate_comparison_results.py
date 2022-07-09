@@ -232,10 +232,14 @@ def get_probability_results():
 
     start_time = round(time.time())
 
+    # Desktop
     #pddl_path = "/home/scheidee/new_bt_generation_ws/src/bt_generation/policy_to_behavior_tree/pypddl-parser/pypddl-parser/pddl/infant_mobility/"
-    pddl_path = "/home/scheidee/bt_synthesis_ws/src/policy_to_behavior_tree/pypddl-parser/pypddl-parser/pddl/infant_mobility/"
+    pddl_path = "/home/scheidee/new_bt_generation_ws/src/bt_generation/policy_to_behavior_tree/pypddl-parser/pypddl-parser/pddl/marine/" #infant_mobility/"
+    # Laptop
+    #pddl_path = "/home/scheidee/bt_synthesis_ws/src/policy_to_behavior_tree/pypddl-parser/pypddl-parser/pddl/infant_mobility/"
 
-    path_to_prob_domains = pddl_path + "both_false_probability/"
+    #path_to_prob_domains = pddl_path + "both_false_probability/" # Use with infant mobility domain
+    path_to_prob_domains = pddl_path + 'probability_fn3fp3/' # Use with marine domain
 
     domain_files = os.listdir(path_to_prob_domains)
     domain_files.sort()
@@ -245,11 +249,14 @@ def get_probability_results():
     labels = []
 
     # Path to policy and mdp_problem pickle files
-    #output_path = "/home/scheidee/new_bt_generation_ws/src/bt_generation/policy_to_behavior_tree/mdp_to_bt/src/mdp_to_bt/policy_eval_output/"
-    output_path = "/home/scheidee/bt_synthesis_ws/src/policy_to_behavior_tree/mdp_to_bt/src/mdp_to_bt/policy_eval_output/"
+    # Desktop
+    output_path = "/home/scheidee/new_bt_generation_ws/src/bt_generation/policy_to_behavior_tree/mdp_to_bt/src/mdp_to_bt/policy_eval_output/"
+    # Laptop
+    #output_path = "/home/scheidee/bt_synthesis_ws/src/policy_to_behavior_tree/mdp_to_bt/src/mdp_to_bt/policy_eval_output/"
 
     # Path to PPDDL domain and problem files
-    det_domain_path = pddl_path + "both_false_probability/domain_deterministic.ppddl"
+    #det_domain_path = pddl_path + "both_false_probability/domain_deterministic.ppddl" # Use with infant mobility domain
+    det_domain_path = pddl_path + "probability_fn3fp3/domain_deterministic.ppddl" # Use with marine domain
     problem_path = pddl_path + "problems/problem1.ppddl"
 
     for file in domain_files:
