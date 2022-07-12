@@ -1,0 +1,22 @@
+(define (problem infant-mobility-problem)
+	
+	(:domain infant-mobility-domain)
+
+	;(:objects X - None )
+
+	(:objects
+		direct-social-interaction social-interaction solitary-play - distance
+		moving-toward moving-away stationary - activity
+		NOT TESTED YET, NEED TO ADD TO DOMAIN AND SEE IF PARSED CORRECTLY AND IF IT EVEN SOLVES THE ISSUE OF STATE COMPONENT CONTRADICTIONS
+	)
+
+	(:init
+
+		(has-bubbles X)
+		(child-moving-toward X)
+		(social-interaction X)
+	)
+
+	(:goal (and (child-moving-toward)) )
+	
+)
