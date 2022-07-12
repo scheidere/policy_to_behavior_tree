@@ -1,0 +1,16 @@
+(define (problem infant-mobility-problem)
+	
+	(:domain infant-mobility-domain)
+
+	(:objects X - None )
+
+	(:init
+
+		(has-bubbles X)
+		(child-moving-toward X)
+		(social-interaction X)
+	)
+
+	(:goal (and (child-moving-toward)) )
+	
+)

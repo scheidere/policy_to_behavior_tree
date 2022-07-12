@@ -246,7 +246,8 @@ def get_probability_results():
     ##path_to_prob_domains = pddl_path + 'probability_fn3fp3/' # Use with marine domain
     #det_domain_path = pddl_path + "both_false_probability/domain_deterministic.ppddl" # Use with infant mobility domain
     det_domain_path = path_to_prob_domains + "domain_deterministic.ppddl" # Use with marine domain
-    problem_path = pddl_path + "problems/problem1.ppddl"
+    ##problem_path = pddl_path + "problems/problem1.ppddl" #marine
+    problem_path = pddl_path + "problems/problem2.ppddl" #infant
 
     domain_files = os.listdir(path_to_prob_domains)
     domain_files.sort()
