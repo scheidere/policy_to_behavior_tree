@@ -6,8 +6,7 @@
 
 	(:init
 
-		(has-bubble-juice X)
-		(child-moving-away X)
+		(has-bubbles X)
 		(child-moving-toward X)
 		(child-stationary X)
 		(direct-social-interaction X)

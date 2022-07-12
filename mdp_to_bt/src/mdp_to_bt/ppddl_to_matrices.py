@@ -64,16 +64,21 @@ def getParamCombos(action,problem):
 
 def getStateList(domain,problem):
 
+    print('In getStateList')
+    print('domain.predicates ', domain.predicates)
+
     # Get all states (valid and invalid)
 
     single_state = []
     for i in range(len(domain.predicates)):
-        #print('Predicate is %s' % str(domain.predicates[i]))
+        print('Predicate is %s' % str(domain.predicates[i]))
         for variable_type in domain.types:
-            #print(variable_type)
+            #print('variable type ', variable_type)
             if variable_type in str(domain.predicates[i]):
-                #print('This predicate has variable type %s' % variable_type)
+                print('This predicate has variable type %s' % variable_type)
                 for value in problem.objects[variable_type]:
+
+                    print('problem object ', value)
 
                     state_sub_list = [str(domain.predicates[i].name),value,1]
                     single_state.append(state_sub_list)
@@ -95,6 +100,11 @@ def getStateList(domain,problem):
     # Remove invalid states per constraints in domain
     if domain.constraints:
         states = removeInvalidStates(states)
+
+
+    for state in states:
+        print(state)
+    input('wait states')
 
 
     return states
@@ -189,6 +199,10 @@ def getComboArgValues(args,combo_dict):
 
 
 def preconditionSatisfied(start_state,action,combo_dict=None,test=False):
+
+    print('IN precondSatisfied')
+    print('start_state ', start_state)
+    print('action ', action)
 
     # If ANY precond matches the given state, the OR precond is satisfied
     if action.precond[0] == 'or':
@@ -657,11 +671,14 @@ def getActions(domain):
 
 def getPandR(domain,problem):
 
+    print("In getPandR")
+
     # Init main lists, NxN arrays will be added to (later converted to 3d numpy array)
     P,R = [],[]
 
     # Get valid states
     states = getStateList(domain,problem)
+    print('States ', states)
 
     # Initialize actions with parameters list (used for reading policy)
     #actions_with_params = []
