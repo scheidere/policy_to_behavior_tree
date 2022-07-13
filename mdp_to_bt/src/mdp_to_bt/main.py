@@ -106,7 +106,10 @@ def main(domain, problem):
     reward = evaluate_mdp_policy(mdp_problem, policy)
     print("\nReward: %f\n" % reward)
 
-    path = "/home/scheidee/new_bt_generation_ws/src/bt_generation/policy_to_behavior_tree/mdp_to_bt/src/mdp_to_bt/policy_eval_output/"
+    # Desktop
+    #path = "/home/scheidee/new_bt_generation_ws/src/bt_generation/policy_to_behavior_tree/mdp_to_bt/src/mdp_to_bt/policy_eval_output/"
+    # Laptop
+    path = "/home/scheidee/bt_synthesis_ws/src/policy_to_behavior_tree/mdp_to_bt/src/mdp_to_bt/policy_eval_output/"
     pickle.dump(policy, open( path + "policy.p", "wb" ) )
 
     # Only save mdp problem for probabilistic world, 

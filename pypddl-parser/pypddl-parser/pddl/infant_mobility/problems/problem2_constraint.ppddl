@@ -7,16 +7,16 @@
 	(:objects
 		direct-social-interaction social-interaction solitary-play - distance
 		moving-toward moving-away stationary - activity
-		NOT TESTED YET, NEED TO ADD TO DOMAIN AND SEE IF PARSED CORRECTLY AND IF IT EVEN SOLVES THE ISSUE OF STATE COMPONENT CONTRADICTIONS
+		X - None
 	)
 
 	(:init
 
 		(has-bubbles X)
-		(child-moving-toward X)
-		(social-interaction X)
+		(infant-robot-distance solitary-play)
+		(infant-activity moving-away)
 	)
 
-	(:goal (and (child-moving-toward)) )
+	(:goal (and (infant-activity moving-toward)) )
 	
 )

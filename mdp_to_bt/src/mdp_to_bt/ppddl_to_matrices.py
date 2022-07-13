@@ -65,7 +65,8 @@ def getParamCombos(action,problem):
 def getStateList(domain,problem):
 
     print('In getStateList')
-    print('domain.predicates ', domain.predicates)
+    print('domain types', domain.types)
+    print('HELLO', problem.objects)
 
     # Get all states (valid and invalid)
 
@@ -73,9 +74,10 @@ def getStateList(domain,problem):
     for i in range(len(domain.predicates)):
         print('Predicate is %s' % str(domain.predicates[i]))
         for variable_type in domain.types:
-            #print('variable type ', variable_type)
+            print('variable type ', variable_type)
             if variable_type in str(domain.predicates[i]):
                 print('This predicate has variable type %s' % variable_type)
+                print('problem.objects[variable_type]', problem.objects[variable_type])
                 for value in problem.objects[variable_type]:
 
                     print('problem object ', value)
@@ -99,7 +101,7 @@ def getStateList(domain,problem):
 
     # Remove invalid states per constraints in domain
     if domain.constraints:
-        states = removeInvalidStates(states)
+        states = removeInvalidStates(states,domain)
 
 
     for state in states:
@@ -112,6 +114,8 @@ def getStateList(domain,problem):
 def removeInvalidStates(state_list,domain):
 
     # This would need to have more constraint types added to be entirely complete
+
+    print('BEFORE ', state_list)
 
     valid_states_list = []
     removal_indices = [] # Indices of all invalid states

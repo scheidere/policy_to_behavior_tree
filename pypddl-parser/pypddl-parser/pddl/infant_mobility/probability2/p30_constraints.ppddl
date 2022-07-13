@@ -2,50 +2,67 @@
 
     (:requirements :equality :typing :probabilistic-effects)
 
-    (:types None)
+    (:types None activity distance)
 
     (:predicates
         (has-bubbles ?x - None)
-        (child-moving-toward ?x - None)
-        (social-interaction ?x - None)
+        (infant-activity ?x - activity)
+        (infant-robot-distance ?x - distance)
     )
 
-    (:action spin
-
-        :parameters (?x - None)
-        :precondition (social-interaction ?x) ;(or (direct-social-interaction) (social-interaction) (solitary-play))
-        :effect (probabilistic 0.7 (and (child-moving-toward ?x) (increase reward 2)) ; child moving toward
-                               0.3 (and (not (child-moving-toward ?x)) (increase reward -2)) ; child stationary
-                )
+    
+    (:constraints
+        (and
+            (forall (?act - activity) (at-most-once (infant-activity ?act)))
+            (forall (?dst - distance) (at-most-once (infant-robot-distance ?dst)))
+        )
     )
 
-    (:action move-toward
+    ; (:action spin ; this will be the test for the use of constants, not complete yet
 
-        :parameters (?x - None)
-        :precondition (not (social-interaction ?x))
-        :effect (probabilistic 0.7 (and (child-moving-toward ?x) (increase reward 2)) ; child moving toward
-                               0.3 (and (not (child-moving-toward ?x)) (increase reward -2)) ; child stationary
-                )
-    )
+    ;     :parameters (?d - distance ?a - activity)
+    ;     :precondition (social-interaction ?d) ;(or (direct-social-interaction) (social-interaction) (solitary-play))
+    ;     :effect (probabilistic 0.7 (and (child-moving-toward ?x) (increase reward 2)) ; child moving toward
+    ;                            0.3 (and (not (child-moving-toward ?x)) (increase reward -2)) ; child stationary
+    ;             )
+    ; )
 
-    (:action move-away
+    ; (:action spin
 
-        :parameters (?x - None)
-        :precondition (social-interaction ?x) ;(or (direct-social-interaction) (social-interaction) (solitary-play))
-        :effect (probabilistic 0.7 (and (child-moving-toward ?x) (increase reward 2))
-                               0.3 (and (not (child-moving-toward ?x)) (increase reward -2))
-                )
-    )
+    ;     :parameters (?x - None)
+    ;     :precondition (social-interaction ?x) ;(or (direct-social-interaction) (social-interaction) (solitary-play))
+    ;     :effect (probabilistic 0.7 (and (child-moving-toward ?x) (increase reward 2)) ; child moving toward
+    ;                            0.3 (and (not (child-moving-toward ?x)) (increase reward -2)) ; child stationary
+    ;             )
+    ; )
 
-    (:action blow-bubbles
+    ; (:action move-toward
 
-        :parameters (?x - None)
-        :precondition (and (social-interaction ?x) (has-bubbles ?x))
-        :effect (probabilistic 0.7 (and (child-moving-toward ?x) (increase reward 2))
-                               0.25 (and (not (child-moving-toward ?x)) (increase reward -2))
-                               0.05 (and (not (child-moving-toward ?x)) (not (has-bubbles ?x)) (increase reward -2))
-                )
-    )
+    ;     :parameters (?x - None)
+    ;     :precondition (not (social-interaction ?x))
+    ;     :effect (probabilistic 0.7 (and (child-moving-toward ?x) (increase reward 2)) ; child moving toward
+    ;                            0.3 (and (not (child-moving-toward ?x)) (increase reward -2)) ; child stationary
+    ;             )
+    ; )
+
+    ; (:action move-away
+
+    ;     :parameters (?x - None)
+    ;     :precondition (social-interaction ?x) ;(or (direct-social-interaction) (social-interaction) (solitary-play))
+    ;     :effect (probabilistic 0.7 (and (child-moving-toward ?x) (increase reward 2))
+    ;                            0.3 (and (not (child-moving-toward ?x)) (increase reward -2))
+    ;             )
+    ; )
+
+    ; (:action blow-bubbles
+
+    ;     :parameters (?x - None)
+    ;     :precondition (and (social-interaction ?x) (has-bubbles ?x))
+    ;     :effect (probabilistic 0.7 (and (child-moving-toward ?x) (increase reward 2))
+    ;                            0.25 (and (not (child-moving-toward ?x)) (increase reward -2))
+    ;                            0.05 (and (not (child-moving-toward ?x)) (not (has-bubbles ?x)) (increase reward -2))
+    ;             )
+    ; )
 
     (:action refill-bubbles
 
@@ -54,42 +71,42 @@
         :effect (has-bubbles ?x)
     )
 
-    (:action play-sounds
+    ; (:action play-sounds
 
-        :parameters (?x - None)
-        :precondition (not (child-moving-toward ?x));(child-stationary ?x);(or (child-moving-toward) (child-stationary))
-        :effect (probabilistic 0.7 (and (child-moving-toward ?x) ( increase reward 2)) ; child moving toward
-                               0.3 (and (not (child-moving-toward ?x)) (increase reward -2)) ; child stationary
-                )
-    )
+    ;     :parameters (?x - None)
+    ;     :precondition (not (child-moving-toward ?x));(child-stationary ?x);(or (child-moving-toward) (child-stationary))
+    ;     :effect (probabilistic 0.7 (and (child-moving-toward ?x) ( increase reward 2)) ; child moving toward
+    ;                            0.3 (and (not (child-moving-toward ?x)) (increase reward -2)) ; child stationary
+    ;             )
+    ; )
 
-    (:action lights-and-sounds
+    ; (:action lights-and-sounds
 
-        :parameters (?x - None)
-        :precondition (not (social-interaction ?x));(solitary-play ?x) ;(or (direct-social-interaction) (social-interaction) (solitary-play))
-        :effect (probabilistic 0.7 (and (child-moving-toward ?x) ( increase reward 2))
-                               0.3 (and (not (child-moving-toward ?x)) (increase reward -2))
-                )
-    )
+    ;     :parameters (?x - None)
+    ;     :precondition (not (social-interaction ?x));(solitary-play ?x) ;(or (direct-social-interaction) (social-interaction) (solitary-play))
+    ;     :effect (probabilistic 0.7 (and (child-moving-toward ?x) ( increase reward 2))
+    ;                            0.3 (and (not (child-moving-toward ?x)) (increase reward -2))
+    ;             )
+    ; )
 
-    (:action keep-away
+    ; (:action keep-away
 
-        :parameters (?x - None)
-        :precondition (social-interaction ?x)
-        :effect (probabilistic 0.7 (and (not (social-interaction ?x)) (child-moving-toward ?x) (increase reward 2))
-                               0.15 (and (social-interaction ?x) (not (child-moving-toward ?x)) (increase reward -2)) 
-                               0.15 (and (not (social-interaction ?x)) (not (child-moving-toward ?x)) (increase reward -2))
-                )
-    )
+    ;     :parameters (?x - None)
+    ;     :precondition (social-interaction ?x)
+    ;     :effect (probabilistic 0.7 (and (not (social-interaction ?x)) (child-moving-toward ?x) (increase reward 2))
+    ;                            0.15 (and (social-interaction ?x) (not (child-moving-toward ?x)) (increase reward -2)) 
+    ;                            0.15 (and (not (social-interaction ?x)) (not (child-moving-toward ?x)) (increase reward -2))
+    ;             )
+    ; )
 
-    (:action go-to-infant
+    ; (:action go-to-infant
 
-        :parameters (?x - None)
-        :precondition (not (social-interaction ?x));(solitary-play ?x)
-        :effect (probabilistic 0.7 (and (social-interaction ?x) (child-moving-toward ?x) (increase reward 2))
-                               0.15 (and (social-interaction ?x) (not (child-moving-toward ?x)) (increase reward -2))
-                               0.15 (and (not (social-interaction ?x)) (not (child-moving-toward ?x)) (increase reward -2))
-                )
-    )
+    ;     :parameters (?x - None)
+    ;     :precondition (not (social-interaction ?x));(solitary-play ?x)
+    ;     :effect (probabilistic 0.7 (and (social-interaction ?x) (child-moving-toward ?x) (increase reward 2))
+    ;                            0.15 (and (social-interaction ?x) (not (child-moving-toward ?x)) (increase reward -2))
+    ;                            0.15 (and (not (social-interaction ?x)) (not (child-moving-toward ?x)) (increase reward -2))
+    ;             )
+    ; )
 
 )

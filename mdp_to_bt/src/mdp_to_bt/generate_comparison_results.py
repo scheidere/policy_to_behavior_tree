@@ -233,13 +233,13 @@ def get_probability_results():
     start_time = round(time.time())
 
     # Desktop
-    pddl_path = "/home/scheidee/new_bt_generation_ws/src/bt_generation/policy_to_behavior_tree/pypddl-parser/pypddl-parser/pddl/infant_mobility/"
-    ##pddl_path = "/home/scheidee/new_bt_generation_ws/src/bt_generation/policy_to_behavior_tree/pypddl-parser/pypddl-parser/pddl/marine/" #infant_mobility/"
-    output_path = "/home/scheidee/new_bt_generation_ws/src/bt_generation/policy_to_behavior_tree/mdp_to_bt/src/mdp_to_bt/policy_eval_output/"
+    #pddl_path = "/home/scheidee/new_bt_generation_ws/src/bt_generation/policy_to_behavior_tree/pypddl-parser/pypddl-parser/pddl/infant_mobility/"
+    ##pddl_path = "/home/scheidee/new_bt_generation_ws/src/bt_generation/policy_to_behavior_tree/pypddl-parser/pypddl-parser/pddl/marine/"
+    #output_path = "/home/scheidee/new_bt_generation_ws/src/bt_generation/policy_to_behavior_tree/mdp_to_bt/src/mdp_to_bt/policy_eval_output/"
     
     # Laptop
-    #pddl_path = "/home/scheidee/bt_synthesis_ws/src/policy_to_behavior_tree/pypddl-parser/pypddl-parser/pddl/infant_mobility/"
-    #output_path = "/home/scheidee/bt_synthesis_ws/src/policy_to_behavior_tree/mdp_to_bt/src/mdp_to_bt/policy_eval_output/"
+    pddl_path = "/home/scheidee/bt_synthesis_ws/src/policy_to_behavior_tree/pypddl-parser/pypddl-parser/pddl/infant_mobility/"
+    output_path = "/home/scheidee/bt_synthesis_ws/src/policy_to_behavior_tree/mdp_to_bt/src/mdp_to_bt/policy_eval_output/"
 
     # Desktop + Laptop
     path_to_prob_domains = pddl_path + "probability2/" # Use with infant mobility domain
@@ -247,7 +247,8 @@ def get_probability_results():
     #det_domain_path = pddl_path + "both_false_probability/domain_deterministic.ppddl" # Use with infant mobility domain
     det_domain_path = path_to_prob_domains + "domain_deterministic.ppddl" # Use with marine domain
     ##problem_path = pddl_path + "problems/problem1.ppddl" #marine
-    problem_path = pddl_path + "problems/problem2.ppddl" #infant
+    #problem_path = pddl_path + "problems/problem2.ppddl" #infant (old)
+    problem_path = pddl_path + "problems/problem2_constraint.ppddl" #infant
 
     domain_files = os.listdir(path_to_prob_domains)
     domain_files.sort()
@@ -258,7 +259,7 @@ def get_probability_results():
 
     for file in domain_files:
 
-        if file != 'domain_deterministic.ppddl':
+        if file != 'domain_deterministic.ppddl' and file != 'p30.ppddl':
 
             print(file)
             label = file[1:3]
@@ -297,5 +298,8 @@ def main():
 
 
 if __name__ == "__main__":
+
+    # Note: You will need to change three paths, two in this file, one in main
+    # when using a new comp
 
     main()
