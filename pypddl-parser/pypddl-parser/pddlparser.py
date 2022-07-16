@@ -177,7 +177,7 @@ def p_pddl(p):
 
 
 def p_domain(p):
-    '''domain : LPAREN DEFINE_KEY domain_def require_def types_def constants_def predicates_def constraints_def action_def_lst RPAREN
+    '''domain : LPAREN DEFINE_KEY domain_def require_def types_def predicates_def constants_def constraints_def action_def_lst RPAREN
               | LPAREN DEFINE_KEY domain_def require_def types_def predicates_def constraints_def action_def_lst RPAREN
               | LPAREN DEFINE_KEY domain_def require_def types_def predicates_def action_def_lst RPAREN'''
 
@@ -191,7 +191,7 @@ def p_domain(p):
         p[0] = Domain(p[3], p[4], p[5], p[6], p[7])
     elif len(p) == 11:
         print('hello 11', p[6])
-        p[0] = Domain(p[3], p[4], p[5], p[7], p[9],constraints=p[8],constants=p[6])
+        p[0] = Domain(p[3], p[4], p[5], p[6], p[9],constraints=p[8],constants=p[7])
 
 
 def p_problem(p):

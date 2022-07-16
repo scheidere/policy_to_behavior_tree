@@ -30,6 +30,10 @@ class Domain(object):
         else:
             input('constants is None')
             self._constants = constants # None
+        # self._objects = {}
+        # for obj in objects:
+        #     self._objects[obj.type] = self._objects.get(obj.type, [])
+        #     self._objects[obj.type].append(str(obj.value))
         self._predicates = predicates
         self._constraints = constraints # could be None
         self._operators = operators
@@ -49,6 +53,10 @@ class Domain(object):
     # @property
     # def constants(self):
     #     return self._constants[:]
+
+    # @property
+    # def objects(self):
+    #     return self._objects.copy()
 
     @property
     def constants(self):
@@ -73,8 +81,11 @@ class Domain(object):
         domain_str += '>> types: {0}\n'.format(', '.join(self._types))
         if self._constants:
             domain_str += '>> constants:\n'
-            # for type, constants in self._constants.items():
-            #     domain_str += '{0} -> {1}\n'.format(type, ', '.join(sorted(constants)))
+            for type, constants in self._constants.items():
+                domain_str += '{0} -> {1}\n'.format(type, ', '.join(sorted(constants)))
+        # domain_str += '>> objects:\n'
+        # for type, objects in self._objects.items():
+        #     domain_str += '{0} -> {1}\n'.format(type, ', '.join(sorted(objects)))
         domain_str += '>> predicates: {0}\n'.format(', '.join(map(str, self._predicates)))
         if self._constraints:
             domain_str += '>> constraints: {0}\n'.format(', '.join(map(str, self._constraints)))

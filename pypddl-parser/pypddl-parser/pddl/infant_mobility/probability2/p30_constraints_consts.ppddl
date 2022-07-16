@@ -72,7 +72,7 @@
 
         :parameters (?x - None)
         :precondition (not (has-bubbles ?x))
-        :effect (has-bubbles ?x)
+        :effect (and (has-bubbles ?x) (increase reward 1))
     )
 
     ; (:action play-sounds

@@ -9,7 +9,15 @@ import time
 
 import matplotlib.pyplot as plt
 
+def compare_policies_testing(prob_domain_path, det_domain_path, problem_path, output_path, do_prints = False):
 
+    # Run main with probabilistic domain; Save policy and mdp problem
+    os.system("python3 main.py " + prob_domain_path + " " + problem_path)
+    
+    # Extract probabilistic policy
+    file = open(output_path+'policy.p','rb')
+    prob_policy = pickle.load(file)
+    file.close()
 
 def compare_policies(prob_domain_path, det_domain_path, problem_path, output_path, do_prints = False):
 
@@ -268,7 +276,9 @@ def get_probability_results():
             
             prob_domain_path = path_to_prob_domains + file
 
-            per_diff = compare_policies(prob_domain_path, det_domain_path, problem_path, output_path)
+            #per_diff = compare_policies(prob_domain_path, det_domain_path, problem_path, output_path)
+            per_diff = compare_policies_testing(prob_domain_path, det_domain_path, problem_path, output_path)
+
 
             percent_increase_list.append(per_diff)
             labels.append(label)
