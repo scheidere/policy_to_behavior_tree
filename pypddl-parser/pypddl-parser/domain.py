@@ -15,11 +15,21 @@
 
 class Domain(object):
 
-    def __init__(self, name, requirements, types, predicates, operators,constraints=None):
+    def __init__(self, name, requirements, types, predicates, operators,constraints=None,constants=None):
     #def __init__(self, name, requirements, types, predicates, operators):
         self._name = name
         self._requirements = requirements
         self._types = types
+        if constants:  
+            input('constants is NOT None')      
+            self._constants = {}
+            print('test2 consts', constants)
+            for const in constants:
+                self._constants[const.type] = self._constants.get(const.type, [])
+                self._constants[const.type].append(str(const.value))
+        else:
+            input('constants is None')
+            self._constants = constants # None
         self._predicates = predicates
         self._constraints = constraints # could be None
         self._operators = operators
@@ -35,6 +45,14 @@ class Domain(object):
     @property
     def types(self):
         return self._types[:]
+
+    # @property
+    # def constants(self):
+    #     return self._constants[:]
+
+    @property
+    def constants(self):
+        return self._constants.copy()
 
     @property
     def predicates(self):
@@ -53,6 +71,10 @@ class Domain(object):
         domain_str  = '@ Domain: {0}\n'.format(self._name)
         domain_str += '>> requirements: {0}\n'.format(', '.join(self._requirements))
         domain_str += '>> types: {0}\n'.format(', '.join(self._types))
+        if self._constants:
+            domain_str += '>> constants:\n'
+            # for type, constants in self._constants.items():
+            #     domain_str += '{0} -> {1}\n'.format(type, ', '.join(sorted(constants)))
         domain_str += '>> predicates: {0}\n'.format(', '.join(map(str, self._predicates)))
         if self._constraints:
             domain_str += '>> constraints: {0}\n'.format(', '.join(map(str, self._constraints)))

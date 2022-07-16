@@ -70,7 +70,8 @@ tokens = (
     'REWARDS_KEY',
     'DISJUNCTIVE_PRECONDITIONS_KEY',
     'CONDITIONAL_EFFECTS_KEY',
-    'WHEN_KEY'
+    'WHEN_KEY',
+    'CONSTANTS_KEY'
 )
 
 
@@ -113,7 +114,8 @@ reserved = {
     ':rewards'                  : 'REWARDS_KEY',
     ':disjunctive-preconditions': 'DISJUNCTIVE_PRECONDITIONS_KEY',
     ':conditional-effects'      : 'CONDITIONAL_EFFECTS_KEY',
-    'when'                      : 'WHEN_KEY'
+    'when'                      : 'WHEN_KEY',
+    ':constants'                : 'CONSTANTS_KEY'
 }
 
 
@@ -175,15 +177,21 @@ def p_pddl(p):
 
 
 def p_domain(p):
-    '''domain : LPAREN DEFINE_KEY domain_def require_def types_def predicates_def constraints_def action_def_lst RPAREN
+    '''domain : LPAREN DEFINE_KEY domain_def require_def types_def constants_def predicates_def constraints_def action_def_lst RPAREN
+              | LPAREN DEFINE_KEY domain_def require_def types_def predicates_def constraints_def action_def_lst RPAREN
               | LPAREN DEFINE_KEY domain_def require_def types_def predicates_def action_def_lst RPAREN'''
 
     if debug:
         print('p_domain')
     if len(p) == 10:
+        print('hello 10')
         p[0] = Domain(p[3], p[4], p[5], p[6], p[8],constraints=p[7])
     elif len(p) == 9:
+        print('hello 9')
         p[0] = Domain(p[3], p[4], p[5], p[6], p[7])
+    elif len(p) == 11:
+        print('hello 11', p[6])
+        p[0] = Domain(p[3], p[4], p[5], p[7], p[9],constraints=p[8],constants=p[6])
 
 
 def p_problem(p):
@@ -211,6 +219,12 @@ def p_objects_def(p):
     '''objects_def : LPAREN OBJECTS_KEY typed_constants_lst RPAREN'''
     if debug:
         print('p_objects_def')
+    p[0] = p[3]
+
+def p_constants_def(p):
+    '''constants_def : LPAREN CONSTANTS_KEY typed_constants_lst RPAREN'''
+    if debug:
+        print('p_constants_def')
     p[0] = p[3]
 
 

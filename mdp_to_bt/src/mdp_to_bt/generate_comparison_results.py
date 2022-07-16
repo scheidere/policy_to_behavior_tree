@@ -250,6 +250,8 @@ def get_probability_results():
     #problem_path = pddl_path + "problems/problem2.ppddl" #infant (old)
     problem_path = pddl_path + "problems/problem2_constraint.ppddl" #infant
 
+    test_file = 'p30_constraints_consts.ppddl' #'p30_constraints.ppddl'
+
     domain_files = os.listdir(path_to_prob_domains)
     domain_files.sort()
 
@@ -259,7 +261,7 @@ def get_probability_results():
 
     for file in domain_files:
 
-        if file != 'domain_deterministic.ppddl' and file != 'p30.ppddl':
+        if file != 'domain_deterministic.ppddl' and file == test_file:
 
             print(file)
             label = file[1:3]
