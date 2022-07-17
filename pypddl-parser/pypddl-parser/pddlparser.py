@@ -404,7 +404,10 @@ def p_action_def_body(p):
 def p_precond_def(p):
     '''precond_def : PRECONDITION_KEY LPAREN AND_KEY literals_lst RPAREN
                    | PRECONDITION_KEY LPAREN OR_KEY literals_lst RPAREN
-                   | PRECONDITION_KEY literal'''
+                   | PRECONDITION_KEY literal
+                   | PRECONDITION_KEY LPAREN AND_KEY ground_predicates_lst RPAREN
+                   | PRECONDITION_KEY LPAREN OR_KEY ground_predicates_lst RPAREN
+                   | PRECONDITION_KEY ground_predicate'''
     if debug:
         print('p_precond_def')
     if len(p) == 3:
@@ -443,8 +446,7 @@ def p_probability_lst(p):
     '''probability_lst : PROBABILITY literal
                        | PROBABILITY literal probability_lst
                        | PROBABILITY LPAREN AND_KEY literals_lst RPAREN
-                       | PROBABILITY LPAREN AND_KEY literals_lst RPAREN probability_lst
-                       | '''
+                       | PROBABILITY LPAREN AND_KEY literals_lst RPAREN probability_lst'''
     if len(p) == 3:
         p[0] = (p[1], [p[2]])
     elif len(p) == 4:
@@ -504,7 +506,9 @@ def p_literals_lst(p):
 def p_literal(p):
     '''literal : LPAREN NOT_KEY predicate RPAREN
                | predicate
-               | LPAREN INCREASE REWARD REWARD_VALUE RPAREN'''
+               | LPAREN INCREASE REWARD REWARD_VALUE RPAREN
+               | ground_predicate
+               | LPAREN NOT_KEY ground_predicate RPAREN'''
     if debug:
         print("In p literal")
         print(p[0],p[1])

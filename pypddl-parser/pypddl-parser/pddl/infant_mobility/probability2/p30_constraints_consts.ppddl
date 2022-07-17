@@ -22,6 +22,26 @@
         )
     )
 
+    (:action refill-bubbles
+
+        :parameters (?x - None)
+        :precondition (not (has-bubbles ?x))
+        :effect (and (has-bubbles ?x) (increase reward 1))
+    )
+
+    (:action spin ; this will be the test for the use of constants, not complete yet
+
+        :parameters (?d - distance ?a - activity)
+        :precondition (infant-robot-distance social-interaction) ;(or (direct-social-interaction) (social-interaction) (solitary-play))
+        ;:effect (increase reward 1)
+        ;:effect (and (increase reward 1) (infant-activity moving-toward))
+        :effect (probabilistic 0.9 (and (not (infant-activity moving-toward)) (increase reward 1))
+                               0.1 (and (increase reward 1) (not (infant-activity moving-toward))))
+        ;; :effect (probabilistic 0.7 (and (increase reward 1) (infant-activity moving-toward))
+        ;;                        0.3 (and (increase reward 1) (not (infant-activity moving-toward)))
+        ;;         )
+    )
+
     ; (:action spin ; this will be the test for the use of constants, not complete yet
 
     ;     :parameters (?d - distance ?a - activity)
@@ -68,12 +88,12 @@
     ;             )
     ; )
 
-    (:action refill-bubbles
+    ; (:action refill-bubbles
 
-        :parameters (?x - None)
-        :precondition (not (has-bubbles ?x))
-        :effect (and (has-bubbles ?x) (increase reward 1))
-    )
+    ;     :parameters (?x - None)
+    ;     :precondition (not (has-bubbles ?x))
+    ;     :effect (and (has-bubbles ?x) (increase reward 1))
+    ; )
 
     ; (:action play-sounds
 

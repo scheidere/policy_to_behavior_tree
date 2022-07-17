@@ -79,14 +79,11 @@ class Domain(object):
         domain_str  = '@ Domain: {0}\n'.format(self._name)
         domain_str += '>> requirements: {0}\n'.format(', '.join(self._requirements))
         domain_str += '>> types: {0}\n'.format(', '.join(self._types))
+        domain_str += '>> predicates: {0}\n'.format(', '.join(map(str, self._predicates)))
         if self._constants:
             domain_str += '>> constants:\n'
             for type, constants in self._constants.items():
                 domain_str += '{0} -> {1}\n'.format(type, ', '.join(sorted(constants)))
-        # domain_str += '>> objects:\n'
-        # for type, objects in self._objects.items():
-        #     domain_str += '{0} -> {1}\n'.format(type, ', '.join(sorted(objects)))
-        domain_str += '>> predicates: {0}\n'.format(', '.join(map(str, self._predicates)))
         if self._constraints:
             domain_str += '>> constraints: {0}\n'.format(', '.join(map(str, self._constraints)))
         #print(domain_str)
