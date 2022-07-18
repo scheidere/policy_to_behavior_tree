@@ -404,10 +404,7 @@ def p_action_def_body(p):
 def p_precond_def(p):
     '''precond_def : PRECONDITION_KEY LPAREN AND_KEY literals_lst RPAREN
                    | PRECONDITION_KEY LPAREN OR_KEY literals_lst RPAREN
-                   | PRECONDITION_KEY literal
-                   | PRECONDITION_KEY LPAREN AND_KEY ground_predicates_lst RPAREN
-                   | PRECONDITION_KEY LPAREN OR_KEY ground_predicates_lst RPAREN
-                   | PRECONDITION_KEY ground_predicate'''
+                   | PRECONDITION_KEY literal'''
     if debug:
         print('p_precond_def')
     if len(p) == 3:
