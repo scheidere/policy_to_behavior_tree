@@ -47,6 +47,8 @@ def dictproduct(dct):
 
 def getParamCombos(action,problem):
 
+    #print('In getParamCombos')
+
     combo_list = []
 
     # Dict of param name keys, with possible value list as arg for each
@@ -104,8 +106,8 @@ def getStateList(domain,problem):
         states = removeInvalidStates(states,domain)
 
 
-    for state in states:
-        print(state)
+    for i in range(len(states)):
+        print(i, '', states[i],'\n')
     input('wait states')
 
 
@@ -201,160 +203,256 @@ def getComboArgValues(args,combo_dict):
 
     return values
 
+def preconditionSatisfiedNoParams(start_state, action, combo_dict=None, test=False):
+
+    # Still need to add and test OR option
+
+
+    print('Not OR - precondsatnoparam')
+    # Check that parameter values in combo match start state per action precondition 
+    for precond in action.precond:
+
+        if test:
+            print('precond type ', type(precond))
+            print('precond._predicate', precond._predicate)
+            print('precond._predicate.name', precond._predicate.name)
+
+        # for term in precond._predicate._args:
+        #     print('arg', term._value)
+
+        if precond._predicate.name != '=':
+
+            print('Not =')
+
+            match_found = False
+            
+            ##precond_args = precond._predicate.args
+
+            precond_args = []
+            for arg in precond._predicate._args:
+                precond_args.append(arg._value)
+            #if test:
+            print('hi',precond._predicate.name, precond_args)
+
+            # Search start state for precondition predicate name where true
+            for term in start_state:
+                # True is defined by term[-1] == 1
+
+                # First, check that the state term is the same as the precondition term
+                if term[0] == precond._predicate.name:
+
+                    print('matches term[0]', term[0], precond._predicate.name)
+                    print('precond is pos', precond.is_positive())
+                    print('precond is neg', precond.is_negative())
+                    print('term[-1]', term[-1])
+
+                    # Second, check that the Boolean value is the same for both
+                    if precond.is_positive() and term[-1] == 1 or precond.is_negative() and term[-1] == 0:
+
+                        print('found true preciate in state that matches precond term')
+
+                        # Third, check that the parameters/args are the same
+                        term_arg_vals = term[1:-1] 
+                        print('term_arg_vals ', term_arg_vals)
+                        print('compared to precond_args: ', precond_args)
+
+                        # Compare start state term with combo
+                        if term_arg_vals != precond_args:
+                            # Term does not match arg vals in give combo
+                            if test:
+                                print('Discrepancy found')
+                            else:
+                                pass
+                        else:
+                            if test:
+                                print('Match found') # precondition is satisfied
+                            match_found = True
+                            continue
+
+
+            if not match_found: # Precondition fails for given state and param combo
+                if test:
+                    print('Failure because no match found between state and param combo')
+                return False
+
+        # Otherwise deal with == scenario, (how does this work with constants? - currently not needed)
+        #elif: ...
+
+
+    return True
+
 
 def preconditionSatisfied(start_state,action,combo_dict=None,test=False):
 
     print('IN precondSatisfied')
-    print('start_state ', start_state)
-    print('action ', action)
+    # print('start_state ', start_state)
+    # print('action ', action)
 
-    # If ANY precond matches the given state, the OR precond is satisfied
-    if action.precond[0] == 'or':
+    print('combo_dict ', combo_dict)
 
-        for precond in action.precond[1]:
 
-            if precond._predicate.name != '=':
-                match_found = False
-                
-                precond_args = precond._predicate.args
-                if test:
-                    print(precond._predicate.name, precond_args)
+    if combo_dict:
 
-                # Search start state for precondition predicate name where true
-                for term in start_state:
-                    # True is defined by term[-1] == 1
+        # If ANY precond matches the given state, the OR precond is satisfied
+        if action.precond[0] == 'or':
 
+            print('Is OR')
+
+            for precond in action.precond[1]:
+
+                if precond._predicate.name != '=':
+                    match_found = False
+                    
+                    precond_args = precond._predicate.args
                     if test:
-                        print(type(term[0]))
+                        print(precond._predicate.name, precond_args)
 
-                    # First, check that the state term is the same as the precondition term
-                    if term[0] == precond._predicate.name:
+                    # Search start state for precondition predicate name where true
+                    for term in start_state:
+                        # True is defined by term[-1] == 1
 
-                        # Second, check that the Boolean value is the same for both
-                        if precond.is_positive() and term[-1] == 1 or precond.is_negative() and term[-1] == 0:
+                        if test:
+                            print(type(term[0]))
 
-                            # Third, check that the parameters/args are the same
-                            term_arg_vals = term[1:-1] # if are no parameters this is = [] or has dummy var like 'x'
-                            if test:
-                                print('term_arg_vals: ', term_arg_vals)
+                        # First, check that the state term is the same as the precondition term
+                        if term[0] == precond._predicate.name:
 
-                            if combo_dict: # if there are parameters to compare at all (might be None)
-                                # Get parameter values to compare with from the param_combo given
-                                combo_arg_vals = getComboArgValues(precond_args,combo_dict)
-                            else:
-                                combo_arg_vals = None
+                            # Second, check that the Boolean value is the same for both
+                            if precond.is_positive() and term[-1] == 1 or precond.is_negative() and term[-1] == 0:
 
-                            if test:
-                                print('Comparing %s to %s' % (term_arg_vals,combo_arg_vals))
-
-                            # Compare start state term with combo
-                            if term_arg_vals != combo_arg_vals:
-                                # Term does not match arg vals in give combo
+                                # Third, check that the parameters/args are the same
+                                term_arg_vals = term[1:-1] # if are no parameters this is = [] or has dummy var like 'x'
                                 if test:
-                                    print('Discrepancy found')
+                                    print('term_arg_vals: ', term_arg_vals)
+
+                                if combo_dict: # if there are parameters to compare at all (might be None)
+                                    # Get parameter values to compare with from the param_combo given
+                                    combo_arg_vals = getComboArgValues(precond_args,combo_dict)
                                 else:
-                                    pass
-                            else:
+                                    combo_arg_vals = None
+
                                 if test:
-                                    print('Match found') # precondition is satisfied
-                                match_found = True
-                                return True # Only need a single match needed for an OR
-                                #continue
+                                    print('Comparing %s to %s' % (term_arg_vals,combo_arg_vals))
 
-            # Check equation preconditions with combo parameter values
-            elif precond._predicate.name == '=':
-                args = precond._predicate.args
+                                # Compare start state term with combo
+                                if term_arg_vals != combo_arg_vals:
+                                    # Term does not match arg vals in give combo
+                                    if test:
+                                        print('Discrepancy found')
+                                    else:
+                                        pass
+                                else:
+                                    if test:
+                                        print('Match found') # precondition is satisfied
+                                    match_found = True
+                                    return True # Only need a single match needed for an OR
+                                    #continue
 
-                if precond.is_positive(): # =
+                # Check equation preconditions with combo parameter values
+                elif precond._predicate.name == '=':
+                    args = precond._predicate.args
 
-                    if combo_dict[args[0]] == combo_dict[args[1]]:
-                        return True # Match found, only one needed for OR
-                else: # !=
+                    if precond.is_positive(): # =
 
-                    if combo_dict[args[0]] != combo_dict[args[1]]:
-                        return True
+                        if combo_dict[args[0]] == combo_dict[args[1]]:
+                            return True # Match found, only one needed for OR
+                    else: # !=
+
+                        if combo_dict[args[0]] != combo_dict[args[1]]:
+                            return True
 
 
-            # If after checking all predicates in the OR list, no match found, then precondition not satisfied
-            return False
+                # If after checking all predicates in the OR list, no match found, then precondition not satisfied
+                return False
 
-    else: # precondition is not an OR
-        # Check that parameter values in combo match start state per action precondition 
-        for precond in action.precond:
+        else: # precondition is not an OR
+            print('Not OR')
+            # Check that parameter values in combo match start state per action precondition 
+            for precond in action.precond:
 
-            if test:
+                #if test:
                 print('precond type ', type(precond))
+                print('precond._predicate', precond._predicate)
+                print('precond._predicate.name', precond._predicate.name)
+                for term in precond._predicate._args:
+                    print('arg', term._value)
 
-            if precond._predicate.name != '=':
-                match_found = False
-                
-                precond_args = precond._predicate.args
-                if test:
-                    print(precond._predicate.name, precond_args)
+                if precond._predicate.name != '=':
 
-                # Search start state for precondition predicate name where true
-                for term in start_state:
-                    # True is defined by term[-1] == 1
+                    print('Not =')
 
+                    match_found = False
+                    
+                    precond_args = precond._predicate.args
                     if test:
-                        print(type(term[0]))
+                        print(precond._predicate.name, precond_args)
 
-                    # First, check that the state term is the same as the precondition term
-                    if term[0] == precond._predicate.name:
+                    # Search start state for precondition predicate name where true
+                    for term in start_state:
+                        # True is defined by term[-1] == 1
 
-                        # Second, check that the Boolean value is the same for both
-                        if precond.is_positive() and term[-1] == 1 or precond.is_negative() and term[-1] == 0:
+                        if test:
+                            print(type(term[0]))
 
-                            # Third, check that the parameters/args are the same
-                            term_arg_vals = term[1:-1] # if are no parameters this is = [] or has dummy var like 'x'
-                            if test:
-                                print('term_arg_vals: ', term_arg_vals)
+                        # First, check that the state term is the same as the precondition term
+                        if term[0] == precond._predicate.name:
 
-                            if combo_dict: # if there are parameters to compare at all (might be None)
-                                # Get parameter values to compare with from the param_combo given
-                                combo_arg_vals = getComboArgValues(precond_args,combo_dict)
-                            else:
-                                combo_arg_vals = None
+                            # Second, check that the Boolean value is the same for both
+                            if precond.is_positive() and term[-1] == 1 or precond.is_negative() and term[-1] == 0:
 
-                            if test:
-                                print('Comparing %s to %s' % (term_arg_vals,combo_arg_vals))
-
-                            # Compare start state term with combo
-                            if term_arg_vals != combo_arg_vals:
-                                # Term does not match arg vals in give combo
+                                # Third, check that the parameters/args are the same
+                                term_arg_vals = term[1:-1] # if are no parameters this is = [] or has dummy var like 'x'
+                                print('term_arg_vals ', term_arg_vals)
                                 if test:
-                                    print('Discrepancy found')
+                                    print('term_arg_vals: ', term_arg_vals)
+
+                                if combo_dict: # if there are parameters to compare at all (might be None)
+                                    # Get parameter values to compare with from the param_combo given
+                                    combo_arg_vals = getComboArgValues(precond_args,combo_dict)
                                 else:
-                                    pass
-                            else:
+                                    combo_arg_vals = None
+
                                 if test:
-                                    print('Match found') # precondition is satisfied
-                                match_found = True
-                                continue
+                                    print('Comparing %s to %s' % (term_arg_vals,combo_arg_vals))
+
+                                # Compare start state term with combo
+                                if term_arg_vals != combo_arg_vals:
+                                    # Term does not match arg vals in give combo
+                                    if test:
+                                        print('Discrepancy found')
+                                    else:
+                                        pass
+                                else:
+                                    if test:
+                                        print('Match found') # precondition is satisfied
+                                    match_found = True
+                                    continue
 
 
-                if not match_found: # Precondition fails for given state and param combo
-                    if test:
-                        print('Failure because no match found between state and param combo')
-                    return False
-
-            # Check equation preconditions with combo parameter values
-            elif precond._predicate.name == '=':
-                args = precond._predicate.args
-
-                if precond.is_positive(): # =
-
-                    if combo_dict[args[0]] != combo_dict[args[1]]:
+                    if not match_found: # Precondition fails for given state and param combo
                         if test:
-                            print('Failure due to params not being equal...')
-                        return False
-                else: # !=
-
-                    if combo_dict[args[0]] == combo_dict[args[1]]:
-                        if test:
-                            print('Failure due to params being equal...')
+                            print('Failure because no match found between state and param combo')
                         return False
 
+                # Check equation preconditions with combo parameter values
+                elif precond._predicate.name == '=':
+                    args = precond._predicate.args
+
+                    if precond.is_positive(): # =
+
+                        if combo_dict[args[0]] != combo_dict[args[1]]:
+                            if test:
+                                print('Failure due to params not being equal...')
+                            return False
+                    else: # !=
+
+                        if combo_dict[args[0]] == combo_dict[args[1]]:
+                            if test:
+                                print('Failure due to params being equal...')
+                            return False
+
+    else:
+        return preconditionSatisfiedNoParams(start_state,action)
 
     return True
 
@@ -417,7 +515,9 @@ def testGetStateIndex(domain,problem):
 
 def outcome(start_state, action, param_values = None, test=False):
 
-    #print('entering new outcome function')
+    # param_values same as combo_dict
+
+    input('entering new outcome function')
 
     precond_satisfied = True
 
@@ -436,7 +536,7 @@ def outcome(start_state, action, param_values = None, test=False):
 
     if not preconditionSatisfied(start_state,action, combo_dict=param_values):
 
-        #print('Precondition not satisfied...')
+        print('Precondition not satisfied...')
 
         outcome_sublist = [unchanged_state_terms,1.0,0]
         outcome_list.append(outcome_sublist)
@@ -444,7 +544,7 @@ def outcome(start_state, action, param_values = None, test=False):
 
     else:
 
-        print('precond satisfied')
+        input('precond satisfied')
 
         replacement_state_terms = [] # [state,p,r]
 
@@ -454,6 +554,8 @@ def outcome(start_state, action, param_values = None, test=False):
         probs = [] # checking sum to 1
 
         for i in range(len(action_effects)):
+
+            input('effect %s' %i)
 
             term = action_effects[i]
 
@@ -474,7 +576,7 @@ def outcome(start_state, action, param_values = None, test=False):
                 for effect_term in effects:
 
                     if isinstance(effect_term, Literal):
-                                #print('is literal')
+                        input('is literal')
 
                         literals.append(effect_term)
 
@@ -501,14 +603,19 @@ def outcome(start_state, action, param_values = None, test=False):
     #     input('Wait')
 
     #print('exiting new outcome')
+    #print('outcome list ', outcome_list)
     return outcome_list, precond_satisfied
 
 
 def getOutcomeSublist(literals, prob, reward, start_state, param_values, is_probabilistic=False):
 
+    # literals are the predicates (either with params in param_values or with constants) that define outcome
+
     #print('agh lit', literals)
 
     #print('LOOOOOOOOOOK prob ', prob)
+
+    print('In getOutcomeSublist')
 
     if not literals: # No state changes, just prob and reward
         end_state = copy.deepcopy(start_state)
@@ -529,12 +636,17 @@ def getOutcomeSublist(literals, prob, reward, start_state, param_values, is_prob
         predicate_name = predicate.name
         params = predicate._args
         values = []
-        for param in params:
-            values.append(param_values[param])
 
-        #print('values ', values)
+        for param in params:
+
+            if param_values:
+                values.append(param_values[param])
+            else:
+                values.append(param._value)
+
+
+        print('values ', values)
     
-        #print('values', values)
         # Search for relevant terms in start state, those that will be affected
         for i in range(len(start_state)):
             term = start_state[i]
@@ -640,6 +752,7 @@ def preconditionSatisfiedActionParams(action, combo_dict, test=False):
 def getActionsWithParamsList(domain,problem):
 
     # Get all action/param combos
+    print('In getActionsWithParamsList')
 
     # Initialize actions with parameters list (used for reading policy)
     actions_with_params = []
@@ -649,6 +762,7 @@ def getActionsWithParamsList(domain,problem):
 
         # Get all possible combos of action parameter values
         param_combos = getParamCombos(action,problem)
+        #print('param_combos ', param_combos)
 
         for combo_dict in param_combos:
 
@@ -676,6 +790,9 @@ def getActions(domain):
 def getPandR(domain,problem):
 
     print("In getPandR")
+    input('wait')
+
+    combo_dict = None
 
     # Init main lists, NxN arrays will be added to (later converted to 3d numpy array)
     P,R = [],[]
@@ -711,10 +828,23 @@ def getPandR(domain,problem):
 
     for action_term in actions:
 
-        if problem != None:
+        print('action_term', action_term)
+
+        # if problem != None:
+        #     action, combo_dict = action_term # action term is [action, params]
+        # else:
+        #     action = action_term
+
+        if problem != None and action_term[1]!={}:
             action, combo_dict = action_term # action term is [action, params]
-        else:
+        elif problem == None:
             action = action_term
+        else:
+            action = action_term[0]
+
+        # if combo_dict == {}: #when params are empty e.g. :parameters ()
+
+        #     TODO need to accomodate for combo_dict being empty bc no params, but constants being used instead
 
         # Init two NxN arrays with zeros (one for P_a and one for R_a)
         p, r = np.zeros((N,N)), np.zeros((N,N))
@@ -723,10 +853,13 @@ def getPandR(domain,problem):
         for i in range(len(states)):
             start_state = states[i]
 
-            # print('+++++++++++++++++++')
-            # print('action ',action)
-            # print('params ', combo_dict)
-            # print('start state ', start_state)
+            print('+++++++++++++++++++')
+            print('action ',action)
+            if combo_dict:
+                print('params ', combo_dict)
+            else:
+                print('no params')
+            print('start state ', start_state)
 
             # Get list of [end state, prob, reward] terms, given action and start state
             # Also return only the actions_with_params that satisfy preconds
@@ -736,10 +869,11 @@ def getPandR(domain,problem):
             else: # no parameters
                 #print('no params')
                 outcome_list, precond_satisfied = outcome(start_state,action)
-            #print("outcome_list: ",outcome_list)
 
             # Update NxN matrices, p and r according to outcome
-            #print('outcome_list ', outcome_list)
+            print('outcome_list ', outcome_list)
+            print('==============================')
+            input('wait')
             all_js = [] #debugging
             j_duplicate_tracker = {} # Init tracker that sorts outcome_sublists together, by their associated j (same outcome state)
             for idx in range(len(outcome_list)):

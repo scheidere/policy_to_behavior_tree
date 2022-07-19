@@ -25,7 +25,7 @@
     (:action spin
 
         :parameters ();(?d - distance ?a - activity)
-        :precondition (or (infant-robot-distance direct-social-interaction) (infant-robot-distance social-interaction) (infant-robot-distance solitary-play)) ;(or (direct-social-interaction) (social-interaction) (solitary-play))
+        :precondition (infant-robot-distance social-interaction) ;(or (infant-robot-distance direct-social-interaction) (infant-robot-distance social-interaction) (infant-robot-distance solitary-play)) ;(or (direct-social-interaction) (social-interaction) (solitary-play))
         :effect (probabilistic 0.7 (and (infant-activity moving-toward) (increase reward 2))
                                0.3 (and (not (infant-activity moving-toward)) (increase reward -2))
                 )
