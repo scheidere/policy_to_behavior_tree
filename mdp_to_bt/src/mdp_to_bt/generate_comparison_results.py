@@ -249,16 +249,22 @@ def get_probability_results():
     pddl_path = "/home/scheidee/bt_synthesis_ws/src/policy_to_behavior_tree/pypddl-parser/pypddl-parser/pddl/infant_mobility/"
     output_path = "/home/scheidee/bt_synthesis_ws/src/policy_to_behavior_tree/mdp_to_bt/src/mdp_to_bt/policy_eval_output/"
 
+
+    # Notes for domain/problem combos
+    #   domain p30 in probability2/ goes with problem2
+    #   domain p30 in probability3/, p30_constraints or p30_constraints_consts all go with problem2_constraints
+
     # Desktop + Laptop
+    #path_to_prob_domains = pddl_path + "probability2/" # Use with infant mobility domain (old)
     path_to_prob_domains = pddl_path + "probability3/" # Use with infant mobility domain
-    ##path_to_prob_domains = pddl_path + 'probability_fn3fp3/' # Use with marine domain
+    #path_to_prob_domains = pddl_path + 'probability_fn3fp3/' # Use with marine domain
     #det_domain_path = pddl_path + "both_false_probability/domain_deterministic.ppddl" # Use with infant mobility domain
     det_domain_path = path_to_prob_domains + "domain_deterministic.ppddl" # Use with marine domain
     ##problem_path = pddl_path + "problems/problem1.ppddl" #marine
-    #problem_path = pddl_path + "problems/problem2.ppddl" #infant (old)
-    problem_path = pddl_path + "problems/problem2_constraint.ppddl" #infant
+    ###problem_path = pddl_path + "problems/problem2.ppddl" #infant (old)
+    problem_path = pddl_path + "problems/problem2_constraint.ppddl" #infant (new)
 
-    test_file = 'p30.ppddl'#'p30_constraints_consts.ppddl' #'p30_constraints.ppddl'
+    test_file = 'p30.ppddl' #'p30_or_test.ppddl' #p30.ppddl' #'p30_constraints_consts.ppddl' #'p30_constraints.ppddl'
 
     domain_files = os.listdir(path_to_prob_domains)
     domain_files.sort()
@@ -269,7 +275,7 @@ def get_probability_results():
 
     for file in domain_files:
 
-        if file != 'domain_deterministic.ppddl' and file == test_file:
+        if file != 'domain_deterministic.ppddl' and file == test_file: #will need to remove this test_file bit for full run
 
             print(file)
             label = file[1:3]
@@ -278,7 +284,6 @@ def get_probability_results():
 
             #per_diff = compare_policies(prob_domain_path, det_domain_path, problem_path, output_path)
             per_diff = compare_policies_testing(prob_domain_path, det_domain_path, problem_path, output_path)
-
 
             percent_increase_list.append(per_diff)
             labels.append(label)

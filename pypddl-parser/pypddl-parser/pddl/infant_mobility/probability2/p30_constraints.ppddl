@@ -18,23 +18,14 @@
         )
     )
 
-    ; (:action spin ; this will be the test for the use of constants, not complete yet
+    (:action spin
 
-    ;     :parameters (?d - distance ?a - activity)
-    ;     :precondition (social-interaction ?d) ;(or (direct-social-interaction) (social-interaction) (solitary-play))
-    ;     :effect (probabilistic 0.7 (and (child-moving-toward ?x) (increase reward 2)) ; child moving toward
-    ;                            0.3 (and (not (child-moving-toward ?x)) (increase reward -2)) ; child stationary
-    ;             )
-    ; )
-
-    ; (:action spin
-
-    ;     :parameters (?x - None)
-    ;     :precondition (social-interaction ?x) ;(or (direct-social-interaction) (social-interaction) (solitary-play))
-    ;     :effect (probabilistic 0.7 (and (child-moving-toward ?x) (increase reward 2)) ; child moving toward
-    ;                            0.3 (and (not (child-moving-toward ?x)) (increase reward -2)) ; child stationary
-    ;             )
-    ; )
+        :parameters (?x - None)
+        :precondition (social-interaction ?x) ;(or (direct-social-interaction) (social-interaction) (solitary-play))
+        :effect (probabilistic 0.7 (and (child-moving-toward ?x) (increase reward 2)) ; child moving toward
+                               0.3 (and (not (child-moving-toward ?x)) (increase reward -2)) ; child stationary
+                )
+    )
 
     ; (:action move-toward
 
