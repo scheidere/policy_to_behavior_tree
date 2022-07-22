@@ -302,10 +302,15 @@ def usesConstant(precond_vals, combo_dict):
 
     # Set flag that denotes whether current precond uses constant or combo_dict element
     has_constant = False
-    for val in precond_vals:
-        if val not in combo_dict.values():
-            # Found one that is a constant
-            has_constant = True
+
+    if combo_dict:
+        for val in precond_vals:
+            if val not in combo_dict.values():
+                # Found one that is a constant
+                has_constant = True
+                return True
+    else: # if no combo dict, constants involved
+        return True
 
     return has_constant
 
@@ -768,7 +773,7 @@ def getOutcomeSublist(literals, prob, reward, start_state, param_values, is_prob
 
     # literals are the predicates (either with params in param_values or with constants) that define outcome
 
-    #print('agh lit', literals)
+    print('agh lit', literals)
 
     #print('LOOOOOOOOOOK prob ', prob)
 
@@ -794,15 +799,21 @@ def getOutcomeSublist(literals, prob, reward, start_state, param_values, is_prob
         params = predicate._args
         values = []
 
-        print('p vals test', param_values, param_values.values())
+        print('PARAMS', params)
+
+        if param_values:
+            print('p vals test', param_values, param_values.values())
 
         for param in params:
 
             print('param', param)
 
-            # First, consider cases where no constants involved
-            if param_values and param in param_values.values() or param in param_values.keys():
-                values.append(param_values[param])
+            if param_values:
+                # First, consider cases where no constants involved
+                if param in param_values.values() or param in param_values.keys():
+                    values.append(param_values[param])
+                else: # Cases where constants and params
+                    values.append(param._value)
             else: # Involves a constant
                 values.append(param._value)
 
@@ -814,10 +825,10 @@ def getOutcomeSublist(literals, prob, reward, start_state, param_values, is_prob
             term = start_state[i]
             #print('start state term', term)
 
-            # Find term that will change due to effect of taking action in start state
+            # Find main term that will change due to effect of taking action in start state
             if term[0] == predicate_name and term[1:-1] == values:
 
-                #print('match')
+                print('match!!!', term, predicate_name, values)
                 #print('unchanged_state_terms',unchanged_state_terms)
 
                 unchanged_state_terms.remove(term)
@@ -830,8 +841,12 @@ def getOutcomeSublist(literals, prob, reward, start_state, param_values, is_prob
                 else:
                     new_term.append(0)
 
-                replacement_state_terms.append(new_term)
+                new_terms, unchanged_state_terms = clearOutcomeConflicts(new_term, start_state, unchanged_state_terms)
+
+                for term in new_terms:
+                    replacement_state_terms.append(term)
                 #print('replacement_state_terms', replacement_state_terms)
+
 
         end_state = replacement_state_terms + unchanged_state_terms
         outcome_sublist = [end_state,prob,reward]
@@ -839,6 +854,48 @@ def getOutcomeSublist(literals, prob, reward, start_state, param_values, is_prob
         #print('outcome_sublist 2', outcome_sublist)
 
     return outcome_sublist
+
+
+def clearOutcomeConflicts(new_term, start_state, unchanged_state_terms):
+
+    # new_term[0] denotes the name of the condition that explicitly got changed
+    # by the action effect, given the precondition
+
+    # If new_term[-1] is 1, then term used to be [predicate name, args, 0]
+    # If new_term[-1] is 0, then .. [predicate name, args, 1] (Tougher case)
+
+    print('In clearOutcomeConflicts')
+    print('unchanged_state_terms', unchanged_state_terms)
+
+    new_terms = [new_term]
+
+    print('NNNEEWWWW TEERRMMM', new_term)
+
+    for i in range(len(start_state)):
+        term = start_state[i]
+        print('term',term)
+
+        # Find term that could conflict with change (excluding the one that was explicitly changed itself)
+        if term[0] == new_term[0] and term[1:-1] != new_term[1:-1]:
+
+            next_new_term = copy.deepcopy(term[0:-1])
+
+            # If new value is 1, set all same named terms' value to 0 (only one can be True)
+            if new_term[-1] == 1: # Prevents multiple ones
+                next_new_term.append(0)
+                unchanged_state_terms.remove(term)
+                new_terms.append(next_new_term)
+            elif new_term[-1] == 0:
+                # This is more complex and can be avoided by specifying change in domain effect explicitly
+
+                # One case is that all would be zero, which is a logical failure
+                pass
+
+    print('new_terms', new_terms)
+    input('look at new terms')
+
+
+    return new_terms, unchanged_state_terms
 
 def preconditionSatisfiedActionParams(action, combo_dict, test=False):
 

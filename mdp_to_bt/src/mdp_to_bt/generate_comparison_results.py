@@ -247,6 +247,7 @@ def get_probability_results():
     
     # Laptop
     pddl_path = "/home/scheidee/bt_synthesis_ws/src/policy_to_behavior_tree/pypddl-parser/pypddl-parser/pddl/infant_mobility/"
+    #pddl_path = "/home/scheidee/bt_synthesis_ws/src/policy_to_behavior_tree/pypddl-parser/pypddl-parser/pddl/marine/"
     output_path = "/home/scheidee/bt_synthesis_ws/src/policy_to_behavior_tree/mdp_to_bt/src/mdp_to_bt/policy_eval_output/"
 
 
@@ -260,11 +261,12 @@ def get_probability_results():
     #path_to_prob_domains = pddl_path + 'probability_fn3fp3/' # Use with marine domain
     #det_domain_path = pddl_path + "both_false_probability/domain_deterministic.ppddl" # Use with infant mobility domain
     det_domain_path = path_to_prob_domains + "domain_deterministic.ppddl" # Use with marine domain
-    ##problem_path = pddl_path + "problems/problem1.ppddl" #marine
-    ###problem_path = pddl_path + "problems/problem2.ppddl" #infant (old)
+    #problem_path = pddl_path + "problems/problem1.ppddl" #marine
+    #problem_path = pddl_path + "problems/problem2.ppddl" #infant (old)
     problem_path = pddl_path + "problems/problem2_constraint.ppddl" #infant (new)
 
-    test_file = 'p30.ppddl' #'p30_or_test.ppddl' #p30.ppddl' #'p30_constraints_consts.ppddl' #'p30_constraints.ppddl'
+    #test_file = 'p30.ppddl' #p30_or_test.ppddl' #p30.ppddl' #'p30_constraints_consts.ppddl' #'p30_constraints.ppddl'
+    test_file = 'p30.ppddl' #marine
 
     domain_files = os.listdir(path_to_prob_domains)
     domain_files.sort()
