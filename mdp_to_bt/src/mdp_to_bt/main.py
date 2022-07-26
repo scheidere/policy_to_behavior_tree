@@ -130,7 +130,7 @@ if __name__ == '__main__':
 
     print(domain)
     print(problem)
-    input('wait to look at domain and problem')
+    #input('wait to look at domain and problem')
 
     print('Solving ', domain.name, '...')
 

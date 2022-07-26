@@ -108,7 +108,7 @@ def getStateList(domain,problem):
 
     for i in range(len(states)):
         print(i, '', states[i],'\n')
-    input('wait states')
+    #input('wait states')
 
 
     return states
@@ -336,7 +336,7 @@ def preconditionSatisfied(start_state,action,combo_dict=None,test=False):
         precond_lst = action.precond
 
     print('PRECOND LST', precond_lst)
-    input('wut')
+    #input('wut')
 
     for i in range(len(precond_lst)):
 
@@ -679,7 +679,7 @@ def outcome(start_state, action, param_values = None, test=False):
 
     # param_values same as combo_dict
 
-    input('entering new outcome function')
+    #input('entering new outcome function')
 
     precond_satisfied = True
 
@@ -706,7 +706,7 @@ def outcome(start_state, action, param_values = None, test=False):
 
     else:
 
-        input('precond satisfied')
+        #input('precond satisfied')
 
         replacement_state_terms = [] # [state,p,r]
 
@@ -717,7 +717,7 @@ def outcome(start_state, action, param_values = None, test=False):
 
         for i in range(len(action_effects)):
 
-            input('effect %s' %i)
+            #input('effect %s' %i)
 
             term = action_effects[i]
 
@@ -738,7 +738,7 @@ def outcome(start_state, action, param_values = None, test=False):
                 for effect_term in effects:
 
                     if isinstance(effect_term, Literal):
-                        input('is literal')
+                        #input('is literal')
 
                         literals.append(effect_term)
 
@@ -769,7 +769,7 @@ def outcome(start_state, action, param_values = None, test=False):
     return outcome_list, precond_satisfied
 
 
-def getOutcomeSublist(literals, prob, reward, start_state, param_values, is_probabilistic=False):
+def getOutcomeSublist(literals, prob, reward, start_state, param_values, is_probabilistic=False, test=False):
 
     # literals are the predicates (either with params in param_values or with constants) that define outcome
 
@@ -892,7 +892,7 @@ def clearOutcomeConflicts(new_term, start_state, unchanged_state_terms):
                 pass
 
     print('new_terms', new_terms)
-    input('look at new terms')
+    #input('look at new terms')
 
 
     return new_terms, unchanged_state_terms
@@ -1009,7 +1009,7 @@ def getActions(domain):
 def getPandR(domain,problem):
 
     print("In getPandR")
-    input('wait')
+    #input('wait')
 
     combo_dict = None
 
@@ -1092,7 +1092,7 @@ def getPandR(domain,problem):
             # Update NxN matrices, p and r according to outcome
             print('outcome_list ', outcome_list)
             print('==============================')
-            input('wait')
+            #input('wait')
             all_js = [] #debugging
             j_duplicate_tracker = {} # Init tracker that sorts outcome_sublists together, by their associated j (same outcome state)
             for idx in range(len(outcome_list)):

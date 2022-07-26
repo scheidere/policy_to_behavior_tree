@@ -27,9 +27,9 @@ def compare_policies(prob_domain_path, det_domain_path, problem_path, output_pat
     #partial_path = "/home/scheidee/new_bt_generation_ws/src/bt_generation/policy_to_behavior_tree/pypddl-parser/pypddl-parser/pddl"
     
     # Path to PPDDL domain and problem files
-    #prob_domain_path = probabilistic_domain_path
-    #det_domain_path = partial_path + '/marine/both_false_penalty/domain_deterministic.ppddl'
-    #problem_path = partial_path + "/marine/problems/problem1.ppddl"
+    # prob_domain_path = probabilistic_domain_path
+    # det_domain_path = partial_path + '/marine/both_false_penalty/domain_deterministic.ppddl'
+    # problem_path = partial_path + "/marine/problems/problem1.ppddl"
 
     # Run main with deterministic domain; Save policy
     os.system("python3 main.py " + det_domain_path + " " + problem_path)
@@ -246,8 +246,8 @@ def get_probability_results():
     #output_path = "/home/scheidee/new_bt_generation_ws/src/bt_generation/policy_to_behavior_tree/mdp_to_bt/src/mdp_to_bt/policy_eval_output/"
     
     # Laptop
-    pddl_path = "/home/scheidee/bt_synthesis_ws/src/policy_to_behavior_tree/pypddl-parser/pypddl-parser/pddl/infant_mobility/"
-    #pddl_path = "/home/scheidee/bt_synthesis_ws/src/policy_to_behavior_tree/pypddl-parser/pypddl-parser/pddl/marine/"
+    ###pddl_path = "/home/scheidee/bt_synthesis_ws/src/policy_to_behavior_tree/pypddl-parser/pypddl-parser/pddl/infant_mobility/"
+    pddl_path = "/home/scheidee/bt_synthesis_ws/src/policy_to_behavior_tree/pypddl-parser/pypddl-parser/pddl/marine/"
     output_path = "/home/scheidee/bt_synthesis_ws/src/policy_to_behavior_tree/mdp_to_bt/src/mdp_to_bt/policy_eval_output/"
 
 
@@ -257,13 +257,13 @@ def get_probability_results():
 
     # Desktop + Laptop
     #path_to_prob_domains = pddl_path + "probability2/" # Use with infant mobility domain (old)
-    path_to_prob_domains = pddl_path + "probability3/" # Use with infant mobility domain
-    #path_to_prob_domains = pddl_path + 'probability_fn3fp3/' # Use with marine domain
+    ###path_to_prob_domains = pddl_path + "probability3/" # Use with infant mobility domain
+    path_to_prob_domains = pddl_path + 'probability_fn2fp2/' # Use with marine domain
     #det_domain_path = pddl_path + "both_false_probability/domain_deterministic.ppddl" # Use with infant mobility domain
     det_domain_path = path_to_prob_domains + "domain_deterministic.ppddl" # Use with marine domain
-    #problem_path = pddl_path + "problems/problem1.ppddl" #marine
+    problem_path = pddl_path + "problems/problem1.ppddl" #marine
     #problem_path = pddl_path + "problems/problem2.ppddl" #infant (old)
-    problem_path = pddl_path + "problems/problem2_constraint.ppddl" #infant (new)
+    ###problem_path = pddl_path + "problems/problem2_constraint.ppddl" #infant (new)
 
     #test_file = 'p30.ppddl' #p30_or_test.ppddl' #p30.ppddl' #'p30_constraints_consts.ppddl' #'p30_constraints.ppddl'
     test_file = 'p30.ppddl' #marine
@@ -277,15 +277,15 @@ def get_probability_results():
 
     for file in domain_files:
 
-        if file != 'domain_deterministic.ppddl' and file == test_file: #will need to remove this test_file bit for full run
+        if file != 'domain_deterministic.ppddl': # and file == test_file: #will need to remove this test_file bit for full run
 
             print(file)
             label = file[1:3]
             
             prob_domain_path = path_to_prob_domains + file
 
-            #per_diff = compare_policies(prob_domain_path, det_domain_path, problem_path, output_path)
-            per_diff = compare_policies_testing(prob_domain_path, det_domain_path, problem_path, output_path)
+            per_diff = compare_policies(prob_domain_path, det_domain_path, problem_path, output_path)
+            ###per_diff = compare_policies_testing(prob_domain_path, det_domain_path, problem_path, output_path)
 
             percent_increase_list.append(per_diff)
             labels.append(label)
