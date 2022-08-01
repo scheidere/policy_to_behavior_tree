@@ -1,6 +1,6 @@
 ?
 	->
-		(has-bubbles_x)
-		(social-interaction_x)
-		[blow-bubbles(x: x)]
-	[go-to-infant(x: x)]
+		<!>
+			(infant-activity_moving-toward)
+		[spi)]
+	[go-to-infan)]

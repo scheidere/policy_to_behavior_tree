@@ -21,14 +21,14 @@ class Domain(object):
         self._requirements = requirements
         self._types = types
         if constants:  
-            input('constants is NOT None')      
+            #input('constants is NOT None')      
             self._constants = {}
-            print('test2 consts', constants)
+            #print('test2 consts', constants)
             for const in constants:
                 self._constants[const.type] = self._constants.get(const.type, [])
                 self._constants[const.type].append(str(const.value))
         else:
-            input('constants is None')
+            #input('constants is None')
             self._constants = constants # None
         # self._objects = {}
         # for obj in objects:

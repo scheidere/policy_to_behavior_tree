@@ -37,7 +37,7 @@ def parse():
 
 def main(domain, problem):
 
-    test = False
+    test = False # Making True breaks something
 
     domain_name = domain.name
 
@@ -48,8 +48,8 @@ def main(domain, problem):
 
     if test:
         # print('The follow matrices represent the transition probabilities\n and rewards for all state transitions: ')
-        # print('P:\n', P, '\n')
-        # print('R:\n', R, '\n')
+        print('P:\n', P, '\n')
+        print('R:\n', R, '\n')
 
         #print(P.shape)
         #return

@@ -3,51 +3,242 @@
 		<!>
 			(has-bubbles{x})
 		<!>
-			(child-moving-toward{x})
+			(infant-activity{moving-toward})
 		<!>
-			(social-interaction{x})
-		[go-to-infant(x: x)]
+			(infant-activity{moving-away})
+		(infant-activity{stationary})
+		<!>
+			(infant-robot-distance{direct-social-interaction})
+		<!>
+			(infant-robot-distance{social-interaction})
+		(infant-robot-distance{solitary-play})
+		[spi)]
 	->
 		<!>
 			(has-bubbles{x})
 		<!>
-			(child-moving-toward{x})
-		(social-interaction{x})
-		[refill-bubbles(x: x)]
+			(infant-activity{moving-toward})
+		<!>
+			(infant-activity{moving-away})
+		(infant-activity{stationary})
+		<!>
+			(infant-robot-distance{direct-social-interaction})
+		(infant-robot-distance{social-interaction})
+		<!>
+			(infant-robot-distance{solitary-play})
+		[spi)]
 	->
 		<!>
 			(has-bubbles{x})
-		(child-moving-toward{x})
 		<!>
-			(social-interaction{x})
-		[go-to-infant(x: x)]
+			(infant-activity{moving-toward})
+		<!>
+			(infant-activity{moving-away})
+		(infant-activity{stationary})
+		(infant-robot-distance{direct-social-interaction})
+		<!>
+			(infant-robot-distance{social-interaction})
+		<!>
+			(infant-robot-distance{solitary-play})
+		[spi)]
 	->
 		<!>
 			(has-bubbles{x})
-		(child-moving-toward{x})
-		(social-interaction{x})
-		[refill-bubbles(x: x)]
+		<!>
+			(infant-activity{moving-toward})
+		(infant-activity{moving-away})
+		<!>
+			(infant-activity{stationary})
+		<!>
+			(infant-robot-distance{direct-social-interaction})
+		<!>
+			(infant-robot-distance{social-interaction})
+		(infant-robot-distance{solitary-play})
+		[spi)]
+	->
+		<!>
+			(has-bubbles{x})
+		<!>
+			(infant-activity{moving-toward})
+		(infant-activity{moving-away})
+		<!>
+			(infant-activity{stationary})
+		<!>
+			(infant-robot-distance{direct-social-interaction})
+		(infant-robot-distance{social-interaction})
+		<!>
+			(infant-robot-distance{solitary-play})
+		[spi)]
+	->
+		<!>
+			(has-bubbles{x})
+		<!>
+			(infant-activity{moving-toward})
+		(infant-activity{moving-away})
+		<!>
+			(infant-activity{stationary})
+		(infant-robot-distance{direct-social-interaction})
+		<!>
+			(infant-robot-distance{social-interaction})
+		<!>
+			(infant-robot-distance{solitary-play})
+		[spi)]
+	->
+		<!>
+			(has-bubbles{x})
+		(infant-activity{moving-toward})
+		<!>
+			(infant-activity{moving-away})
+		<!>
+			(infant-activity{stationary})
+		<!>
+			(infant-robot-distance{direct-social-interaction})
+		<!>
+			(infant-robot-distance{social-interaction})
+		(infant-robot-distance{solitary-play})
+		[go-to-infan)]
+	->
+		<!>
+			(has-bubbles{x})
+		(infant-activity{moving-toward})
+		<!>
+			(infant-activity{moving-away})
+		<!>
+			(infant-activity{stationary})
+		<!>
+			(infant-robot-distance{direct-social-interaction})
+		(infant-robot-distance{social-interaction})
+		<!>
+			(infant-robot-distance{solitary-play})
+		[go-to-infan)]
+	->
+		<!>
+			(has-bubbles{x})
+		(infant-activity{moving-toward})
+		<!>
+			(infant-activity{moving-away})
+		<!>
+			(infant-activity{stationary})
+		(infant-robot-distance{direct-social-interaction})
+		<!>
+			(infant-robot-distance{social-interaction})
+		<!>
+			(infant-robot-distance{solitary-play})
+		[keep-awa)]
 	->
 		(has-bubbles{x})
 		<!>
-			(child-moving-toward{x})
+			(infant-activity{moving-toward})
 		<!>
-			(social-interaction{x})
-		[go-to-infant(x: x)]
+			(infant-activity{moving-away})
+		(infant-activity{stationary})
+		<!>
+			(infant-robot-distance{direct-social-interaction})
+		<!>
+			(infant-robot-distance{social-interaction})
+		(infant-robot-distance{solitary-play})
+		[spi)]
 	->
 		(has-bubbles{x})
 		<!>
-			(child-moving-toward{x})
-		(social-interaction{x})
-		[blow-bubbles(x: x)]
-	->
-		(has-bubbles{x})
-		(child-moving-toward{x})
+			(infant-activity{moving-toward})
 		<!>
-			(social-interaction{x})
-		[go-to-infant(x: x)]
+			(infant-activity{moving-away})
+		(infant-activity{stationary})
+		<!>
+			(infant-robot-distance{direct-social-interaction})
+		(infant-robot-distance{social-interaction})
+		<!>
+			(infant-robot-distance{solitary-play})
+		[spi)]
 	->
 		(has-bubbles{x})
-		(child-moving-toward{x})
-		(social-interaction{x})
-		[blow-bubbles(x: x)]
+		<!>
+			(infant-activity{moving-toward})
+		<!>
+			(infant-activity{moving-away})
+		(infant-activity{stationary})
+		(infant-robot-distance{direct-social-interaction})
+		<!>
+			(infant-robot-distance{social-interaction})
+		<!>
+			(infant-robot-distance{solitary-play})
+		[spi)]
+	->
+		(has-bubbles{x})
+		<!>
+			(infant-activity{moving-toward})
+		(infant-activity{moving-away})
+		<!>
+			(infant-activity{stationary})
+		<!>
+			(infant-robot-distance{direct-social-interaction})
+		<!>
+			(infant-robot-distance{social-interaction})
+		(infant-robot-distance{solitary-play})
+		[spi)]
+	->
+		(has-bubbles{x})
+		<!>
+			(infant-activity{moving-toward})
+		(infant-activity{moving-away})
+		<!>
+			(infant-activity{stationary})
+		<!>
+			(infant-robot-distance{direct-social-interaction})
+		(infant-robot-distance{social-interaction})
+		<!>
+			(infant-robot-distance{solitary-play})
+		[spi)]
+	->
+		(has-bubbles{x})
+		<!>
+			(infant-activity{moving-toward})
+		(infant-activity{moving-away})
+		<!>
+			(infant-activity{stationary})
+		(infant-robot-distance{direct-social-interaction})
+		<!>
+			(infant-robot-distance{social-interaction})
+		<!>
+			(infant-robot-distance{solitary-play})
+		[spi)]
+	->
+		(has-bubbles{x})
+		(infant-activity{moving-toward})
+		<!>
+			(infant-activity{moving-away})
+		<!>
+			(infant-activity{stationary})
+		<!>
+			(infant-robot-distance{direct-social-interaction})
+		<!>
+			(infant-robot-distance{social-interaction})
+		(infant-robot-distance{solitary-play})
+		[go-to-infan)]
+	->
+		(has-bubbles{x})
+		(infant-activity{moving-toward})
+		<!>
+			(infant-activity{moving-away})
+		<!>
+			(infant-activity{stationary})
+		<!>
+			(infant-robot-distance{direct-social-interaction})
+		(infant-robot-distance{social-interaction})
+		<!>
+			(infant-robot-distance{solitary-play})
+		[go-to-infan)]
+	->
+		(has-bubbles{x})
+		(infant-activity{moving-toward})
+		<!>
+			(infant-activity{moving-away})
+		<!>
+			(infant-activity{stationary})
+		(infant-robot-distance{direct-social-interaction})
+		<!>
+			(infant-robot-distance{social-interaction})
+		<!>
+			(infant-robot-distance{solitary-play})
+		[keep-awa)]
