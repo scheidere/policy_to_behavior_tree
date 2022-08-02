@@ -35,7 +35,7 @@
 
         :parameters ()
         :precondition (not (infant-robot-distance direct-social-interaction))
-        :effect (probabilistic 0.8 (and (infant-activity moving-toward) (increase reward 2))
+        :effect (probabilistic 0.8 (and (infant-activity moving-toward) (increase reward 1))
                                0.2 (increase reward -2)
                 )
     )
@@ -53,7 +53,7 @@
 
         :parameters (?x - None)
         :precondition (and (infant-robot-distance social-interaction) (has-bubbles ?x))
-        :effect (probabilistic 0.8 (and (infant-activity moving-toward) (increase reward 2))
+        :effect (probabilistic 0.8 (and (infant-activity moving-toward) (increase reward 3))
                                0.15 (increase reward -2)
                                0.05 (and (not (has-bubbles ?x)) (increase reward -2))
                 )
@@ -70,7 +70,7 @@
 
         :parameters ()
         :precondition (not (infant-activity moving-toward))
-        :effect (probabilistic 0.8 (and (infant-activity moving-toward) ( increase reward 2))
+        :effect (probabilistic 0.8 (and (infant-activity moving-toward) ( increase reward 1))
                                0.2 (increase reward -2)
                 )
     )
@@ -98,10 +98,20 @@
 
         :parameters ()
         :precondition (not (infant-robot-distance direct-social-interaction)) ; solitary play or social interaction distances
-        :effect (probabilistic 0.8 (and (infant-robot-distance direct-social-interaction) (infant-activity moving-toward) (increase reward 2))
+        :effect (probabilistic 0.8 (and (infant-robot-distance direct-social-interaction) (infant-activity moving-toward) (increase reward 1))
                                0.1 (and (infant-robot-distance direct-social-interaction) (infant-activity moving-away) (increase reward -2))
                                0.1 (and (infant-robot-distance social-interaction) (infant-activity moving-away) (increase reward -2))
                 )
     )
+
+    ; (:action explore
+
+    ;     :parameters (?x - None)
+    ;     :precondition (and (not (infant-activity move-toward)) (not (has-bubbles)))
+    ;     :effect (probabilistic 0.35 (infant-activity moving-away)
+    ;                            0.45 (infant-activity stationary)
+    ;                            0.2 (has-bubbles ?x)
+    ;             )
+    ; )
 
 )

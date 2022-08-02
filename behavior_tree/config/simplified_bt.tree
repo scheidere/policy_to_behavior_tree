@@ -2,5 +2,16 @@
 	->
 		<!>
 			(infant-activity_moving-toward)
+		<!>
+			(infant-robot-distance_social-interaction)
 		[spi)]
+	->
+		(has-bubbles_x)
+		<!>
+			(infant-activity_moving-toward)
+		[blow-bubbles(x: x)]
+	->
+		<!>
+			(infant-activity_moving-toward)
+		[refill-bubbles(x: x)]
 	[go-to-infan)]

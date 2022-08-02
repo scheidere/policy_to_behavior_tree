@@ -26,7 +26,7 @@
 		(infant-robot-distance{social-interaction})
 		<!>
 			(infant-robot-distance{solitary-play})
-		[spi)]
+		[refill-bubbles(x: x)]
 	->
 		<!>
 			(has-bubbles{x})
@@ -68,7 +68,7 @@
 		(infant-robot-distance{social-interaction})
 		<!>
 			(infant-robot-distance{solitary-play})
-		[spi)]
+		[refill-bubbles(x: x)]
 	->
 		<!>
 			(has-bubbles{x})
@@ -150,7 +150,7 @@
 		(infant-robot-distance{social-interaction})
 		<!>
 			(infant-robot-distance{solitary-play})
-		[spi)]
+		[blow-bubbles(x: x)]
 	->
 		(has-bubbles{x})
 		<!>
@@ -189,7 +189,7 @@
 		(infant-robot-distance{social-interaction})
 		<!>
 			(infant-robot-distance{solitary-play})
-		[spi)]
+		[blow-bubbles(x: x)]
 	->
 		(has-bubbles{x})
 		<!>
