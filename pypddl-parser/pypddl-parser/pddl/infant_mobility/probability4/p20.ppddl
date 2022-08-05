@@ -35,12 +35,13 @@
                 )
     )
 
+    ; typo at 9/1, instead of 8/2
     (:action move-toward
 
         :parameters ()
         :precondition (not (infant-robot-distance direct-social-interaction))
-        :effect (probabilistic 0.9 (and (infant-activity moving-toward) (increase reward 2))
-                               0.1 (increase reward -1)
+        :effect (probabilistic 0.8 (and (infant-activity moving-toward) (increase reward 2))
+                               0.2 (increase reward -1)
                 )
     )
 

@@ -70,7 +70,7 @@ def compare_policies(prob_domain_path, det_domain_path, problem_path, output_pat
     per_diff, difference = percentDifference(avg_reward_prob, avg_reward_det) # + if prob better, - if det better
 
     #return avg_reward_prob, avg_reward_det
-    return per_diff, difference
+    return per_diff, difference, avg_reward_prob, avg_reward_det
 
 def percentIncrease(prob_avg_rew, det_avg_rew):
 
@@ -168,15 +168,30 @@ def get_penalty_results():
 
     start_time = round(time.time())
 
-    pddl_path = "/home/scheidee/new_bt_generation_ws/src/bt_generation/policy_to_behavior_tree/pypddl-parser/pypddl-parser/pddl/marine/"
+    # Marine
+    # pddl_path = "/home/scheidee/new_bt_generation_ws/src/bt_generation/policy_to_behavior_tree/pypddl-parser/pypddl-parser/pddl/marine/"
 
-    test_fp_penalty = "false_positive_penalty/" # constant probability
-    test_np_penalty = "false_negative_penalty/" # constant probability
-    test_both_penalty = "both_false_penalty/" # constant probability
-    # test_fp_probability = "false_positive_probability_range" # constant penalty
-    # test_np_probability = "false_negative_probability_range" # constant penalty
+    # test_fp_penalty = "false_positive_penalty/" # constant probability
+    # test_np_penalty = "false_negative_penalty/" # constant probability
+    # test_both_penalty = "both_false_penalty/" # constant probability
+    # # test_fp_probability = "false_positive_probability_range" # constant penalty
+    # # test_np_probability = "false_negative_probability_range" # constant penalty
 
-    path_to_prob_domains = pddl_path + test_both_penalty
+    # # Path to policy and mdp_problem pickle files
+    # output_path = "/home/scheidee/new_bt_generation_ws/src/bt_generation/policy_to_behavior_tree/mdp_to_bt/src/mdp_to_bt/policy_eval_output/"
+    
+    # # Path to PPDDL domain and problem files
+    # det_domain_path = pddl_path + test_both_penalty + "domain_deterministic.ppddl"
+    # problem_path = pddl_path + "problems/problem1.ppddl"
+    # path_to_prob_domains = pddl_path + test_both_penalty
+
+
+    # Infant
+    pddl_path = "/home/scheidee/new_bt_generation_ws/src/bt_generation/policy_to_behavior_tree/pypddl-parser/pypddl-parser/pddl/infant_mobility/"
+    path_to_prob_domains = pddl_path + "probability4/"
+    problem_path = pddl_path + "problems/problem3.ppddl"
+    det_domain_path = path_to_prob_domains + "domain_deterministic.ppddl"
+
 
     domain_files = os.listdir(path_to_prob_domains)
     ###domain_files = ['fn1fp1.ppddl']#,'fn2fp2.ppddl']#,'fn2fp2.ppddl'] # for testing
@@ -185,12 +200,6 @@ def get_penalty_results():
     n = 4
     percent_increase_array = np.zeros((n,n))
 
-    # Path to policy and mdp_problem pickle files
-    output_path = "/home/scheidee/new_bt_generation_ws/src/bt_generation/policy_to_behavior_tree/mdp_to_bt/src/mdp_to_bt/policy_eval_output/"
-    
-    # Path to PPDDL domain and problem files
-    det_domain_path = pddl_path + test_both_penalty + "domain_deterministic.ppddl"
-    problem_path = pddl_path + "problems/problem1.ppddl"
 
     for file in domain_files:
 
@@ -242,11 +251,12 @@ def get_penalty_results():
 
     plt.xlabel('False Negative Penalty')
     plt.ylabel('False Positive Penalty')
+    plt.title('Infant Domain (Constant probabilities)')
 
     fig.colorbar(img)
 
-    plt.savefig(str(start_time) + '_fnfp_penalty_results')
-    #plt.show() #only this or savefig works, one at a time
+    #plt.savefig(str(start_time) + '_fnfp_penalty_results')
+    plt.show() #only this or savefig works, one at a time
 
 
 def get_probability_results():
@@ -274,9 +284,9 @@ def get_probability_results():
     # problem_path = pddl_path + "problems/problem2_constraint.ppddl"
 
     # Double new
-    path_to_prob_domains = pddl_path + "probability4/"
+    path_to_prob_domains = pddl_path + "probability4/" #FINAL
     #problem_path = pddl_path + "problems/problem2_constraint.ppddl"
-    problem_path = pddl_path + "problems/problem3.ppddl" # has orientation object added
+    problem_path = pddl_path + "problems/problem3.ppddl" # has orientation object added, FINAL
 
     # Both
     det_domain_path = path_to_prob_domains + "domain_deterministic.ppddl" # Use with marine domain
@@ -293,6 +303,8 @@ def get_probability_results():
     percent_increase_list = []
     labels = []
     difference_list = [] # diff between p and d avg rewards
+    probabilistic_avg_rew_list = []
+    deterministic_avg_rew_list = []
 
     for file in domain_files:
         print('file', file)
@@ -305,16 +317,20 @@ def get_probability_results():
             
             prob_domain_path = path_to_prob_domains + file
 
-            per_diff, difference = compare_policies(prob_domain_path, det_domain_path, problem_path, output_path)
+            per_diff, difference, p, d = compare_policies(prob_domain_path, det_domain_path, problem_path, output_path)
             ###per_diff = compare_policies_testing(prob_domain_path, det_domain_path, problem_path, output_path)
 
             percent_increase_list.append(per_diff)
             labels.append(label)
             difference_list.append(difference)
+            probabilistic_avg_rew_list.append(p)
+            deterministic_avg_rew_list.append(d)
 
     print(percent_increase_list)
     print(labels)
     print(difference_list)
+    print('p rewards', probabilistic_avg_rew_list)
+    print('d rewards', deterministic_avg_rew_list)
 
 
     # NEW PLOTTING WAY (Also in plot_penalty.py)
@@ -324,6 +340,7 @@ def get_probability_results():
     plt.xlabel('Action Effect Uncertainty') # Likelihood of action failure
     plt.ylabel('Percent Increase')
     plt.title('Infant Domain: All rewards 2 except bubbles (3) and penalties -2')
+    #plt.title('Marine Domain (Constant penalties)')
 
     #plt.savefig(str(start_time) + '_probability_results')
     plt.show() #only this or savefig works, one at a time
