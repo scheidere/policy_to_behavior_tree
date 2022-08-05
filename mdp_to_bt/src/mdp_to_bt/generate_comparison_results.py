@@ -256,8 +256,14 @@ def get_probability_results():
     #path_to_prob_domains = pddl_path + "probability2/" #old
     #problem_path = pddl_path + "problems/problem2.ppddl" #infant (old)
 
-    path_to_prob_domains = pddl_path + "probability3/"
-    problem_path = pddl_path + "problems/problem2_constraint.ppddl" #infant (new)
+    # New
+    #path_to_prob_domains = pddl_path + "probability3/"
+    #problem_path = pddl_path + "problems/problem2_constraint.ppddl"
+
+    # Double new
+    path_to_prob_domains = pddl_path + "probability4/"
+    #problem_path = pddl_path + "problems/problem2_constraint.ppddl"
+    problem_path = pddl_path + "problems/problem3.ppddl" # has orientation object added
 
     # Both
     det_domain_path = path_to_prob_domains + "domain_deterministic.ppddl" # Use with marine domain

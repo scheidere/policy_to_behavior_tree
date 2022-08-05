@@ -12,6 +12,26 @@
 		<!>
 			(infant-robot-distance{social-interaction})
 		(infant-robot-distance{solitary-play})
+		<!>
+			(infant-orientation{toward})
+		(infant-orientation{away})
+		[spi)]
+	->
+		<!>
+			(has-bubbles{x})
+		<!>
+			(infant-activity{moving-toward})
+		<!>
+			(infant-activity{moving-away})
+		(infant-activity{stationary})
+		<!>
+			(infant-robot-distance{direct-social-interaction})
+		<!>
+			(infant-robot-distance{social-interaction})
+		(infant-robot-distance{solitary-play})
+		(infant-orientation{toward})
+		<!>
+			(infant-orientation{away})
 		[spi)]
 	->
 		<!>
@@ -26,6 +46,26 @@
 		(infant-robot-distance{social-interaction})
 		<!>
 			(infant-robot-distance{solitary-play})
+		<!>
+			(infant-orientation{toward})
+		(infant-orientation{away})
+		[spi)]
+	->
+		<!>
+			(has-bubbles{x})
+		<!>
+			(infant-activity{moving-toward})
+		<!>
+			(infant-activity{moving-away})
+		(infant-activity{stationary})
+		<!>
+			(infant-robot-distance{direct-social-interaction})
+		(infant-robot-distance{social-interaction})
+		<!>
+			(infant-robot-distance{solitary-play})
+		(infant-orientation{toward})
+		<!>
+			(infant-orientation{away})
 		[refill-bubbles(x: x)]
 	->
 		<!>
@@ -40,7 +80,27 @@
 			(infant-robot-distance{social-interaction})
 		<!>
 			(infant-robot-distance{solitary-play})
+		<!>
+			(infant-orientation{toward})
+		(infant-orientation{away})
 		[spi)]
+	->
+		<!>
+			(has-bubbles{x})
+		<!>
+			(infant-activity{moving-toward})
+		<!>
+			(infant-activity{moving-away})
+		(infant-activity{stationary})
+		(infant-robot-distance{direct-social-interaction})
+		<!>
+			(infant-robot-distance{social-interaction})
+		<!>
+			(infant-robot-distance{solitary-play})
+		(infant-orientation{toward})
+		<!>
+			(infant-orientation{away})
+		[keep-awa)]
 	->
 		<!>
 			(has-bubbles{x})
@@ -54,6 +114,26 @@
 		<!>
 			(infant-robot-distance{social-interaction})
 		(infant-robot-distance{solitary-play})
+		<!>
+			(infant-orientation{toward})
+		(infant-orientation{away})
+		[lights-and-sound)]
+	->
+		<!>
+			(has-bubbles{x})
+		<!>
+			(infant-activity{moving-toward})
+		(infant-activity{moving-away})
+		<!>
+			(infant-activity{stationary})
+		<!>
+			(infant-robot-distance{direct-social-interaction})
+		<!>
+			(infant-robot-distance{social-interaction})
+		(infant-robot-distance{solitary-play})
+		(infant-orientation{toward})
+		<!>
+			(infant-orientation{away})
 		[spi)]
 	->
 		<!>
@@ -68,6 +148,26 @@
 		(infant-robot-distance{social-interaction})
 		<!>
 			(infant-robot-distance{solitary-play})
+		<!>
+			(infant-orientation{toward})
+		(infant-orientation{away})
+		[lights-and-sound)]
+	->
+		<!>
+			(has-bubbles{x})
+		<!>
+			(infant-activity{moving-toward})
+		(infant-activity{moving-away})
+		<!>
+			(infant-activity{stationary})
+		<!>
+			(infant-robot-distance{direct-social-interaction})
+		(infant-robot-distance{social-interaction})
+		<!>
+			(infant-robot-distance{solitary-play})
+		(infant-orientation{toward})
+		<!>
+			(infant-orientation{away})
 		[refill-bubbles(x: x)]
 	->
 		<!>
@@ -82,6 +182,43 @@
 			(infant-robot-distance{social-interaction})
 		<!>
 			(infant-robot-distance{solitary-play})
+		<!>
+			(infant-orientation{toward})
+		(infant-orientation{away})
+		[lights-and-sound)]
+	->
+		<!>
+			(has-bubbles{x})
+		<!>
+			(infant-activity{moving-toward})
+		(infant-activity{moving-away})
+		<!>
+			(infant-activity{stationary})
+		(infant-robot-distance{direct-social-interaction})
+		<!>
+			(infant-robot-distance{social-interaction})
+		<!>
+			(infant-robot-distance{solitary-play})
+		(infant-orientation{toward})
+		<!>
+			(infant-orientation{away})
+		[keep-awa)]
+	->
+		<!>
+			(has-bubbles{x})
+		(infant-activity{moving-toward})
+		<!>
+			(infant-activity{moving-away})
+		<!>
+			(infant-activity{stationary})
+		<!>
+			(infant-robot-distance{direct-social-interaction})
+		<!>
+			(infant-robot-distance{social-interaction})
+		(infant-robot-distance{solitary-play})
+		<!>
+			(infant-orientation{toward})
+		(infant-orientation{away})
 		[spi)]
 	->
 		<!>
@@ -96,7 +233,10 @@
 		<!>
 			(infant-robot-distance{social-interaction})
 		(infant-robot-distance{solitary-play})
-		[go-to-infan)]
+		(infant-orientation{toward})
+		<!>
+			(infant-orientation{away})
+		[spi)]
 	->
 		<!>
 			(has-bubbles{x})
@@ -110,7 +250,27 @@
 		(infant-robot-distance{social-interaction})
 		<!>
 			(infant-robot-distance{solitary-play})
-		[go-to-infan)]
+		<!>
+			(infant-orientation{toward})
+		(infant-orientation{away})
+		[spi)]
+	->
+		<!>
+			(has-bubbles{x})
+		(infant-activity{moving-toward})
+		<!>
+			(infant-activity{moving-away})
+		<!>
+			(infant-activity{stationary})
+		<!>
+			(infant-robot-distance{direct-social-interaction})
+		(infant-robot-distance{social-interaction})
+		<!>
+			(infant-robot-distance{solitary-play})
+		(infant-orientation{toward})
+		<!>
+			(infant-orientation{away})
+		[refill-bubbles(x: x)]
 	->
 		<!>
 			(has-bubbles{x})
@@ -124,6 +284,26 @@
 			(infant-robot-distance{social-interaction})
 		<!>
 			(infant-robot-distance{solitary-play})
+		<!>
+			(infant-orientation{toward})
+		(infant-orientation{away})
+		[spi)]
+	->
+		<!>
+			(has-bubbles{x})
+		(infant-activity{moving-toward})
+		<!>
+			(infant-activity{moving-away})
+		<!>
+			(infant-activity{stationary})
+		(infant-robot-distance{direct-social-interaction})
+		<!>
+			(infant-robot-distance{social-interaction})
+		<!>
+			(infant-robot-distance{solitary-play})
+		(infant-orientation{toward})
+		<!>
+			(infant-orientation{away})
 		[keep-awa)]
 	->
 		(has-bubbles{x})
@@ -137,6 +317,25 @@
 		<!>
 			(infant-robot-distance{social-interaction})
 		(infant-robot-distance{solitary-play})
+		<!>
+			(infant-orientation{toward})
+		(infant-orientation{away})
+		[spi)]
+	->
+		(has-bubbles{x})
+		<!>
+			(infant-activity{moving-toward})
+		<!>
+			(infant-activity{moving-away})
+		(infant-activity{stationary})
+		<!>
+			(infant-robot-distance{direct-social-interaction})
+		<!>
+			(infant-robot-distance{social-interaction})
+		(infant-robot-distance{solitary-play})
+		(infant-orientation{toward})
+		<!>
+			(infant-orientation{away})
 		[spi)]
 	->
 		(has-bubbles{x})
@@ -150,6 +349,25 @@
 		(infant-robot-distance{social-interaction})
 		<!>
 			(infant-robot-distance{solitary-play})
+		<!>
+			(infant-orientation{toward})
+		(infant-orientation{away})
+		[spi)]
+	->
+		(has-bubbles{x})
+		<!>
+			(infant-activity{moving-toward})
+		<!>
+			(infant-activity{moving-away})
+		(infant-activity{stationary})
+		<!>
+			(infant-robot-distance{direct-social-interaction})
+		(infant-robot-distance{social-interaction})
+		<!>
+			(infant-robot-distance{solitary-play})
+		(infant-orientation{toward})
+		<!>
+			(infant-orientation{away})
 		[blow-bubbles(x: x)]
 	->
 		(has-bubbles{x})
@@ -163,7 +381,26 @@
 			(infant-robot-distance{social-interaction})
 		<!>
 			(infant-robot-distance{solitary-play})
+		<!>
+			(infant-orientation{toward})
+		(infant-orientation{away})
 		[spi)]
+	->
+		(has-bubbles{x})
+		<!>
+			(infant-activity{moving-toward})
+		<!>
+			(infant-activity{moving-away})
+		(infant-activity{stationary})
+		(infant-robot-distance{direct-social-interaction})
+		<!>
+			(infant-robot-distance{social-interaction})
+		<!>
+			(infant-robot-distance{solitary-play})
+		(infant-orientation{toward})
+		<!>
+			(infant-orientation{away})
+		[keep-awa)]
 	->
 		(has-bubbles{x})
 		<!>
@@ -176,6 +413,25 @@
 		<!>
 			(infant-robot-distance{social-interaction})
 		(infant-robot-distance{solitary-play})
+		<!>
+			(infant-orientation{toward})
+		(infant-orientation{away})
+		[lights-and-sound)]
+	->
+		(has-bubbles{x})
+		<!>
+			(infant-activity{moving-toward})
+		(infant-activity{moving-away})
+		<!>
+			(infant-activity{stationary})
+		<!>
+			(infant-robot-distance{direct-social-interaction})
+		<!>
+			(infant-robot-distance{social-interaction})
+		(infant-robot-distance{solitary-play})
+		(infant-orientation{toward})
+		<!>
+			(infant-orientation{away})
 		[spi)]
 	->
 		(has-bubbles{x})
@@ -189,6 +445,25 @@
 		(infant-robot-distance{social-interaction})
 		<!>
 			(infant-robot-distance{solitary-play})
+		<!>
+			(infant-orientation{toward})
+		(infant-orientation{away})
+		[lights-and-sound)]
+	->
+		(has-bubbles{x})
+		<!>
+			(infant-activity{moving-toward})
+		(infant-activity{moving-away})
+		<!>
+			(infant-activity{stationary})
+		<!>
+			(infant-robot-distance{direct-social-interaction})
+		(infant-robot-distance{social-interaction})
+		<!>
+			(infant-robot-distance{solitary-play})
+		(infant-orientation{toward})
+		<!>
+			(infant-orientation{away})
 		[blow-bubbles(x: x)]
 	->
 		(has-bubbles{x})
@@ -202,6 +477,41 @@
 			(infant-robot-distance{social-interaction})
 		<!>
 			(infant-robot-distance{solitary-play})
+		<!>
+			(infant-orientation{toward})
+		(infant-orientation{away})
+		[lights-and-sound)]
+	->
+		(has-bubbles{x})
+		<!>
+			(infant-activity{moving-toward})
+		(infant-activity{moving-away})
+		<!>
+			(infant-activity{stationary})
+		(infant-robot-distance{direct-social-interaction})
+		<!>
+			(infant-robot-distance{social-interaction})
+		<!>
+			(infant-robot-distance{solitary-play})
+		(infant-orientation{toward})
+		<!>
+			(infant-orientation{away})
+		[keep-awa)]
+	->
+		(has-bubbles{x})
+		(infant-activity{moving-toward})
+		<!>
+			(infant-activity{moving-away})
+		<!>
+			(infant-activity{stationary})
+		<!>
+			(infant-robot-distance{direct-social-interaction})
+		<!>
+			(infant-robot-distance{social-interaction})
+		(infant-robot-distance{solitary-play})
+		<!>
+			(infant-orientation{toward})
+		(infant-orientation{away})
 		[spi)]
 	->
 		(has-bubbles{x})
@@ -215,7 +525,10 @@
 		<!>
 			(infant-robot-distance{social-interaction})
 		(infant-robot-distance{solitary-play})
-		[go-to-infan)]
+		(infant-orientation{toward})
+		<!>
+			(infant-orientation{away})
+		[spi)]
 	->
 		(has-bubbles{x})
 		(infant-activity{moving-toward})
@@ -228,7 +541,26 @@
 		(infant-robot-distance{social-interaction})
 		<!>
 			(infant-robot-distance{solitary-play})
-		[go-to-infan)]
+		<!>
+			(infant-orientation{toward})
+		(infant-orientation{away})
+		[spi)]
+	->
+		(has-bubbles{x})
+		(infant-activity{moving-toward})
+		<!>
+			(infant-activity{moving-away})
+		<!>
+			(infant-activity{stationary})
+		<!>
+			(infant-robot-distance{direct-social-interaction})
+		(infant-robot-distance{social-interaction})
+		<!>
+			(infant-robot-distance{solitary-play})
+		(infant-orientation{toward})
+		<!>
+			(infant-orientation{away})
+		[blow-bubbles(x: x)]
 	->
 		(has-bubbles{x})
 		(infant-activity{moving-toward})
@@ -241,4 +573,23 @@
 			(infant-robot-distance{social-interaction})
 		<!>
 			(infant-robot-distance{solitary-play})
+		<!>
+			(infant-orientation{toward})
+		(infant-orientation{away})
+		[spi)]
+	->
+		(has-bubbles{x})
+		(infant-activity{moving-toward})
+		<!>
+			(infant-activity{moving-away})
+		<!>
+			(infant-activity{stationary})
+		(infant-robot-distance{direct-social-interaction})
+		<!>
+			(infant-robot-distance{social-interaction})
+		<!>
+			(infant-robot-distance{solitary-play})
+		(infant-orientation{toward})
+		<!>
+			(infant-orientation{away})
 		[keep-awa)]

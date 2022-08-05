@@ -66,6 +66,8 @@ def getParamCombos(action,problem):
 
 def getStateList(domain,problem):
 
+    #input('IN GET STATE LIST')
+
     print('In getStateList')
     print('domain types', domain.types)
     print('HELLO', problem.objects)
@@ -110,6 +112,7 @@ def getStateList(domain,problem):
         print(i, '', states[i],'\n')
     #input('wait states')
 
+    #input('OUT GET STATE LIST')
 
     return states
 
@@ -1018,7 +1021,10 @@ def getPandR(domain,problem):
 
     # Get valid states
     states = getStateList(domain,problem)
-    print('States ', states)
+    # print('States: ')
+    # for state in states:
+    #     print(state)
+    # input('look at states for conflicts!')
 
     # Initialize actions with parameters list (used for reading policy)
     #actions_with_params = []

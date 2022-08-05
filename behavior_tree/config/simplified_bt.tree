@@ -1,17 +1,30 @@
 ?
 	->
+		(infant-robot-distance_solitary-play)
 		<!>
-			(infant-activity_moving-toward)
+			(infant-orientation_away)
+		[spi)]
+	->
 		<!>
-			(infant-robot-distance_social-interaction)
+			(infant-activity_moving-away)
+		<!>
+			(infant-orientation_toward)
 		[spi)]
 	->
 		(has-bubbles_x)
 		<!>
-			(infant-activity_moving-toward)
+			(infant-orientation_away)
+		<!>
+			(infant-robot-distance_direct-social-interaction)
 		[blow-bubbles(x: x)]
 	->
 		<!>
-			(infant-activity_moving-toward)
+			(infant-orientation_away)
+		<!>
+			(infant-robot-distance_direct-social-interaction)
 		[refill-bubbles(x: x)]
-	[go-to-infan)]
+	->
+		<!>
+			(infant-orientation_toward)
+		[lights-and-sound)]
+	[keep-awa)]
