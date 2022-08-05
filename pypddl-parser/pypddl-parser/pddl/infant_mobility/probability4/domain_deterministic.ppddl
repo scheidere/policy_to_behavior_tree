@@ -34,23 +34,21 @@
                 )
     )
 
-    ; (:action move-toward
+    (:action move-toward
 
-    ;     :parameters ()
-    ;     :precondition (not (infant-robot-distance direct-social-interaction))
-    ;     :effect (probabilistic 0.9 (and (infant-activity moving-toward) (increase reward 1))
-    ;                            0.1 (increase reward -2)
-    ;             )
-    ; )
+        :parameters ()
+        :precondition (not (infant-robot-distance direct-social-interaction))
+        :effect (probabilistic 1.0 (and (infant-activity moving-toward) (increase reward 2))
+                )
+    )
 
-    ; (:action move-away
+    (:action move-away
 
-    ;     :parameters ()
-    ;     :precondition (or (infant-robot-distance direct-social-interaction) (infant-robot-distance social-interaction) (infant-robot-distance solitary-play)) ;(or (direct-social-interaction) (social-interaction) (solitary-play))
-    ;     :effect (probabilistic 0.8 (and (infant-activity moving-toward) (increase reward 2))
-    ;                            0.2 (increase reward -2)
-    ;             )
-    ; )
+        :parameters ()
+        :precondition (or (infant-robot-distance direct-social-interaction) (infant-robot-distance social-interaction) (infant-robot-distance solitary-play)) ;(or (direct-social-interaction) (social-interaction) (solitary-play))
+        :effect (probabilistic 1.0 (and (infant-activity moving-toward) (increase reward 2))
+                )
+    )
 
     (:action blow-bubbles
 
@@ -71,7 +69,7 @@
 
         :parameters ()
         :precondition (and (not (infant-activity moving-toward)) (infant-orientation away))
-        :effect (probabilistic 1.0 (and (infant-activity moving-toward) (increase reward 1))
+        :effect (probabilistic 1.0 (and (infant-activity moving-toward) (increase reward 2))
                 )
     )
 
@@ -95,7 +93,7 @@
 
         :parameters ()
         :precondition (and (infant-robot-distance solitary-play) (infant-orientation obstructed))
-        :effect (probabilistic 1.0 (and (infant-robot-distance direct-social-interaction) (infant-activity moving-toward) (increase reward 1))
+        :effect (probabilistic 1.0 (and (infant-robot-distance direct-social-interaction) (infant-activity moving-toward) (increase reward 2))
                 )
     )
 

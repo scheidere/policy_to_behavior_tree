@@ -67,17 +67,24 @@ def compare_policies(prob_domain_path, det_domain_path, problem_path, output_pat
     print('\nAverage reward over %d trials: %f' % (num_trials, avg_reward_det))
 
     #percentIncrease(avg_reward_prob, avg_reward_det)
-    per_diff = percentDifference(avg_reward_prob, avg_reward_det) # + if prob better, - if det better
+    per_diff, difference = percentDifference(avg_reward_prob, avg_reward_det) # + if prob better, - if det better
 
     #return avg_reward_prob, avg_reward_det
-    return per_diff
+    return per_diff, difference
 
 def percentIncrease(prob_avg_rew, det_avg_rew):
 
     small = min(prob_avg_rew,det_avg_rew)
     less_small = max(prob_avg_rew,det_avg_rew)
 
-    percent =  100*(less_small - small)/small
+    if small == det_avg_rew and small < 0:
+
+        percent = 100*(less_small - small)/abs(small)
+
+    else: # small > 0 or small < 0 but is prob not det
+
+        percent =  100*(less_small - small)/small
+
     print('%f is %f percent higher than %f' %(less_small,percent,small))
 
     return percent
@@ -143,13 +150,19 @@ def percentDifference(prob_avg_rew, det_avg_rew):
     # percent =  100*(less_small - small)/small
     # print('%f is %f percent higher than %f' %(less_small,percent,small))
 
+    difference = prob_avg_rew - det_avg_rew
+
     dec_per_diff = (prob_avg_rew - det_avg_rew)/det_avg_rew
 
     per_diff = 100*dec_per_diff
 
+    if per_diff < 0 and det_avg_rew < prob_avg_rew:
+
+        per_diff = abs(per_diff)
+
     print('diff (+ if prob higher) ', per_diff)
 
-    return per_diff
+    return per_diff, difference
 
 def get_penalty_results():
 
@@ -257,8 +270,8 @@ def get_probability_results():
     #problem_path = pddl_path + "problems/problem2.ppddl" #infant (old)
 
     # New
-    #path_to_prob_domains = pddl_path + "probability3/"
-    #problem_path = pddl_path + "problems/problem2_constraint.ppddl"
+    # path_to_prob_domains = pddl_path + "probability3/"
+    # problem_path = pddl_path + "problems/problem2_constraint.ppddl"
 
     # Double new
     path_to_prob_domains = pddl_path + "probability4/"
@@ -279,10 +292,11 @@ def get_probability_results():
     # Init list to be plotted in histogram (y axis)
     percent_increase_list = []
     labels = []
+    difference_list = [] # diff between p and d avg rewards
 
     for file in domain_files:
         print('file', file)
-        input('press enter')
+        #input('press enter')
 
         if file != 'domain_deterministic.ppddl': # and file == test_file: #will need to remove this test_file bit for full run
 
@@ -291,14 +305,16 @@ def get_probability_results():
             
             prob_domain_path = path_to_prob_domains + file
 
-            per_diff = compare_policies(prob_domain_path, det_domain_path, problem_path, output_path)
+            per_diff, difference = compare_policies(prob_domain_path, det_domain_path, problem_path, output_path)
             ###per_diff = compare_policies_testing(prob_domain_path, det_domain_path, problem_path, output_path)
 
             percent_increase_list.append(per_diff)
             labels.append(label)
+            difference_list.append(difference)
 
     print(percent_increase_list)
     print(labels)
+    print(difference_list)
 
 
     # NEW PLOTTING WAY (Also in plot_penalty.py)
@@ -307,6 +323,7 @@ def get_probability_results():
 
     plt.xlabel('Action Effect Uncertainty') # Likelihood of action failure
     plt.ylabel('Percent Increase')
+    plt.title('Infant Domain: All rewards 2 except bubbles (3) and penalties -2')
 
     #plt.savefig(str(start_time) + '_probability_results')
     plt.show() #only this or savefig works, one at a time

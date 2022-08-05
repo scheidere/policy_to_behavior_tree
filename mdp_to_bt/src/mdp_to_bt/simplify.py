@@ -457,7 +457,7 @@ class Simplify:
 
         # dontcares = []
         dontcares = self.findInitialDontCares()
-        print('init dontcares', dontcares)
+        #print('init dontcares', dontcares)
 
         #print('self.actions', self.actions)
 
@@ -472,10 +472,10 @@ class Simplify:
             # print('action', action)
             action = self.actions[action_num]
 
-            print('action: ', action)
+            #print('action: ', action)
 
             # action_num = self.getActionNum(action)
-            print('action_num', action_num)
+            #print('action_num', action_num)
 
             #print('action num', action_num)
 
@@ -483,7 +483,7 @@ class Simplify:
             if not first_iter:
                 dontcares += prev_minterms
 
-            print('new dontcares', dontcares)
+            #print('new dontcares', dontcares)
 
             #action_num = self.policy[i]
             #print(self.policy)
@@ -491,7 +491,7 @@ class Simplify:
 
             # Get list of numeric states the policy states action a should be taken in
             minterms = self.getActionStates(action_num) # switch to take action num
-            print('minterms', minterms)
+            #print('minterms', minterms)
 
             prev_minterms = minterms
 
@@ -501,13 +501,13 @@ class Simplify:
             # Get the sum-of-product representation
             sop = SOPform(c, minterms, dontcares)
             # print('sop', sop)
-            print('sop', sop)
+            #print('sop', sop)
 
             # Simplify it
             sop_simplify = to_dnf(sop,simplify=True)
             #print('sop_simplify', sop_simplify)
             # print('sop_simplify', sop_simplify)
-            print('sop_simplify',sop_simplify)
+            #print('sop_simplify',sop_simplify)
 
             subtree_list = self.buildSubtree(sop_simplify,action)
             #print('out', subtree_list)
