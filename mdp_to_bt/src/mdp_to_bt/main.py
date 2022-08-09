@@ -90,14 +90,17 @@ def main(domain, problem):
         input('Scroll up to read the policy. Press return to simplify and evaluate.')
 
     # Simplify the policy using Boolean logic and the resulting behavior tree in a .tree file
-    print('Simplified policy behavior tree:\n')
-    simplify = Simplify(states, actions_with_params, policy, domain, problem)
-    simplified_policy_bt = simplify.bt
+    # print('Simplified policy behavior tree:\n')
+    # simplify = Simplify(states, actions_with_params, policy, domain, problem)
+    # simplified_policy_bt = simplify.bt
+    print('SIMPLIFICATION HAS BEEN COMMENTED OUT TO SAVE TIME')
+    print('Policy is equivalent, simplification result not used for plotting results')
 
     # Save the behavior trees in .tree files in behavior_tree/config
     print('Saving behavior trees to files...\n')
     raw_policy_bt.write_config('../../../behavior_tree/config/raw_policy_bt.tree')
-    simplified_policy_bt.write_config('../../../behavior_tree/config/simplified_bt.tree')
+    print('SKIPPING SAVE OF SIMPLIFIED POLICY WHILE GENERATING RESULTS')
+    # simplified_policy_bt.write_config('../../../behavior_tree/config/simplified_bt.tree')
     
     # Evaluate the policy (simplified policy is equivalent, by definition)
     mdp_problem = MDP_Problem(P, R, states, actions_with_params)

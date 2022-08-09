@@ -164,33 +164,38 @@ def percentDifference(prob_avg_rew, det_avg_rew):
 
     return per_diff, difference
 
-def get_penalty_results():
+def get_penalty_results(domain):
 
     start_time = round(time.time())
 
-    # Marine
-    # pddl_path = "/home/scheidee/new_bt_generation_ws/src/bt_generation/policy_to_behavior_tree/pypddl-parser/pypddl-parser/pddl/marine/"
+    # Path to policy and mdp_problem pickle files
+    # output_path = "/home/scheidee/new_bt_generation_ws/src/bt_generation/policy_to_behavior_tree/mdp_to_bt/src/mdp_to_bt/policy_eval_output/" # Desktop
+    output_path = "/home/scheidee/bt_synthesis_ws/src/policy_to_behavior_tree/mdp_to_bt/src/mdp_to_bt/policy_eval_output/" # Laptop
 
-    # test_fp_penalty = "false_positive_penalty/" # constant probability
-    # test_np_penalty = "false_negative_penalty/" # constant probability
-    # test_both_penalty = "both_false_penalty/" # constant probability
-    # # test_fp_probability = "false_positive_probability_range" # constant penalty
-    # # test_np_probability = "false_negative_probability_range" # constant penalty
+    if domain == 'm':
+        # Marine
+        #pddl_path = "/home/scheidee/new_bt_generation_ws/src/bt_generation/policy_to_behavior_tree/pypddl-parser/pypddl-parser/pddl/marine/"
+        pddl_path = "/home/scheidee/bt_synthesis_ws/src/policy_to_behavior_tree/pypddl-parser/pypddl-parser/pddl/marine/"
+        
+        test_fp_penalty = "false_positive_penalty/" # constant probability
+        test_np_penalty = "false_negative_penalty/" # constant probability
+        test_both_penalty = "both_false_penalty/" # constant probability
+        # test_fp_probability = "false_positive_probability_range" # constant penalty
+        # test_np_probability = "false_negative_probability_range" # constant penalty
 
-    # # Path to policy and mdp_problem pickle files
-    # output_path = "/home/scheidee/new_bt_generation_ws/src/bt_generation/policy_to_behavior_tree/mdp_to_bt/src/mdp_to_bt/policy_eval_output/"
-    
-    # # Path to PPDDL domain and problem files
-    # det_domain_path = pddl_path + test_both_penalty + "domain_deterministic.ppddl"
-    # problem_path = pddl_path + "problems/problem1.ppddl"
-    # path_to_prob_domains = pddl_path + test_both_penalty
+        # Path to PPDDL domain and problem files
+        det_domain_path = pddl_path + test_both_penalty + "domain_deterministic.ppddl"
+        problem_path = pddl_path + "problems/problem1.ppddl"
+        path_to_prob_domains = pddl_path + test_both_penalty
 
 
-    # Infant
-    pddl_path = "/home/scheidee/new_bt_generation_ws/src/bt_generation/policy_to_behavior_tree/pypddl-parser/pypddl-parser/pddl/infant_mobility/"
-    path_to_prob_domains = pddl_path + "probability4/"
-    problem_path = pddl_path + "problems/problem3.ppddl"
-    det_domain_path = path_to_prob_domains + "domain_deterministic.ppddl"
+    if domain == 'i':
+        # Infant
+        #pddl_path = "/home/scheidee/new_bt_generation_ws/src/bt_generation/policy_to_behavior_tree/pypddl-parser/pypddl-parser/pddl/infant_mobility/" # Desktop
+        pddl_path = "/home/scheidee/bt_synthesis_ws/src/policy_to_behavior_tree/pypddl-parser/pypddl-parser/pddl/infant_mobility/" # Laptop
+        path_to_prob_domains = pddl_path + "penalty_p30const/" #+ "penalty_p20const/"
+        problem_path = pddl_path + "problems/problem3.ppddl"
+        det_domain_path = path_to_prob_domains + "domain_deterministic.ppddl"
 
 
     domain_files = os.listdir(path_to_prob_domains)
@@ -212,7 +217,7 @@ def get_penalty_results():
 
             prob_domain_path = path_to_prob_domains + file
 
-            per_diff = compare_policies(prob_domain_path, det_domain_path)
+            per_diff, difference, p, d = compare_policies(prob_domain_path, det_domain_path, problem_path, output_path)
 
             # Add percent to unflipped array
             percent_increase_array[i][j] = per_diff
@@ -259,7 +264,7 @@ def get_penalty_results():
     plt.show() #only this or savefig works, one at a time
 
 
-def get_probability_results():
+def get_probability_results(domain):
 
     start_time = round(time.time())
 
@@ -267,26 +272,28 @@ def get_probability_results():
     #   domain p30 in probability2/ goes with problem2
     #   domain p30 in probability3/, p30_constraints or p30_constraints_consts all go with problem2_constraints
 
-    # Marine
-    # pddl_path = "/home/scheidee/bt_synthesis_ws/src/policy_to_behavior_tree/pypddl-parser/pypddl-parser/pddl/marine/" # Laptop
-    # path_to_prob_domains = pddl_path + 'probability_fn2fp2/'
-    # problem_path = pddl_path + "problems/problem1.ppddl"
+    if domain == 'm':
+        # Marine
+        pddl_path = "/home/scheidee/bt_synthesis_ws/src/policy_to_behavior_tree/pypddl-parser/pypddl-parser/pddl/marine/" # Laptop
+        path_to_prob_domains = pddl_path + 'probability_fn2fp2/'
+        problem_path = pddl_path + "problems/problem1.ppddl"
 
-    # Infant
-    pddl_path = "/home/scheidee/bt_synthesis_ws/src/policy_to_behavior_tree/pypddl-parser/pypddl-parser/pddl/infant_mobility/" # Laptop
-    #pddl_path = "/home/scheidee/new_bt_generation_ws/src/bt_generation/policy_to_behavior_tree/pypddl-parser/pypddl-parser/pddl/infant_mobility/" # Desktop
+    if domain == 'i':
+        # Infant
+        pddl_path = "/home/scheidee/bt_synthesis_ws/src/policy_to_behavior_tree/pypddl-parser/pypddl-parser/pddl/infant_mobility/" # Laptop
+        #pddl_path = "/home/scheidee/new_bt_generation_ws/src/bt_generation/policy_to_behavior_tree/pypddl-parser/pypddl-parser/pddl/infant_mobility/" # Desktop
 
-    #path_to_prob_domains = pddl_path + "probability2/" #old
-    #problem_path = pddl_path + "problems/problem2.ppddl" #infant (old)
+        #path_to_prob_domains = pddl_path + "probability2/" #old
+        #problem_path = pddl_path + "problems/problem2.ppddl" #infant (old)
 
-    # New
-    # path_to_prob_domains = pddl_path + "probability3/"
-    # problem_path = pddl_path + "problems/problem2_constraint.ppddl"
+        # New
+        # path_to_prob_domains = pddl_path + "probability3/"
+        # problem_path = pddl_path + "problems/problem2_constraint.ppddl"
 
-    # Double new
-    path_to_prob_domains = pddl_path + "probability4/" #FINAL
-    #problem_path = pddl_path + "problems/problem2_constraint.ppddl"
-    problem_path = pddl_path + "problems/problem3.ppddl" # has orientation object added, FINAL
+        # Double new
+        path_to_prob_domains = pddl_path + "probability4/" #FINAL
+        #problem_path = pddl_path + "problems/problem2_constraint.ppddl"
+        problem_path = pddl_path + "problems/problem3.ppddl" # has orientation object added, FINAL
 
     # Both
     det_domain_path = path_to_prob_domains + "domain_deterministic.ppddl" # Use with marine domain
@@ -350,11 +357,12 @@ def get_probability_results():
 def main():
 
     method = input('To generate penalty or probability plots, respectively, type pen or prob: ')
+    domain = input("Choose either the marine (type 'm') or infant (type 'i') domain: ")
 
     if method == "pen":
-        get_penalty_results()
+        get_penalty_results(domain)
     elif method == "prob":
-        get_probability_results()
+        get_probability_results(domain)
 
 
 if __name__ == "__main__":
