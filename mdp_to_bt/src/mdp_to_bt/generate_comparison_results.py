@@ -256,7 +256,10 @@ def get_penalty_results(domain):
 
     plt.xlabel('False Negative Penalty')
     plt.ylabel('False Positive Penalty')
-    plt.title('Infant Domain (Constant probabilities)')
+    if domain == 'i':
+        plt.title('Infant Domain - Constant Probability')
+    elif domain == 'm':
+        plt.title('Marine Domain - Constant Probability')
 
     fig.colorbar(img)
 
@@ -338,16 +341,25 @@ def get_probability_results(domain):
     print(difference_list)
     print('p rewards', probabilistic_avg_rew_list)
     print('d rewards', deterministic_avg_rew_list)
+    p_vals = [int(val) for val in probabilistic_avg_rew_list]
+    d_vals = [int(val) for val in deterministic_avg_rew_list]
 
 
     # NEW PLOTTING WAY (Also in plot_penalty.py)
     plt.bar(labels, percent_increase_list, align='center')
     plt.gca().set_xticks(labels)
 
+    for i in range(len(labels)):
+        plt.annotate('p:'+str(p_vals[i])+' d:'+str(d_vals[i]), xy=(labels[i],percent_increase_list[i]), ha='center', va='bottom')
+
+
     plt.xlabel('Action Effect Uncertainty') # Likelihood of action failure
     plt.ylabel('Percent Increase')
-    plt.title('Infant Domain: All rewards 2 except bubbles (3) and penalties -2')
-    #plt.title('Marine Domain (Constant penalties)')
+    #plt.title('Infant Domain: All rewards 2 except bubbles (3) and penalties -2')
+    if domain == 'i':
+        plt.title('Infant Domain - Constant Penalty') # All rewards 2 except 3 for bubbles
+    elif domain == 'm':
+        plt.title('Marine Domain - Constant Penalty')
 
     #plt.savefig(str(start_time) + '_probability_results')
     plt.show() #only this or savefig works, one at a time
@@ -369,5 +381,8 @@ if __name__ == "__main__":
 
     # Note: You will need to change three paths, two in this file, one in main
     # when using a new comp
+
+    Go to main.py and comment out simplification of bt because it is not needed for plotting
+    and slows it down
 
     main()
