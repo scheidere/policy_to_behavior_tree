@@ -117,7 +117,7 @@
 		<!>
 			(infant-orientation{toward})
 		(infant-orientation{away})
-		[move-towar)]
+		[lights-and-sound)]
 	->
 		<!>
 			(has-bubbles{x})
@@ -151,7 +151,7 @@
 		<!>
 			(infant-orientation{toward})
 		(infant-orientation{away})
-		[move-towar)]
+		[lights-and-sound)]
 	->
 		<!>
 			(has-bubbles{x})
@@ -185,7 +185,7 @@
 		<!>
 			(infant-orientation{toward})
 		(infant-orientation{away})
-		[move-awa)]
+		[lights-and-sound)]
 	->
 		<!>
 			(has-bubbles{x})
@@ -270,7 +270,7 @@
 		(infant-orientation{toward})
 		<!>
 			(infant-orientation{away})
-		[refill-bubbles(x: x)]
+		[spi)]
 	->
 		<!>
 			(has-bubbles{x})
@@ -416,7 +416,7 @@
 		<!>
 			(infant-orientation{toward})
 		(infant-orientation{away})
-		[move-towar)]
+		[lights-and-sound)]
 	->
 		(has-bubbles{x})
 		<!>
@@ -448,7 +448,7 @@
 		<!>
 			(infant-orientation{toward})
 		(infant-orientation{away})
-		[move-towar)]
+		[lights-and-sound)]
 	->
 		(has-bubbles{x})
 		<!>
@@ -480,7 +480,7 @@
 		<!>
 			(infant-orientation{toward})
 		(infant-orientation{away})
-		[move-awa)]
+		[lights-and-sound)]
 	->
 		(has-bubbles{x})
 		<!>
@@ -560,7 +560,7 @@
 		(infant-orientation{toward})
 		<!>
 			(infant-orientation{away})
-		[blow-bubbles(x: x)]
+		[spi)]
 	->
 		(has-bubbles{x})
 		(infant-activity{moving-toward})

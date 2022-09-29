@@ -472,7 +472,7 @@ class Simplify:
             # print('action', action)
             action = self.actions[action_num]
 
-            #print('action: ', action)
+            # print('action: ', action)
 
             # action_num = self.getActionNum(action)
             #print('action_num', action_num)

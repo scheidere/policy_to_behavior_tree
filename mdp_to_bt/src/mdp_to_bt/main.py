@@ -98,10 +98,11 @@ def main(domain, problem):
 
     # Save the behavior trees in .tree files in behavior_tree/config
     print('Saving behavior trees to files...\n')
-    raw_policy_bt.write_config('../../../behavior_tree/config/raw_policy_bt.tree')
+    raw_policy_bt.write_config('../../../behavior_tree/config/final_synthesized_BTs/raw_policy_bt.tree')
     print('SKIPPING SAVE OF SIMPLIFIED POLICY WHILE GENERATING RESULTS')
-    simplified_policy_bt.write_config('../../../behavior_tree/config/final_synthesized_BTs/simplified_bt_final.tree')
-    
+    simplified_policy_bt.write_config('../../../behavior_tree/config/final_synthesized_BTs/infant/simplified_bt_final.tree')
+    #simplified_policy_bt.write_config('../../../behavior_tree/config/final_synthesized_BTs/marine/simplified_bt_final.tree')
+
     # Evaluate the policy (simplified policy is equivalent, by definition)
     mdp_problem = MDP_Problem(P, R, states, actions_with_params)
     # if domain == prob_domain:

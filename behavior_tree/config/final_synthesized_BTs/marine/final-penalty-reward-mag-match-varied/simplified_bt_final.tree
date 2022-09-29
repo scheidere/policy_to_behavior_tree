@@ -1,0 +1,24 @@
+?
+	->
+		(at-drop-off_x)
+		(has-object_x)
+		<!>
+			(found-mine_x)
+		<!>
+			(found-target-to-report_x)
+		[drop-off(x: x)]
+	->
+		(found-target-to-report_x)
+		<!>
+			(in-comms-range_x)
+		[go-to-comms(x: x)]
+	->
+		(has-object_x)
+		<!>
+			(found-target-to-report_x)
+		[go-to-drop-off(x: x)]
+	->
+		<!>
+			(found-target-to-report_x)
+		[explore(x: x)]
+	[report(x: x)]
