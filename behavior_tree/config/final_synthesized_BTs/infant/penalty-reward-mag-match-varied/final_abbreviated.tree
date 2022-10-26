@@ -1,55 +1,55 @@
 ?
 	->
-		(infant-moving-toward)
+		(i-MT)
 		<!>
-			(infant-facing-toward)
-		[spin]
+			(i-FT)
+		[S]
 	->
-		(infant-moving-toward)
+		(i-MT)
 		<!>
 			(DSI)
-		[spin]
+		[S]
 	->
 		(SI)
 		<!>
-			(infant-facing-away)
-		[move-toward]
+			(i-FA)
+		[MT]
 	->
 		<!>
-			(infant-moving-away)
+			(i-MA)
 		<!>
-			(infant-facing-toward)
+			(i-FT)
 		<!>
 			(DSI)
-		[move-toward]
+		[MT]
 	->
-		(infant-activity_stationary)
+		(i-S)
 		<!>
-			(infant-robot-distance_social-interaction)
-		[move-awa)]
+			(SI)
+		[MA]
 	->
 		<!>
-			(infant-moving-toward)
+			(i-MT)
 		<!>
-			(infant-facing-away)
+			(i-FA)
 		<!>
 			(DSI)
-		[move-away]
+		[MA]
 	->
-		(has-bubbles)
+		(r-HB)
 		<!>
-			(infant-moving-toward)
+			(i-MT)
 		<!>
-			(infant-facing-away)
-		[blow-bubbles]
-	->
-		<!>
-			(infant-moving-toward)
-		<!>
-			(infant-facing-away)
-		[refill-bubbles]
+			(i-FA)
+		[BB]
 	->
 		<!>
-			(infant-moving-toward)
-		[lights-and-sound)]
-	[keep-awa)]
+			(i-MT)
+		<!>
+			(i-FA)
+		[RB]
+	->
+		<!>
+			(i-MT)
+		[LS]
+	[KA]

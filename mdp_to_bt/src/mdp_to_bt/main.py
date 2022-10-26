@@ -20,6 +20,7 @@ import itertools
 from itertools import product
 import numpy as np
 import copy
+import time
 
 np.set_printoptions(threshold=sys.maxsize) # So you can see matrices without truncation
 
@@ -93,15 +94,16 @@ def main(domain, problem):
     print('Simplified policy behavior tree:\n')
     simplify = Simplify(states, actions_with_params, policy, domain, problem)
     simplified_policy_bt = simplify.bt
-    #print('SIMPLIFICATION HAS BEEN COMMENTED OUT TO SAVE TIME')
-    #print('Policy is equivalent, simplification result not used for plotting results')
+    # print('SIMPLIFICATION HAS BEEN COMMENTED OUT TO SAVE TIME')
+    # print('Policy is equivalent, simplification result not used for plotting results')
 
     # Save the behavior trees in .tree files in behavior_tree/config
     print('Saving behavior trees to files...\n')
     raw_policy_bt.write_config('../../../behavior_tree/config/final_synthesized_BTs/raw_policy_bt.tree')
     print('SKIPPING SAVE OF SIMPLIFIED POLICY WHILE GENERATING RESULTS')
-    simplified_policy_bt.write_config('../../../behavior_tree/config/final_synthesized_BTs/infant/simplified_bt_final.tree')
-    #simplified_policy_bt.write_config('../../../behavior_tree/config/final_synthesized_BTs/marine/simplified_bt_final.tree')
+    #simplified_policy_bt.write_config('../../../behavior_tree/config/final_synthesized_BTs/infant/simplified_bt_final.tree')
+    # simplified_policy_bt.write_config('../../../behavior_tree/config/final_synthesized_BTs/marine/simplified_bt_final.tree')
+    simplified_policy_bt.write_config('../../../behavior_tree/config/final_synthesized_BTs/simplified_bt_final1.tree')
 
     # Evaluate the policy (simplified policy is equivalent, by definition)
     mdp_problem = MDP_Problem(P, R, states, actions_with_params)
@@ -126,6 +128,8 @@ def main(domain, problem):
 
 if __name__ == '__main__':
 
+    start_time = time.time()
+
     # Define domain and problem to consider (they represent an MDP)
     #print('\nFor the following domain and problem: \n\n')
     args = parse()
@@ -139,4 +143,7 @@ if __name__ == '__main__':
     print('Solving ', domain.name, '...')
 
     mdp_problem, policy = main(domain, problem)
+
+    time_elapsed = time.time() - start_time
+    print("Time elapsed: ", time_elapsed)
 

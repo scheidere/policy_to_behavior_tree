@@ -1,42 +1,42 @@
 ?
 	->
-		(found-object)
+		(FO)
 		<!>
-			(found-target-to-report)
+			(FTTR)
 		<!>
-			(has-object)
-		[pick-up]
+			(HO)
+		[PU]
 	->
-		(at-drop-off)
-		(has-object)
+		(ADO)
+		(HO)
 		<!>
-			(found-target-to-report)
-		[drop-off]
+			(FTTR)
+		[DO]
 	->
-		(at-drop-off)
-		(has-object)
+		(ADO)
+		(HO)
 		<!>
-			(in-comms-range)
-		[drop-off]
+			(ICR)
+		[DO]
 	->
-		(found-mine)
+		(FM)
 		<!>
-			(found-target-to-report)
+			(FTTR)
 		<!>
-			(has-object)
-		[disarm]
+			(HO)
+		[D]
 	->
-		(found-target-to-report)
+		(FTTR)
 		<!>
-			(in-comms-range)
-		[go-to-comms]
+			(ICR)
+		[GTC]
 	->
-		(has-object)
+		(HO)
 		<!>
-			(found-target-to-report)
-		[go-to-drop-off]
+			(FTTR)
+		[GTDO]
 	->
 		<!>
-			(found-target-to-report)
-		[explore]
-	[report]
+			(FTTR)
+		[E]
+	[R]

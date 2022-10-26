@@ -68,9 +68,9 @@ def getStateList(domain,problem):
 
     #input('IN GET STATE LIST')
 
-    print('In getStateList')
-    print('domain types', domain.types)
-    print('HELLO', problem.objects)
+    # print('In getStateList')
+    # print('domain types', domain.types)
+    # print('HELLO', problem.objects)
 
     # Get all states (valid and invalid)
 
@@ -974,10 +974,10 @@ def preconditionSatisfiedActionParams(action, combo_dict, test=False):
 def getActionsWithParamsList(domain,problem):
 
     # Has bugs with infant domain
-    input('HELLO')
+    # input('HELLO')
 
     # Get all action/param combos
-    print('In getActionsWithParamsList')
+    # print('In getActionsWithParamsList')
 
     # Initialize actions with parameters list (used for reading policy)
     actions_with_params = []
@@ -985,11 +985,11 @@ def getActionsWithParamsList(domain,problem):
     # Loop through all actions in domain
     for action in domain.operators:
 
-        print('action: ', action)
+        # print('action: ', action)
 
         # Get all possible combos of action parameter values
         param_combos = getParamCombos(action,problem)
-        print('param_combos ', param_combos)
+        # print('param_combos ', param_combos)
 
         for combo_dict in param_combos:
 
@@ -1000,9 +1000,9 @@ def getActionsWithParamsList(domain,problem):
                 #actions_with_params.append([action.name,combo_dict])
                 actions_with_params.append([action,combo_dict])
 
-    print(actions_with_params)
-    print('end')
-    input('bye')
+    # print(actions_with_params)
+    # print('end')
+    # input('bye')
     return actions_with_params
 
 def getActions(domain):
@@ -1047,11 +1047,11 @@ def getPandR(domain,problem):
         # Get valid action/param combos
         actions = getActionsWithParamsList(domain,problem) # old var name: actions_with_params
         #print('actions: ', actions)
-        input('yo1')
-        print('actions: ')
-        for action in actions:
-            print(action[0]._name, action[1])
-        input('yo2')
+        # input('yo1')
+        # print('actions: ')
+        # for action in actions:
+        #     print(action[0]._name, action[1])
+        # input('yo2')
 
         #input("YOU ARE HERE")
 
@@ -1300,7 +1300,7 @@ def get_average_reward(num_runs, mdp_problem, policy):
         rewards.append(reward)
 
 
-    return sum(rewards)/len(rewards)
+    return sum(rewards)/len(rewards), rewards
 
 
 def getAverageRewardInSameWorld():

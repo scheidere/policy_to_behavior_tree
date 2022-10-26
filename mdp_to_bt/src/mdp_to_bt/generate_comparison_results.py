@@ -1,6 +1,3 @@
-
-
-
 from main import *
 import os
 import sys
@@ -59,11 +56,11 @@ def compare_policies(prob_domain_path, det_domain_path, problem_path, output_pat
     num_trials = 100
     print('Probabilistic path', prob_domain_path)
     print('Probabilistic: ', prob_policy)
-    avg_reward_prob = get_average_reward(num_trials, mdp_problem, prob_policy)
+    avg_reward_prob, prob_rewards = get_average_reward(num_trials, mdp_problem, prob_policy)
     print('\nAverage reward over %d trials: %f' % (num_trials, avg_reward_prob))
     print('Deterministic path', det_domain_path)
     print('Deterministic: ', det_policy)
-    avg_reward_det = get_average_reward(num_trials, mdp_problem, det_policy)
+    avg_reward_det, det_rewards = get_average_reward(num_trials, mdp_problem, det_policy)
     print('\nAverage reward over %d trials: %f' % (num_trials, avg_reward_det))
 
     #percentIncrease(avg_reward_prob, avg_reward_det)
@@ -227,6 +224,7 @@ def get_penalty_results(domain):
     #percent_increase_array = np.flip(percent_increase_array,axis=0) 
 
     print(percent_increase_array)
+    np.save("imshow_probability_array_" + domain + ".npy",percent_increase_array)
 
     # OLD PLOTTING WAY
     # plt.figure(figsize=(12,4))
