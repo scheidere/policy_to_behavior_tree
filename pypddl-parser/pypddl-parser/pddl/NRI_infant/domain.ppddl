@@ -75,6 +75,17 @@
                                0.05 (and (infant-robot-distance solitary-play) (infant-activity stationary) (increase reward -2))
                 )
     )
+    
+    (:action chase
+
+        :parameters ()
+        ;:precondition (infant-robot-distance direct-social-interaction)
+        :precondition (and (infant-robot-distance direct-social-interaction) (infant-orientation toward))
+        :effect (probabilistic 0.9 (and (infant-robot-distance social-interaction) (infant-activity moving-toward) (increase reward 2))
+                               0.05 (and (infant-robot-distance social-interaction) (infant-activity stationary) (increase reward -2)) 
+                               0.05 (and (infant-robot-distance solitary-play) (infant-activity stationary) (increase reward -2))
+                )
+    )
 
     (:action keep-away-bubbles
 
