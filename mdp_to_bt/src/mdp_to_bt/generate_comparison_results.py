@@ -380,7 +380,7 @@ if __name__ == "__main__":
     # Note: You will need to change three paths, two in this file, one in main
     # when using a new comp
 
-    Go to main.py and comment out simplification of bt because it is not needed for plotting
-    and slows it down
+    #Go to main.py and comment out simplification of bt because it is not needed for plotting
+    #and slows it down
 
     main()

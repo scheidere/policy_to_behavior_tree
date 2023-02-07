@@ -8,23 +8,28 @@ import numpy as np
 from behavior_tree.behavior_tree import *
 from itertools import product
 import itertools
+import time
 
 
 
 class Simplify:
     def __init__(self, states, actions_with_params, policy, domain, problem):
 
+        simplification_start_time = time.time()
         self.states = states
         self.actions = actions_with_params # all possible actions in the domain
         self.policy = policy
         self.action_nums_in_policy = list(np.unique(self.policy))
         self.domain = domain
         self.problem = problem
+        self.simplification_runtime = None
+        self.policy_to_bt_runtime = None
 
+        # simplification_start_time = time.time()
         # Get condition names with parameters! E.g. ['robot-at', {'?x': 'left-cell'}]
         self.conditions = self.getConditionsWithParamsList()
 
-        self.run()
+        self.run(simplification_start_time)
         #self.test()
 
     def test(self):
@@ -443,7 +448,7 @@ class Simplify:
         print('\nNumber of subtrees: ', len(bt.root.children))
         print('\n++++++++++++++++++\n')
 
-    def run(self):
+    def run(self, simplification_start_time):
 
         # Create list for subtrees
         subtrees = []
@@ -523,7 +528,11 @@ class Simplify:
 
             first_iter = False
 
+        self.simplification_runtime = time.time() - simplification_start_time
+
+        policy_to_bt_start_time = time.time()
         self.bt = self.buildFullTree(subtrees)
+        self.policy_to_bt_runtime = time.time() - policy_to_bt_start_time
         self.printBT(self.bt)
         
 

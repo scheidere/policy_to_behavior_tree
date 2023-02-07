@@ -26,19 +26,20 @@ def get_graphviz(tree):
         if node.is_active:
             style += 'penwidth=2 color=black style=filled '
             if node.status == bt.ReturnStatus.SUCCESS:
-                style += 'fillcolor=green'
+                style += 'fillcolor=yellowgreen'#'fillcolor=green'
             elif node.status == bt.ReturnStatus.RUNNING:
                 style += 'fillcolor=lightblue'
             elif node.status == bt.ReturnStatus.FAILURE:
-                style += 'fillcolor=red'
+                style += 'fillcolor=indianred2' #'fillcolor=#FF0000'
+		#print(style)
         else:
             style += 'penwidth=2 '
             if node.status == bt.ReturnStatus.SUCCESS:
-                style += 'color=green'
+                style += 'color=yellowgreen'#'color=green'
             elif node.status == bt.ReturnStatus.RUNNING:
                 style += 'color=lightblue'
             elif node.status == bt.ReturnStatus.FAILURE:
-                style += 'color=red'
+                style += 'color=indianred2'#'color=#FF0000'
         
         if isinstance(node, bt.Condition):
             name = 'condition_%d' % (counts[bt.Condition])
@@ -66,6 +67,7 @@ def get_graphviz(tree):
             counts[bt.Decorator] += 1
             
         node_names[node] = name
+	#print(gv)
         
         for child in node.children:
             nodes_worklist.append(child)

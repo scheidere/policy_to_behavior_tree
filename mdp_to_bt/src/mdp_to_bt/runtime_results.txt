@@ -1,0 +1,234 @@
+Total time elapsed: 0.18255114555358887
+PPDDL to matrices runtime: 0.10206484794616699
+PPDDL to matrices runtime percentage: 0.5591027524733079
+Solver runtime: 0.005532741546630859
+Solver runtime percentage: 0.03030789825970549
+Simplification runtime: 0.06806802749633789
+Simplification runtime percentage: 0.3728709961798413
+Policy to BT runtime: 0.0027894973754882812
+Policy to BT runtime percentage: 0.015280634734058184
+Total time elapsed: 0.2199716567993164
+PPDDL to matrices runtime: 0.15482306480407715
+PPDDL to matrices runtime percentage: 0.7038318802377557
+Solver runtime: 0.005827665328979492
+Solver runtime percentage: 0.02649280099888579
+Simplification runtime: 0.051285743713378906
+Simplification runtime percentage: 0.23314705385052265
+Policy to BT runtime: 0.002874135971069336
+Policy to BT runtime percentage: 0.013065937734384822
+Total time elapsed: 0.1841123104095459
+PPDDL to matrices runtime: 0.10407304763793945
+PPDDL to matrices runtime percentage: 0.5652693587215092
+Solver runtime: 0.00543212890625
+Solver runtime percentage: 0.02950443071496187
+Simplification runtime: 0.06789064407348633
+Simplification runtime percentage: 0.36874581565169645
+Policy to BT runtime: 0.002844572067260742
+Policy to BT runtime percentage: 0.015450200265985344
+Total time elapsed: 0.21163702011108398
+PPDDL to matrices runtime: 0.12908363342285156
+PPDDL to matrices runtime percentage: 0.6099293656426374
+Solver runtime: 0.005136251449584961
+Solver runtime percentage: 0.02426915407752881
+Simplification runtime: 0.06950879096984863
+Simplification runtime percentage: 0.32843399010893687
+Policy to BT runtime: 0.0028066635131835938
+Policy to BT runtime percentage: 0.01326168508567373
+Total time elapsed: 0.1818408966064453
+PPDDL to matrices runtime: 0.09607124328613281
+PPDDL to matrices runtime percentage: 0.5283258336217838
+Solver runtime: 0.005873918533325195
+Solver runtime percentage: 0.03230251633678425
+Simplification runtime: 0.07324719429016113
+Simplification runtime percentage: 0.4028092450989647
+Policy to BT runtime: 0.002925872802734375
+Policy to BT runtime percentage: 0.016090290233592413
+Total time elapsed: 0.1908247470855713
+PPDDL to matrices runtime: 0.13073492050170898
+PPDDL to matrices runtime percentage: 0.6851046444363094
+Solver runtime: 0.00509333610534668
+Solver runtime percentage: 0.02669117178529618
+Simplification runtime: 0.04692959785461426
+Simplification runtime percentage: 0.24593035532005542
+Policy to BT runtime: 0.002922534942626953
+Policy to BT runtime percentage: 0.01531528267304033
+Total time elapsed: 0.1745302677154541
+PPDDL to matrices runtime: 0.0953054428100586
+PPDDL to matrices runtime percentage: 0.546068278342643
+Solver runtime: 0.005368471145629883
+Solver runtime percentage: 0.03075954226107293
+Simplification runtime: 0.06750226020812988
+Simplification runtime percentage: 0.38676535074238455
+Policy to BT runtime: 0.0029134750366210938
+Policy to BT runtime percentage: 0.016693236507097357
+Total time elapsed: 0.2217845916748047
+PPDDL to matrices runtime: 0.1729729175567627
+PPDDL to matrices runtime percentage: 0.7799140429484258
+Solver runtime: 0.004619121551513672
+Solver runtime percentage: 0.0208270624962375
+Simplification runtime: 0.0361475944519043
+Simplification runtime percentage: 0.16298514779108866
+Policy to BT runtime: 0.002992391586303711
+Policy to BT runtime percentage: 0.013492333095399857
+Total time elapsed: 0.20080089569091797
+PPDDL to matrices runtime: 0.12002253532409668
+PPDDL to matrices runtime percentage: 0.5977191232694545
+Solver runtime: 0.005690336227416992
+Solver runtime percentage: 0.028338201420056518
+Simplification runtime: 0.06833195686340332
+Simplification runtime percentage: 0.3402970720239367
+Policy to BT runtime: 0.0030357837677001953
+Policy to BT runtime percentage: 0.015118377621049133
+Total time elapsed: 0.197052001953125
+PPDDL to matrices runtime: 0.13252949714660645
+PPDDL to matrices runtime percentage: 0.6725610287285116
+Solver runtime: 0.005446910858154297
+Solver runtime percentage: 0.027641997057457023
+Simplification runtime: 0.05199265480041504
+Simplification runtime percentage: 0.26385245663620877
+Policy to BT runtime: 0.0031206607818603516
+Policy to BT runtime percentage: 0.015836737261886325
+Total time elapsed: 0.1918787956237793
+PPDDL to matrices runtime: 0.1037449836730957
+PPDDL to matrices runtime percentage: 0.5406797730610663
+Solver runtime: 0.0076410770416259766
+Solver runtime percentage: 0.0398224150656438
+Simplification runtime: 0.0719597339630127
+Simplification runtime percentage: 0.3750270254150731
+Policy to BT runtime: 0.002876758575439453
+Policy to BT runtime percentage: 0.014992581989517867
+Total time elapsed: 0.1962873935699463
+PPDDL to matrices runtime: 0.13242888450622559
+PPDDL to matrices runtime percentage: 0.6746683120993965
+Solver runtime: 0.0054035186767578125
+Solver runtime percentage: 0.02752860781572449
+Simplification runtime: 0.05133700370788574
+Simplification runtime percentage: 0.26153999385392007
+Policy to BT runtime: 0.003053426742553711
+Policy to BT runtime percentage: 0.015555898354040925
+Total time elapsed: 0.20313024520874023
+PPDDL to matrices runtime: 0.11941123008728027
+PPDDL to matrices runtime percentage: 0.5878554912616345
+Solver runtime: 0.00612950325012207
+Solver runtime percentage: 0.030175236798553974
+Simplification runtime: 0.07082748413085938
+Simplification runtime percentage: 0.3486801488280379
+Policy to BT runtime: 0.00292205810546875
+Policy to BT runtime percentage: 0.014385145365555933
+Total time elapsed: 0.21510553359985352
+PPDDL to matrices runtime: 0.13007283210754395
+PPDDL to matrices runtime percentage: 0.6046931007805209
+Solver runtime: 0.00551605224609375
+Solver runtime percentage: 0.025643469760080157
+Simplification runtime: 0.0724785327911377
+Simplification runtime percentage: 0.33694406451655806
+Policy to BT runtime: 0.0028913021087646484
+Policy to BT runtime percentage: 0.013441319060360135
+Total time elapsed: 0.18312287330627441
+PPDDL to matrices runtime: 0.09978532791137695
+PPDDL to matrices runtime percentage: 0.5449091427507542
+Solver runtime: 0.005563497543334961
+Solver runtime percentage: 0.030381226784433252
+Simplification runtime: 0.07097887992858887
+Simplification runtime percentage: 0.3876024804933906
+Policy to BT runtime: 0.002947092056274414
+Policy to BT runtime percentage: 0.016093522360504795
+Total time elapsed: 0.20520520210266113
+PPDDL to matrices runtime: 0.1361246109008789
+PPDDL to matrices runtime percentage: 0.6633584797366773
+Solver runtime: 0.007049560546875
+Solver runtime percentage: 0.03435371264783146
+Simplification runtime: 0.05501723289489746
+Simplification runtime percentage: 0.2681083731365307
+Policy to BT runtime: 0.002965688705444336
+Policy to BT runtime percentage: 0.01445230761723402
+Total time elapsed: 0.18110060691833496
+PPDDL to matrices runtime: 0.09645438194274902
+PPDDL to matrices runtime percentage: 0.5326010971693977
+Solver runtime: 0.005646467208862305
+Solver runtime percentage: 0.03117862112636932
+Simplification runtime: 0.0724029541015625
+Simplification runtime percentage: 0.3997940997194543
+Policy to BT runtime: 0.0029115676879882812
+Policy to BT runtime percentage: 0.016077073056421153
+Total time elapsed: 0.17505145072937012
+PPDDL to matrices runtime: 0.12989401817321777
+PPDDL to matrices runtime percentage: 0.7420333715144937
+Solver runtime: 0.00478816032409668
+Solver runtime percentage: 0.02735287427865528
+Simplification runtime: 0.03367948532104492
+Simplification runtime percentage: 0.19239763612764038
+Policy to BT runtime: 0.0028672218322753906
+Policy to BT runtime percentage: 0.016379309170697028
+Total time elapsed: 32.897117137908936
+PPDDL to matrices runtime: 0.1372509002685547
+PPDDL to matrices runtime percentage: 0.004172125469024575
+Solver runtime: 0.01320028305053711
+Solver runtime percentage: 0.00040125956919567844
+Simplification runtime: 32.738720655441284
+Simplification runtime percentage: 0.9951850953442628
+Policy to BT runtime: 0.002711772918701172
+Policy to BT runtime percentage: 8.24319318721173e-05
+Total time elapsed: 30.01828169822693
+PPDDL to matrices runtime: 0.14359474182128906
+PPDDL to matrices runtime percentage: 0.004783576330745496
+Solver runtime: 0.0014104843139648438
+Solver runtime percentage: 4.698751008283582e-05
+Simplification runtime: 29.863632440567017
+Simplification runtime percentage: 0.9948481642215701
+Policy to BT runtime: 0.003681659698486328
+Policy to BT runtime percentage: 0.0001226472499491465
+Total time elapsed: 45.71743321418762
+PPDDL to matrices runtime: 0.13352370262145996
+PPDDL to matrices runtime percentage: 0.002920629904918266
+Solver runtime: 0.016157865524291992
+Solver runtime percentage: 0.00035342897420753873
+Simplification runtime: 45.55955934524536
+Simplification runtime percentage: 0.9965467468787538
+Policy to BT runtime: 0.003648519515991211
+Policy to BT runtime percentage: 7.980586965365666e-05
+Total time elapsed: 31.789886236190796
+PPDDL to matrices runtime: 0.1480567455291748
+PPDDL to matrices runtime percentage: 0.004657353739146807
+Solver runtime: 0.0014622211456298828
+Solver runtime percentage: 4.599642586846491e-05
+Simplification runtime: 31.630672693252563
+Simplification runtime percentage: 0.9949916919565136
+Policy to BT runtime: 0.0036497116088867188
+Policy to BT runtime percentage: 0.00011480731896208393
+Total time elapsed: 42.98198938369751
+PPDDL to matrices runtime: 0.138413667678833
+PPDDL to matrices runtime percentage: 0.0032202713197665867
+Solver runtime: 0.0131683349609375
+Solver runtime percentage: 0.000306368670918989
+Simplification runtime: 42.8230402469635
+Simplification runtime percentage: 0.9963019595180884
+Policy to BT runtime: 0.0030438899993896484
+Policy to BT runtime percentage: 7.081780166611263e-05
+Total time elapsed: 26.60931634902954
+PPDDL to matrices runtime: 0.14445114135742188
+PPDDL to matrices runtime percentage: 0.00542859273281142
+Solver runtime: 0.0013463497161865234
+Solver runtime percentage: 5.059692998221751e-05
+Simplification runtime: 26.45346689224243
+Simplification runtime percentage: 0.9941430491958959
+Policy to BT runtime: 0.0036821365356445312
+Policy to BT runtime percentage: 0.00013837772031970378
+Total time elapsed: 37.600830078125
+PPDDL to matrices runtime: 0.1194605827331543
+PPDDL to matrices runtime percentage: 0.003177073018998396
+Solver runtime: 0.01230621337890625
+Solver runtime percentage: 0.00032728568367605335
+Simplification runtime: 37.46172022819519
+Simplification runtime percentage: 0.9963003516241323
+Policy to BT runtime: 0.0029287338256835938
+Policy to BT runtime percentage: 7.789013752085863e-05
+Total time elapsed: 31.195831775665283
+PPDDL to matrices runtime: 0.14679479598999023
+PPDDL to matrices runtime percentage: 0.004705590062339657
+Solver runtime: 0.0015535354614257812
+Solver runtime percentage: 4.9799456305493894e-05
+Simplification runtime: 31.037492990493774
+Simplification runtime percentage: 0.9949243608469827
+Policy to BT runtime: 0.0036301612854003906
+Policy to BT runtime percentage: 0.00011636686950697515

@@ -1,0 +1,16 @@
+?
+	->
+		(is_moving_toward)
+		(is_sp)
+		[selected]
+	->
+		(is_moving_away)
+		(is_dsi)
+		[sounds]
+	->
+		<!>
+			(is_moving_away)
+		<!>
+			(is_sp)
+		[keep_away_bubbles]
+	[chase_sounds]

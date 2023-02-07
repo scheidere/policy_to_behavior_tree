@@ -756,8 +756,9 @@ def outcome(start_state, action, param_values = None, test=False):
                 outcome_list.append(outcome_sublist)
 
         print('prob check list', probs)
-        if sum(probs) != 1:
-            print('error found with probs above')
+        #if sum(probs) != 1:
+        if sum(probs) < .999999 or sum(probs) > 1.000001:
+            print('error found with probs above, sum is not 1: ', sum(probs))
             input('wait')
         print('outcome list', outcome_list)
         if len(outcome_list) != len(probs):

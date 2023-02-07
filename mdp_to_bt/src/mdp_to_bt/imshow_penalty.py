@@ -35,7 +35,7 @@ def plot(percent_increase_array,domain):
         plt.title('Marine Domain - Constant Probability')
 
     cbar = fig.colorbar(img)
-    cbar.set_label("Reward")
+    cbar.set_label("Percent Increase in Reward")
 
     #plt.savefig(str(start_time) + '_fnfp_penalty_results')
     plt.show() #only this or savefig works, one at a time
@@ -45,6 +45,10 @@ if __name__ == "__main__":
 
     domain = input("domain ('i' or 'm'): ")
 
-    data = read_results("imshow_probability_array_"+ domain + ".npy")
+    directory = "imshow_data/"
+    data = read_results(directory+"imshow_probability_array_"+ domain + ".npy")
+
+    print(data.max(),data.min())
+    print(data.sum()/data.size)
 
     plot(data,domain)

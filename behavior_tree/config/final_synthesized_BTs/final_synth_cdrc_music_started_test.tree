@@ -1,0 +1,13 @@
+?
+	->
+		(infant-activity_moving-away)
+		[play-music(x: x)]
+	->
+		<!>
+			(infant-robot-distance_social-interaction)
+		[play-music(x: x)]
+	->
+		<!>
+			(music-started_x)
+		[play-music(x: x)]
+	[blow-bubble)]

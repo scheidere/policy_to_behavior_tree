@@ -97,21 +97,14 @@ if __name__ == "__main__":
 
 	# Average percent increase of prob over det
 	average_gain = get_overall_average_gain()
-	# print("Average gain: ", average_gain)
+	print("Average gain: ", average_gain)
 
-	# input('Press enter')
+	input('Press enter')
 
 	# Range of execution time (approx. 1 to 50s)
-	#get_exec_time()
+	get_exec_time()
 
 	# Number of nodes in:
 	# raw policy and simplified bt for
 	# marine and infant domain
-	final_infant_dir = "/home/scheidee/bt_synthesis_ws/src/policy_to_behavior_tree/behavior_tree/config/final_synthesized_BTs/infant/penalty-reward-mag-match-varied"
-	raw_infant_tree = "raw_policy_bt.tree"
-	simplified_infant_tree = "final_clean.tree"
-	final_marine_dir = "/home/scheidee/bt_synthesis_ws/src/policy_to_behavior_tree/behavior_tree/config/final_synthesized_BTs/marine/final-penalty-reward-mag-match7030"
-	raw_marine_tree = "raw_policy_bt.tree"
-	simplified_marine_tree = "final_clean.tree"
-
-	count_all_nodes()
+	#count_all_nodes()

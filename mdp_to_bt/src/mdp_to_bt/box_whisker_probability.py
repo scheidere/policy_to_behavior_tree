@@ -291,8 +291,9 @@ def plot_all2(domain):
 	print(labels)
 	print(len(all_data))
 	#print(all_data)
-	fig = plt.figure(figsize =(10, 7))
-	ax = fig.add_subplot(111)
+	# fig = plt.figure(figsize =(10, 7))
+	# ax = fig.add_subplot(111)
+	fig, ax = plt.subplots(1,1)
 	bp = ax.boxplot(all_data, patch_artist = True,
                 notch ='True', vert = 1)
 
@@ -306,7 +307,7 @@ def plot_all2(domain):
 		plt.title("Marine Domain - Constant Penalty")
 	else:
 		plt.title("Infant Domain - Constant Penalty")
-	plt.xlabel("Action Effect Uncertainty")
+	plt.xlabel("Transition Probability")
 	plt.ylabel("Percent Increase in Reward")
 	ax.set_xticklabels(labels)
 
@@ -351,8 +352,8 @@ if __name__ == "__main__":
 
 	#generate_data('i')
 
-	Comment out simplification in main
+	#Comment out simplification in main
 
-	plot_all2('i')
+	plot_all2('m')
 
 
