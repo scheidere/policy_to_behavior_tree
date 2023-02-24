@@ -118,7 +118,7 @@ def main(domain, problem):
     #print('SKIPPING SAVE OF SIMPLIFIED POLICY WHILE GENERATING RESULTS')
     #simplified_policy_bt.write_config('../../../behavior_tree/config/final_synthesized_BTs/infant/simplified_bt_final.tree')
     # simplified_policy_bt.write_config('../../../behavior_tree/config/final_synthesized_BTs/marine/simplified_bt_final.tree')
-    simplified_policy_bt.write_config('../../../behavior_tree/config/final_synthesized_BTs/final_synth_cdrc_music_started_test2.tree')
+    simplified_policy_bt.write_config('../../../behavior_tree/config/final_synthesized_BTs/final_synth_cdrc_is_song_off_test.tree')
 
     evaluate_for_reward = False
 

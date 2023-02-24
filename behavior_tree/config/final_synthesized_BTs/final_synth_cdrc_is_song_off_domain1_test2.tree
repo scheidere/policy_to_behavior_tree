@@ -1,0 +1,24 @@
+?
+	->
+		(is-song-off_x)
+		[songs(x: x)]
+	->
+		(infant-activity_moving-away)
+		(infant-robot-distance_direct-social-interaction)
+		[songs(x: x)]
+	->
+		(infant-robot-distance_social-interaction)
+		<!>
+			(infant-activity_moving-away)
+		[add-on(x: x)]
+	->
+		<!>
+			(infant-activity_moving-away)
+		<!>
+			(infant-robot-distance_direct-social-interaction)
+		[lights-add-on(x: x)]
+	->
+		<!>
+			(infant-activity_moving-away)
+		[keep-away-add-on(x: x)]
+	[follow(x: x)]

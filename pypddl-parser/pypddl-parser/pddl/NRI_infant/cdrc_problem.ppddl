@@ -12,7 +12,7 @@
 
 		(infant-robot-distance solitary-play)
 		(infant-activity moving-away)
-		(music-started X)
+		(is-song-off X)
 	)
 
 	(:goal (and (infant-activity moving-toward)) )
