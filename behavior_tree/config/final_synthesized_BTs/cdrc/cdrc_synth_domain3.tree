@@ -1,0 +1,18 @@
+?
+	->
+		(infant-activity_moving-away)
+		(infant-robot-distance_direct-social-interaction)
+		<!>
+			(is-song-off_x)
+		[lights(x: x)]
+	->
+		(infant-activity_moving-toward)
+		(infant-robot-distance_solitary-play)
+		[lights-add-on(x: x)]
+	->
+		<!>
+			(infant-activity_moving-away)
+		<!>
+			(infant-robot-distance_solitary-play)
+		[keep-away-add-on(x: x)]
+	[follow(x: x)]

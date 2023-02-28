@@ -1,0 +1,20 @@
+?
+	->
+		<!>
+			(music-started_x)
+		[songs(x: x)]
+	->
+		(infant-activity_moving-away)
+		(infant-robot-distance_direct-social-interaction)
+		[songs(x: x)]
+	->
+		<!>
+			(infant-activity_moving-away)
+		<!>
+			(infant-robot-distance_direct-social-interaction)
+		[lights-plus(x: x)]
+	->
+		<!>
+			(infant-activity_moving-away)
+		[keep-away-plus(x: x)]
+	[follow(x: x)]
