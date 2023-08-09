@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 from ppddl_to_matrices import *
 #from matrices_to_policy import solve
 from matrices_to_policy import *
@@ -13,9 +12,9 @@ import mdptoolbox.example
 
 import argparse
 import sys
-#sys.path.append('../../../pypddl-parser/pypddl-parser')
-from pypddl_parser.pddlparser import PDDLParser
-from pypddl_parser.literal import Literal #used for isinstance()
+sys.path.append('../../../pypddl-parser/pypddl-parser')
+from pddlparser import PDDLParser
+from literal import Literal #used for isinstance()
 
 import itertools
 from itertools import product
@@ -28,8 +27,6 @@ np.set_printoptions(threshold=sys.maxsize) # So you can see matrices without tru
 import pickle
 
 def parse():
-
-    # This function is for running without roslaunch, which is now deprecated
     usage = 'python3 main.py <DOMAIN> <INSTANCE>'
     description = 'pypddl-parser is a PDDL parser built on top of ply.'
     parser = argparse.ArgumentParser(usage=usage, description=description)
@@ -117,9 +114,11 @@ def main(domain, problem):
     # Save the behavior trees in .tree files in behavior_tree/config
     print('Saving behavior trees to files...\n')
     if save_raw_policy_bt:
-        raw_policy_bt.write_config('/home/parallels/auro_ws/src/policy_to_behavior_tree/behavior_tree/config/final_synthesized_BTs/raw_policy_bt.tree')
+        raw_policy_bt.write_config('../../../behavior_tree/config/final_synthesized_BTs/raw_policy_bt.tree')
     #print('SKIPPING SAVE OF SIMPLIFIED POLICY WHILE GENERATING RESULTS')
-    simplified_policy_bt.write_config('/home/parallels/auro_ws/src/policy_to_behavior_tree/behavior_tree/config/final_synthesized_BTs/final_synth_bt.tree')
+    #simplified_policy_bt.write_config('../../../behavior_tree/config/final_synthesized_BTs/infant/simplified_bt_final.tree')
+    # simplified_policy_bt.write_config('../../../behavior_tree/config/final_synthesized_BTs/marine/simplified_bt_final.tree')
+    simplified_policy_bt.write_config('../../../behavior_tree/config/final_synthesized_BTs/final_synth_cdrc_monday.tree')
 
     evaluate_for_reward = False
 
@@ -152,45 +151,17 @@ def main(domain, problem):
 
 if __name__ == '__main__':
 
-    rospy.init_node('mdp_to_bt')
-    config_filename = rospy.get_param('~config')
-    print('config_filename', config_filename)
-    garbage_string = "_parameters.yaml"
-    if garbage_string in config_filename:
-        current_method = config_filename.replace(garbage_string, '')
-
     start_time = time.time()
-
-    # This method can (in theory) be run with or without ros
-    # The non-ros version is deprecated
-    # The most updated version is setup to run with "roslaunch main.launch config:=final"
-    # You must change the variable below, depending on which method you would like to use
-    use_ros = True 
 
     # Define domain and problem to consider (they represent an MDP)
     #print('\nFor the following domain and problem: \n\n')
-    if use_ros:
-        domain_path = rospy.get_param('~domain')
-        problem_path = rospy.get_param('~problem')
-
-    else:
-        ## If running with 'python3 main.py <DOMAIN> <INSTANCE>'
-        ## Domain refers to domain path, instance refers to problem path
-        # This is deprecated, do not use
-        print('i am here')
-        args = parse()
-        domain_path = args.domain
-        problem_path = args.problem
-
-    domain  = PDDLParser.parse(domain_path)
-    problem = PDDLParser.parse(problem_path)
-
-    ##
-    print("???")
+    args = parse()
+    domain  = PDDLParser.parse(args.domain)
+    problem = PDDLParser.parse(args.problem)
 
     print(domain)
     print(problem)
-    input('wait to look at domain and problem')
+    #input('wait to look at domain and problem')
 
     print(('Solving ', domain.name, '...'))
 

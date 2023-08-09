@@ -3,7 +3,7 @@
 # Emily Scheide (October 2021)
 
 
-from term import Term
+from pypddl_parser.term import Term
 
 
 class Reward(object):

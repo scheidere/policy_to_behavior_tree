@@ -1,20 +1,55 @@
 ?
 	->
+		(infant-activity_moving-toward)
 		<!>
-			(music-started_x)
-		[songs(x: x)]
+			(infant-orientation_toward)
+		[spi)]
 	->
-		(infant-activity_moving-away)
-		(infant-robot-distance_direct-social-interaction)
-		[songs(x: x)]
-	->
-		<!>
-			(infant-activity_moving-away)
+		(infant-activity_moving-toward)
 		<!>
 			(infant-robot-distance_direct-social-interaction)
-		[lights-plus(x: x)]
+		[spi)]
+	->
+		(infant-robot-distance_solitary-play)
+		<!>
+			(infant-orientation_away)
+		[move-towar)]
 	->
 		<!>
 			(infant-activity_moving-away)
-		[keep-away-plus(x: x)]
-	[follow(x: x)]
+		<!>
+			(infant-orientation_toward)
+		<!>
+			(infant-robot-distance_direct-social-interaction)
+		[move-towar)]
+	->
+		(infant-activity_stationary)
+		<!>
+			(infant-robot-distance_social-interaction)
+		[move-awa)]
+	->
+		<!>
+			(infant-activity_moving-toward)
+		<!>
+			(infant-orientation_away)
+		<!>
+			(infant-robot-distance_social-interaction)
+		[move-awa)]
+	->
+		(has-bubbles_x)
+		<!>
+			(infant-activity_moving-toward)
+		<!>
+			(infant-orientation_away)
+		[blow-bubbles(x: x)]
+	->
+		<!>
+			(infant-activity_moving-toward)
+		<!>
+			(infant-orientation_away)
+		[refill-bubbles(x: x)]
+	->
+		<!>
+			(infant-activity_moving-toward)
+		[lights-and-sound)]
+	[keep-awa)]

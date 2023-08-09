@@ -3,7 +3,7 @@
 # Emily Scheide (January 2022)
 
 
-from term import Term
+from pypddl_parser.term import Term
 
 
 class Constraint(object):
