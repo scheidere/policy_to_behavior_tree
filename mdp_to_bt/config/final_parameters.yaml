@@ -1,2 +1,4 @@
-#Test
-test: True
+# Full method
+do_simplification: True
+ignore_dontcares: True
+default_action_order: True

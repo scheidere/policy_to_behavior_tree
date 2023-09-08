@@ -22,26 +22,23 @@ from itertools import product
 import numpy as np
 import copy
 import time
+import datetime
+import yaml
+
 
 np.set_printoptions(threshold=sys.maxsize) # So you can see matrices without truncation
 
 import pickle
 
-def parse():
+def main(domain, problem, config):
 
-    # This function is for running without roslaunch, which is now deprecated
-    usage = 'python3 main.py <DOMAIN> <INSTANCE>'
-    description = 'pypddl-parser is a PDDL parser built on top of ply.'
-    parser = argparse.ArgumentParser(usage=usage, description=description)
+    test = False
+    save_raw_policy_bt = True
 
-    parser.add_argument('domain',  type=str, help='path to PDDL domain file')
-    parser.add_argument('problem', type=str, help='path to PDDL problem file')
-
-    return parser.parse_args()
-
-def main(domain, problem):
-
-    test = False # Making True breaks something
+    # Method components
+    do_simplification = config['do_simplification'] # True for full method
+    ignore_dontcares = config['ignore_dontcares'] # True for full method
+    default_action_order = config['default_action_order'] # True for full method
 
     domain_name = domain.name
 
@@ -49,8 +46,6 @@ def main(domain, problem):
     # Convert to MDP, i.e. generate transition probability matrix P and reward matrix R
     P, R, states, actions_with_params = getPandR(domain,problem)
     ppddl_to_matrices_runtime = time.time() - start_time_ppddl_to_matrices
-
-    # print('actions_with_params', actions_with_params)
 
     if test:
         # print('The follow matrices represent the transition probabilities\n and rewards for all state transitions: ')
@@ -68,7 +63,7 @@ def main(domain, problem):
                 if check != 1:
                     print(('oh no, sum is not 1!', check, i, j))
 
-        return
+        #return
 
     # Set value iteration as our method of solving the MDP for a policy, denoted by 'v'
     solver = 'v' # Note that Q-learning has bugs in the MDPToolbox, hence sticking to value iteration
@@ -78,15 +73,11 @@ def main(domain, problem):
         print((type(R), shape(R)))
 
     start_time_solver = time.time()
-    # print('time before solver: ', start_time_solver)
     # Solve for a policy (and also return updated action list, only including those actions that actually appear in the policy)
     policy = matrices_to_policy.solve(solver,P,R)
     solver_runtime = time.time() - start_time_solver
-    # print('time after solver: ', time.time())
-    # print('solver runtime: ', solver_runtime)
-    # input('hiiiii')
 
-    save_raw_policy_bt = False
+    
     if save_raw_policy_bt:
         # Convert policy to BT and save as
         # print('\n++++++++++++++++++\n')
@@ -104,22 +95,32 @@ def main(domain, problem):
         eval(input('Scroll up to read the policy. Press return to simplify and evaluate.'))
 
     # Simplify the policy using Boolean logic and the resulting behavior tree in a .tree file
-    print('Simplified policy behavior tree:\n')
-    test_time_start = time.time()
-    simplify = Simplify(states, actions_with_params, policy, domain, problem)
-    simplified_policy_bt = simplify.bt
-    simplification_runtime = simplify.simplification_runtime
-    policy_to_bt_runtime = simplify.policy_to_bt_runtime
-    test_runtime = time.time()-test_time_start
-    # print('SIMPLIFICATION HAS BEEN COMMENTED OUT TO SAVE TIME')
-    # print('Policy is equivalent, simplification result not used for plotting results')
+    if do_simplification:
+        print('Simplified policy behavior tree:\n')
+        test_time_start = time.time()
+        simplify = Simplify(states, actions_with_params, policy, domain, problem, ignore_dontcares, default_action_order)
+        simplified_policy_bt = simplify.bt
+        simplification_runtime = simplify.simplification_runtime
+        policy_to_bt_runtime = simplify.policy_to_bt_runtime
+        test_runtime = time.time()-test_time_start
+    else:
+        print('SKIPPING SIMPLIFICATION!')
+        simplification_runtime = None
+        policy_to_bt_runtime = None
+        test_runtime = None
+        #input('hi')
 
     # Save the behavior trees in .tree files in behavior_tree/config
     print('Saving behavior trees to files...\n')
     if save_raw_policy_bt:
-        raw_policy_bt.write_config('/home/parallels/auro_ws/src/policy_to_behavior_tree/behavior_tree/config/final_synthesized_BTs/raw_policy_bt.tree')
-    #print('SKIPPING SAVE OF SIMPLIFIED POLICY WHILE GENERATING RESULTS')
-    simplified_policy_bt.write_config('/home/parallels/auro_ws/src/policy_to_behavior_tree/behavior_tree/config/final_synthesized_BTs/final_synth_bt.tree')
+        raw_policy_bt.write_config('/home/parallels/auro_ws/src/policy_to_behavior_tree/behavior_tree/config/AURO_final_synthesized_BTs/raw_policy_bt.tree')
+    
+    if do_simplification:
+        simplified_policy_bt.write_config('/home/parallels/auro_ws/src/policy_to_behavior_tree/behavior_tree/config/AURO_final_synthesized_BTs/final_synth_bt.tree')
+    else:
+        print('SKIPPING SAVE OF SIMPLIFIED POLICY WHILE GENERATING RESULTS')
+        raw_policy_bt.evaluateBTCompactness()
+        #input('hi')
 
     evaluate_for_reward = False
 
@@ -150,7 +151,7 @@ def main(domain, problem):
     return mdp_problem, policy, ppddl_to_matrices_runtime, solver_runtime, simplification_runtime, policy_to_bt_runtime, test_runtime # TO BE REMOVED
 
 
-if __name__ == '__main__':
+def run():
 
     rospy.init_node('mdp_to_bt')
     config_filename = rospy.get_param('~config')
@@ -159,85 +160,64 @@ if __name__ == '__main__':
     if garbage_string in config_filename:
         current_method = config_filename.replace(garbage_string, '')
 
-    start_time = time.time()
+    now = datetime.datetime.now()
+    start_time_milli = int(time.time()*1000) #milliseconds
 
-    # This method can (in theory) be run with or without ros
-    # The non-ros version is deprecated
-    # The most updated version is setup to run with "roslaunch main.launch config:=final"
-    # You must change the variable below, depending on which method you would like to use
-    use_ros = True 
+    # Create output file
+    f = open("/home/parallels/Desktop/AURO_results/bla.txt", "w+")
 
-    # Define domain and problem to consider (they represent an MDP)
-    #print('\nFor the following domain and problem: \n\n')
-    if use_ros:
-        domain_path = rospy.get_param('~domain')
-        problem_path = rospy.get_param('~problem')
-
-    else:
-        ## If running with 'python3 main.py <DOMAIN> <INSTANCE>'
-        ## Domain refers to domain path, instance refers to problem path
-        # This is deprecated, do not use
-        print('i am here')
-        args = parse()
-        domain_path = args.domain
-        problem_path = args.problem
-
+    # Get the domain and problem
+    domain_path = rospy.get_param('~domain')
+    problem_path = rospy.get_param('~problem')
     domain  = PDDLParser.parse(domain_path)
     problem = PDDLParser.parse(problem_path)
 
-    ##
-    print("???")
+    # Get config file
+    rospack = rospkg.RosPack()
+    filepath = rospack.get_path('mdp_to_bt') + "/config/" + rospy.get_param('~config')
+    with open(filepath, 'r') as stream:
+        config = yaml.safe_load(stream)
 
-    print(domain)
-    print(problem)
-    input('wait to look at domain and problem')
+    mdp_problem, policy, ppddl_to_matrices_runtime, solver_runtime, simplification_runtime, policy_to_bt_runtime, test_runtime = main(domain, problem, config)
 
-    print(('Solving ', domain.name, '...'))
 
-    mdp_problem, policy, ppddl_to_matrices_runtime, solver_runtime, simplification_runtime, policy_to_bt_runtime, test_runtime = main(domain, problem)
+if __name__ == '__main__':
 
-    # time_elapsed = time.time() - start_time
-    # print("Total time elapsed: ", time_elapsed)
-    # print("PPDDL to matrices runtime percentage: ", ppddl_to_matrices_runtime/time_elapsed)
-    # print("Solver runtime percentage: ", solver_runtime/time_elapsed)
-    # print("Simplification runtime percentage: ", simplification_runtime/time_elapsed)
-    # print("Policy to BT runtime percentage: ", policy_to_bt_runtime/time_elapsed)
-    # print('Test runtime percentage: ', test_runtime/time_elapsed, test_runtime)
+    run()
 
-    # f = open('runtime_results.txt','a')
-    # t_str = "Total time elapsed: " + str(time_elapsed) + "\n"
-    # f.write(t_str)
-    # # Alg. 2: PPDDL to MDP
-    # ppddl_to_mdp_str1 = "PPDDL to matrices runtime: " + str(ppddl_to_matrices_runtime) + "\n"
-    # ppddl_to_mdp_str2 = "PPDDL to matrices runtime percentage: " + str(ppddl_to_matrices_runtime/time_elapsed) + "\n"
-    # f.write(ppddl_to_mdp_str1)
-    # f.write(ppddl_to_mdp_str2)
-    # # Solver
-    # solver_str1 = "Solver runtime: " + str(solver_runtime) + "\n"
-    # solver_str2 = "Solver runtime percentage: " + str(solver_runtime/time_elapsed) + "\n"
-    # f.write(solver_str1)
-    # f.write(solver_str2)
-    # # Alg. 3: Simplify policy
-    # simp_str1 = "Simplification runtime: " + str(simplification_runtime) + "\n"
-    # simp_str2 = "Simplification runtime percentage: " + str(simplification_runtime/time_elapsed) + "\n"
-    # f.write(simp_str1)
-    # f.write(simp_str2)
-    # # Alg. 4: Policy to BT
-    # polbt_str1 = "Policy to BT runtime: " + str(policy_to_bt_runtime) + "\n"
-    # polbt_str2 = "Policy to BT runtime percentage: " + str(policy_to_bt_runtime/time_elapsed) + "\n"
-    # f.write(polbt_str1)
-    # f.write(polbt_str2)
+    # rospy.init_node('mdp_to_bt')
+    # config_filename = rospy.get_param('~config')
+    # print('config_filename', config_filename)
+    # garbage_string = "_parameters.yaml"
+    # if garbage_string in config_filename:
+    #     current_method = config_filename.replace(garbage_string, '')
 
-    # # These are runtime percentages being saved
-    # f1 = open('ppddl_to_mdp_runtimes.txt', 'a')
-    # bla1 = str(ppddl_to_matrices_runtime/time_elapsed) + "\n"
-    # f1.write(bla1)
-    # f2 = open('solver_runtimes.txt', 'a')
-    # bla2 = str(solver_runtime/time_elapsed) + "\n"
-    # f2.write(bla2)
-    # f3 = open('simplification_runtimes.txt','a')
-    # bla3 = str(simplification_runtime/time_elapsed) + "\n"
-    # f3.write(bla3)
-    # f4 = open('policy_to_bt_runtimes.txt','a')
-    # bla4 = str(policy_to_bt_runtime/time_elapsed) + "\n"
-    # f4.write(bla4)
+    # start_time = time.time()
+
+    # # This method can (in theory) be run with or without ros
+    # # The non-ros version is deprecated
+    # # The most updated version is setup to run with "roslaunch main.launch config:=final"
+    # # You must change the variable below, depending on which method you would like to use
+    # use_ros = True 
+
+    # # Define domain and problem to consider (they represent an MDP)
+    # #print('\nFor the following domain and problem: \n\n')
+    # if use_ros:
+    #     domain_path = rospy.get_param('~domain')
+    #     problem_path = rospy.get_param('~problem')
+
+    # else:
+    #     ## If running with 'python3 main.py <DOMAIN> <INSTANCE>'
+    #     ## Domain refers to domain path, instance refers to problem path
+    #     # This is deprecated, do not use
+    #     print('i am here')
+    #     args = parse()
+    #     domain_path = args.domain
+    #     problem_path = args.problem
+
+    # domain  = PDDLParser.parse(domain_path)
+    # problem = PDDLParser.parse(problem_path)
+
+    # print(('Solving ', domain.name, '...'))
+
+    # mdp_problem, policy, ppddl_to_matrices_runtime, solver_runtime, simplification_runtime, policy_to_bt_runtime, test_runtime = main(domain, problem)

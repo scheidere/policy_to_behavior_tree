@@ -1,0 +1,4 @@
+# Full method, but different action order during simplification
+do_simplification: True
+ignore_dontcares: True
+default_action_order: False

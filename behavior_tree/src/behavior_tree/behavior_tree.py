@@ -608,7 +608,39 @@ class BehaviorTree:
     def print_BT(self):
         for node in self.nodes:
             node.print_node()
-            
+    
+    def evaluateBTCompactness(self):
+
+        print('EVALUATING BT COMPACTNESS')
+
+        # Determine complexity of the sentence "reading" the bt results in
+        # Count total number of nodes
+        # Count conditions and actions
+
+        # Populate bt.nodes
+        self.generate_nodes_list()
+
+        print('len(self.nodes) where self is BT',len(self.nodes))
+
+        total_num_nodes = 0
+        num_action_nodes = 0
+        num_condition_nodes = 0
+        for node in self.nodes:
+            total_num_nodes+=1
+            print(node.label)
+            if isinstance(node,Action):
+                print(node.label, 'is Action')
+                num_action_nodes+=1
+            elif isinstance(node,Condition):
+                print(node.label,'is Condition')
+                num_condition_nodes+=1
+
+        print("Total number of nodes: %d" %total_num_nodes)
+        print("Total number of action nodes: %d" %num_action_nodes)
+        print("Total number of condition nodes: %d" %num_condition_nodes)
+
+        print('DONE WITH COMPACTNESS EVAL')
+
 if __name__ == '__main__':
     pass
     #BehaviorTree(sys.argv[1])

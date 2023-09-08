@@ -1,0 +1,4 @@
+# Full method, but dontcares are not ignored
+do_simplification: True
+ignore_dontcares: False
+default_action_order: True

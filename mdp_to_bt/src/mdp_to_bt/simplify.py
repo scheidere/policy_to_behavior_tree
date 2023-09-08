@@ -9,11 +9,11 @@ from behavior_tree.behavior_tree import *
 from itertools import product
 import itertools
 import time
-
+import copy
 
 
 class Simplify:
-    def __init__(self, states, actions_with_params, policy, domain, problem):
+    def __init__(self, states, actions_with_params, policy, domain, problem, ignore_dontcares, default_action_order):
 
         simplification_start_time = time.time()
         self.states = states
@@ -24,6 +24,20 @@ class Simplify:
         self.problem = problem
         self.simplification_runtime = None
         self.policy_to_bt_runtime = None
+        self.ignore_dontcares = ignore_dontcares
+        self.default_action_order = default_action_order
+
+        print('action order default', self.action_nums_in_policy)
+        reordered_action_nums_in_policy = copy.deepcopy(self.action_nums_in_policy)
+        if not self.default_action_order: # Reorder actions randomly
+            print('Reordering actions to determine whether it changes simplification results')
+            while self.action_nums_in_policy==reordered_action_nums_in_policy:
+                random.shuffle(reordered_action_nums_in_policy)
+
+            # Now with new order, save it
+            self.action_nums_in_policy = reordered_action_nums_in_policy
+
+        print('reordered action order', self.action_nums_in_policy)
 
         # simplification_start_time = time.time()
         # Get condition names with parameters! E.g. ['robot-at', {'?x': 'left-cell'}]
@@ -448,6 +462,40 @@ class Simplify:
         print('\nNumber of subtrees: ', len(bt.root.children))
         print('\n++++++++++++++++++\n')
 
+    # def evaluateBTCompactness(self, bt):
+
+    #     print('EVALUATING BT COMPACTNESS')
+
+    #     # Determine complexity of the sentence "reading" the bt results in
+    #     # Count total number of nodes
+    #     # Count conditions and actions
+
+    #     # Populate bt.nodes
+    #     bt.generate_nodes_list()
+
+    #     print('len(bt.nodes)',len(bt.nodes))
+
+    #     total_num_nodes = 0
+    #     num_action_nodes = 0
+    #     num_condition_nodes = 0
+    #     for node in bt.nodes:
+    #         total_num_nodes+=1
+    #         print(node.label)
+    #         if isinstance(node,Action):
+    #             print(node.label, 'is Action')
+    #             num_action_nodes+=1
+    #         elif isinstance(node,Condition):
+    #             print(node.label,'is Condition')
+    #             num_condition_nodes+=1
+
+    #     print("Total number of nodes: %d" %total_num_nodes)
+    #     print("Total number of action nodes: %d" %num_action_nodes)
+    #     print("Total number of condition nodes: %d" %num_condition_nodes)
+
+    #     print('DONE WITH COMPACTNESS EVAL')
+
+
+
     def run(self, simplification_start_time):
 
         # Create list for subtrees
@@ -461,8 +509,13 @@ class Simplify:
         # print('c: ', c)
 
         # dontcares = []
-        dontcares = self.findInitialDontCares()
-        #print('init dontcares', dontcares)
+        if self.ignore_dontcares:
+            dontcares = self.findInitialDontCares()
+        else:
+            print('we care now 1')
+            dontcares = [] # Not removing dontcares, so don't need to find them
+        #print('init # dontcares', len(dontcares))
+        #input('look up 1')
 
         #print('self.actions', self.actions)
 
@@ -486,9 +539,14 @@ class Simplify:
 
             #if i >= 1:
             if not first_iter:
-                dontcares += prev_minterms
+                if self.ignore_dontcares:
+                    dontcares += prev_minterms
+                else:
+                    print('we care now 2')
+                    dontcares = [] # Not removing dontcares, so don't need to add them
 
-            #print('new dontcares', dontcares)
+            #print('new # dontcares', len(dontcares))
+            #input('look up 2')
 
             #action_num = self.policy[i]
             #print(self.policy)
@@ -509,7 +567,7 @@ class Simplify:
             #print('sop', sop)
 
             # Simplify it
-            sop_simplify = to_dnf(sop,simplify=True)
+            sop_simplify = to_dnf(sop,simplify=True,force=True)
             #print('sop_simplify', sop_simplify)
             # print('sop_simplify', sop_simplify)
             #print('sop_simplify',sop_simplify)
@@ -534,6 +592,7 @@ class Simplify:
         self.bt = self.buildFullTree(subtrees)
         self.policy_to_bt_runtime = time.time() - policy_to_bt_start_time
         self.printBT(self.bt)
+        self.bt.evaluateBTCompactness()
         
 
 
