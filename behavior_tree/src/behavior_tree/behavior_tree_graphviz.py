@@ -2,12 +2,12 @@
 #import graphviz
 import cv2
 import sys
-import behavior_tree as bt
+import behavior_tree.behavior_tree as bt
 import os
 
 import sys
-reload(sys)  
-sys.setdefaultencoding('utf8')
+#reload(sys)  
+#sys.setdefaultencoding('utf8')
 
 
 def get_graphviz(tree):

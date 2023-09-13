@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import os
 import time
 import rospy
@@ -25,7 +27,14 @@ from behavior_tree import behavior_tree_graphviz as gv
 #import graphviz
 import cv2
 from threading import Lock
-from xdot.xdot_qt import DotWidget
+import sympy
+#import sys
+#import pprint
+#pprint.pprint(sys.path)
+#sys.path.append('/home/parallels/.local/lib/python3.8/site-packages')
+#pprint.pprint(sys.path)
+#from xdot.xdot_qt import DotWidget
+from xdot.ui.window import DotWidget
 
 class BehaviorTreePlugin(Plugin):
     def __init__(self, context):

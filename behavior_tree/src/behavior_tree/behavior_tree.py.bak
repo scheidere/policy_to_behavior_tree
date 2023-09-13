@@ -15,7 +15,7 @@ class ReturnStatus:
         if status == Status.FAILURE or status == Status.RUNNING or status == Status.SUCCESS:
             self.status = status
         else:
-            print(('Invalid return status: ' + status +', defaulting to FAILURE.'))
+            print('Invalid return status: ' + status +', defaulting to FAILURE.')
             self.status = Status.FAILURE
 
     def __eq__(self, other):
@@ -48,13 +48,13 @@ class Node(object):
         self.children.append(node)
 
     def tick(self, active, traversal_count):
-        print(('tick not implemented for node ' + self.label))
+        print('tick not implemented for node ' + self.label)
     
     def init_ros(self):
         pass
 
     def print_node(self):
-        print((self.label))
+        print(self.label)
 
 #================================================================================================================
 # ---------------------------------------------- Control Flow Nodes ---------------------------------------------
@@ -87,7 +87,7 @@ class Fallback(ControlFlowNode):
         self.is_active = active
 
 class Sequence(ControlFlowNode):
-    label = '\u2192' # arrow
+    label = u'\u2192' # arrow
     
     def __init__(self):
         ControlFlowNode.__init__(self)
@@ -266,11 +266,11 @@ class Action(ExecutionNode):
     def callback(self, msg):
         if self.is_active:
             if msg.id != self.current_id:
-                print((self.label + ' Incorrect ID', msg.id, self.current_id, self.is_active))
+                print(self.label + ' Incorrect ID', msg.id, self.current_id, self.is_active)
                 return
             self.set_status(ReturnStatus(msg.status))
             if msg.status != self.status.status:
-                print(('Invalid return status "' + msg.status + '" for node ' + self.label))
+                print('Invalid return status "' + msg.status + '" for node ' + self.label)
 
     def publish_active_msg(self, active_id):
         if self.publisher != None:
@@ -369,7 +369,7 @@ class BehaviorTree:
         while len(nodes_stack) != 0:
             current_node = nodes_stack.pop()
             self.nodes.append(current_node)
-            for child_idx in reversed(list(range(len(current_node.children)))):
+            for child_idx in reversed(range(len(current_node.children))):
                 nodes_stack.append(current_node.children[child_idx]) #push
 
 
@@ -406,7 +406,7 @@ class BehaviorTree:
                         filename = filename[0:start] + rospack.get_path(package_name) + filename[end+1:]
                         subtree_lines = open(filename).read().split('\n')
                         add_tabs = tabs*'\t'
-                        subtree_lines = [add_tabs+x for x in subtree_lines]
+                        subtree_lines = map(lambda x:add_tabs+x, subtree_lines)
                         del lines[i]
                         lines = lines[:i] + subtree_lines + lines[i:]
         
@@ -423,7 +423,7 @@ class BehaviorTree:
             elif label[0] == '?':
                 node = Fallback()   
             elif label[0] == '|':
-                arguments = [x.strip() for x in label[3:].split(',')]
+                arguments = map(lambda x:x.strip(), label[3:].split(','))
                 node = Parallel(int(arguments[0]))
                 self.num_child = int(arguments[0])
             elif label[0] == '(':
@@ -528,7 +528,7 @@ class BehaviorTree:
             f.write( indent + label + '\n' )
 
             # Add all children to the stack
-            for child_idx in reversed(list(range(len(current_node.children)))):
+            for child_idx in reversed(range(len(current_node.children))):
                 nodes_stack.append(current_node.children[child_idx]) #push
                 tabs_stack.append(tabs + 1) #push
 
@@ -588,7 +588,7 @@ class BehaviorTree:
             unique_action_nodes = {}
             for node in self.nodes:
                 if isinstance(node, Action):
-                    if node.label not in list(unique_action_nodes.keys()) or node.is_active:
+                    if node.label not in unique_action_nodes.keys() or node.is_active:
                         #if node.is_active:
                         unique_action_nodes[node.label] = node
                         if node.is_newly_active:
@@ -596,7 +596,7 @@ class BehaviorTree:
                     #else:
                     #    unique_action_nodes[node.label] = node
                         
-            for label, node in unique_action_nodes.items():
+            for label, node in unique_action_nodes.iteritems():
                 #active_msg = Bool()
                 #active_msg.data = node.is_active
                 #node.publisher.publish(active_msg)
@@ -622,24 +622,24 @@ class BehaviorTree:
         # Populate bt.nodes
         self.generate_nodes_list()
 
-        print(('len(self.nodes) where self is BT',len(self.nodes)))
+        print('len(self.nodes) where self is BT',len(self.nodes))
 
         total_num_nodes = 0
         num_action_nodes = 0
         num_condition_nodes = 0
         for node in self.nodes:
             total_num_nodes+=1
-            print((node.label))
+            print(node.label)
             if isinstance(node,Action):
-                print((node.label, 'is Action'))
+                print(node.label, 'is Action')
                 num_action_nodes+=1
             elif isinstance(node,Condition):
-                print((node.label,'is Condition'))
+                print(node.label,'is Condition')
                 num_condition_nodes+=1
 
-        print(("Total number of nodes: %d" %total_num_nodes))
-        print(("Total number of action nodes: %d" %num_action_nodes))
-        print(("Total number of condition nodes: %d" %num_condition_nodes))
+        print("Total number of nodes: %d" %total_num_nodes)
+        print("Total number of action nodes: %d" %num_action_nodes)
+        print("Total number of condition nodes: %d" %num_condition_nodes)
 
         print('DONE WITH COMPACTNESS EVAL - Total node count (does not consider node activity)')
 
@@ -696,37 +696,18 @@ class BehaviorTree:
 
         return active_actions
 
-    def makeActionActive(self, action_label): #maybe have this be general, make node active, given instance
-
-        # likely need to fix label generation (remove (x: x) stuff)
-
-        # I think this method of setting an action to false manually will not work
-        # rqt doesnt work currently, but I dont think it would help if it did
-        # because setting an action to active in the GUI doesnt make the correct conditions change their status
-        # it is all manual
-
-        # So it seems we would have to loop through or do something differently
-        # I would assume the answer lies in the tick function somewhere since that's traversal
-
-        # for a in self.action_nodes:
-        #     print(a)
-
-        print(self.active_ids)
-        for n in self.nodes:
-            if n.label == action_label:
-                n.is_active = True
-            print(n.label, n.is_active)
-
-
     def countActiveConditions(self):
         
         '''
         Count average number of active conditions per action
         '''
 
+        # Populate bt.nodes
+        self.generate_nodes_list()
+
         # Check which actions are active
         active_actions = self.getActiveActions()
-        print(('The active actions are: ', active_actions))
+        print('The active actions are: ', active_actions)
 
 
 if __name__ == '__main__':
