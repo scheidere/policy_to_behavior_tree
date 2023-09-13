@@ -33,8 +33,8 @@ import sympy
 #pprint.pprint(sys.path)
 #sys.path.append('/home/parallels/.local/lib/python3.8/site-packages')
 #pprint.pprint(sys.path)
-#from xdot.xdot_qt import DotWidget
-from xdot.ui.window import DotWidget
+from xdot.xdot_qt import DotWidget
+##from xdot.ui.window import DotWidget #parallels
 
 class BehaviorTreePlugin(Plugin):
     def __init__(self, context):

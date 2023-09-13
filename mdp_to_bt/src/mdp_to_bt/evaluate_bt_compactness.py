@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 
 import rospy
 from behavior_tree.behavior_tree import *
@@ -52,7 +52,8 @@ if __name__ == "__main__":
     graphviz_pub = rospy.Publisher('behavior_tree_graphviz', String, queue_size=1)
     compressed_pub = rospy.Publisher('behavior_tree_graphviz_compressed', String, queue_size=1)
 
-    path_to_bts = "/home/parallels/auro_ws/src/policy_to_behavior_tree/behavior_tree/config/AURO_final_synthesized_BTs"
+    # path_to_bts = "/home/parallels/auro_ws/src/policy_to_behavior_tree/behavior_tree/config/AURO_final_synthesized_BTs"
+    path_to_bts = "/home/scheidee/auro_ws/src/policy_to_behavior_tree/behavior_tree/config/AURO_final_synthesized_BTs"
 
     marine_simplified_bt = "/marine/final_synth_bt.tree"
 
