@@ -696,7 +696,7 @@ class BehaviorTree:
 
         return active_actions
 
-    def makeActionActive(self, action_label): #maybe have this be general, make node active, given instance
+    def changeConditionStatus(self): 
 
         # likely need to fix label generation (remove (x: x) stuff)
 
@@ -711,12 +711,21 @@ class BehaviorTree:
         # for a in self.action_nodes:
         #     print(a)
 
-        print(self.active_ids)
-        for n in self.nodes:
-            if n.label == action_label:
-                n.is_active = True
-            print(n.label, n.is_active)
+        # print(self.active_ids)
+        # for n in self.nodes:
+        #     if n.label == action_label:
+        #         n.is_active = True
+        #     print(n.label, n.is_active)
 
+
+        # Condtion stuff below
+
+        print(self.condition_nodes)
+        for key in self.condition_nodes:
+            print(key, " - ", self.condition_nodes[key], "\n")
+            condition_node = self.condition_nodes[key]
+        #first_condition = self.condition_nodes[0]
+        #print('first condition', first_condition.label , first_condition)
 
     def countActiveConditions(self):
         
