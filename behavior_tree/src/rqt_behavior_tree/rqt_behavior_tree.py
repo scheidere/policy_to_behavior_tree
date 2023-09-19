@@ -182,6 +182,10 @@ class BehaviorTreePlugin(Plugin):
                 added_node_labels.append(node.label)
                 
                 def get_publish_function(widget, button, other_buttons, node, message_type, message_data):
+                    # print('in get_publish_function')
+                    # print('node', node)
+                    # print('message_type', message_type)
+                    # print('message_data', message_data)
                     pub = rospy.Publisher(node.get_subscriber_name(), message_type, queue_size=1)
                     class IDContainer:
                         def __init__(self):

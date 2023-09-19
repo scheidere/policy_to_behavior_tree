@@ -183,6 +183,7 @@ class Condition(ExecutionNode):
     def __init__(self, label):
         ExecutionNode.__init__(self, label)
         self.current_traversal_count = -1
+        self.is_newly_active = False
 
     def tick(self, active, traversal_count):
         if self.current_traversal_count != traversal_count:
@@ -191,12 +192,42 @@ class Condition(ExecutionNode):
             if self.is_active:
                 return
         
-        if self.is_active == False and active == True and self.status == ReturnStatus.FAILURE:
-            self.set_status(ReturnStatus.FAILURE)#RUNNING)
+        # Condition activity/status before
+        # if self.is_active == False and active == True and self.status == ReturnStatus.FAILURE:
+        #     self.set_status(ReturnStatus.FAILURE)#RUNNING)
+        # if self.get_status_age() > self.max_wait_time:
+        #     self.set_status(ReturnStatus.FAILURE)
+
+        # Condition activity/status now
+        if self.is_active == False and active == True:
+            self.is_newly_active = True
+            if self.status == ReturnStatus.FAILURE:
+                self.set_status(ReturnStatus.FAILURE)
+        else:
+            self.is_newly_active = False
+
         if self.get_status_age() > self.max_wait_time:
             self.set_status(ReturnStatus.FAILURE)
+
+        # ACTION ACTIVITY/STATUS COPY - TO BE DELETED
+        # if self.is_active == False and active == True:# and self.status == ReturnStatus.FAILURE:
+        #     self.set_status(ReturnStatus.RUNNING)
+        #     self.is_newly_active = True
+        # else:
+        #     self.is_newly_active = False
         
         self.is_active = active
+
+    def get_publisher_name(self):
+        pub_name = self.label.lower().replace(' ', '_') + '_active'
+        illegal_list = ['(',')',':','-']
+        for illegal_char in illegal_list:
+            pub_name = pub_name.replace(illegal_char,'')
+        return pub_name
+
+    def init_publisher(self):
+        #self.publisher = rospy.Publisher(self.get_publisher_name(), Bool, queue_size=1)
+        self.publisher = rospy.Publisher(self.get_publisher_name(), Active, queue_size=1)
         
     def get_subscriber_name(self):
         #sub_name = self.label.lower().replace(' ', '_') + '_success'
@@ -214,6 +245,18 @@ class Condition(ExecutionNode):
             self.set_status(ReturnStatus.SUCCESS)
         else:
             self.set_status(ReturnStatus.FAILURE)
+
+    def publish_active_msg(self, active_id): # Added for AURO
+        if self.publisher != None:
+            #active_msg = Bool()
+            #active_msg.data = self.is_active
+            active_msg = Active()
+            active_msg.active = self.is_active
+            active_msg.id = active_id
+            self.current_id = active_id
+            self.publisher.publish(active_msg)
+        else:
+            rospy.logerr('')
 
 class Action(ExecutionNode):
     def __init__(self, label):
@@ -333,6 +376,7 @@ class BehaviorTree:
         self.nodes = []
         self.node_text = []
         self.active_ids = {}
+        self.active_condition_ids = {}
         self.traversal_count = 0
 
         #self.flag = 1
@@ -346,6 +390,7 @@ class BehaviorTree:
         Node.max_wait_time = rospy.get_param('~timeout', 1.0)
 
         self.active_actions_pub = rospy.Publisher('active_actions', String, queue_size=1)
+        self.active_conditions_pub = rospy.Publisher('active_conditions', String, queue_size=1) # Added for AURO results; BT compactness eval
         self.defineActionNodes()
         self.defineConditionNodes()
 
@@ -430,6 +475,7 @@ class BehaviorTree:
                 node_label = label.replace('(', '').replace(')', '')
                 node = Condition(node_label)
                 self.node_text = node_label
+                self.active_condition_ids[node_label] = 0 # Added for AURO
             elif label[0] == '[':
                 node_label = label.replace('[', '').replace(']', '')
                 node = Action(node_label)
@@ -583,6 +629,8 @@ class BehaviorTree:
             self.traversal_count += 1
             active_actions = String()
             active_actions.data = ''
+            active_conditions = String() # AURO
+            active_conditions.data = '' # AURO
 
             # Make sure that if there are more than one of the same action, if any are active, then active should be published
             unique_action_nodes = {}
@@ -604,8 +652,37 @@ class BehaviorTree:
 
                 if node.is_active:
                     active_actions.data += label + ', '
+
+
+
             active_actions.data = active_actions.data[:-2] # strip the final comma and space
             self.active_actions_pub.publish(active_actions)
+
+            # For AURO results, track active conditions as well
+            unique_condition_nodes = {}
+            for node in self.nodes:
+                if isinstance(node, Condition):
+                    if node.label not in list(unique_condition_nodes.keys()) or node.is_active:
+                        #if node.is_active:
+                        unique_condition_nodes[node.label] = node
+                        if node.is_newly_active:
+                            self.active_condition_ids[node.label] += 1
+                    #else:
+                    #    unique_action_nodes[node.label] = node
+                        
+            for label, node in unique_condition_nodes.items():
+                #active_msg = Bool()
+                #active_msg.data = node.is_active
+                #node.publisher.publish(active_msg)
+                node.publish_active_msg(self.active_condition_ids[node.label])
+
+                if node.is_active:
+                    active_conditions.data += label + ', '
+
+            active_conditions.data = active_conditions.data[:-2] # strip the final comma and space
+            self.active_conditions_pub.publish(active_conditions)
+
+    #def get
 
     def print_BT(self):
         for node in self.nodes:
