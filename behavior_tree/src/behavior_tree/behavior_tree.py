@@ -394,6 +394,24 @@ class BehaviorTree:
         self.defineActionNodes()
         self.defineConditionNodes()
 
+    # def at_node_activity_equilibrium(self, bt_at_previous_tick):
+    #     '''
+    #      - Returns Bool denoting whether or not there has been a change in any node's status or activity
+    #      between current and previous tick
+    #     '''
+    #     print('================== CHECKING IF AT EQUIL ===================')
+    #     at_equil = True
+    #     for n1 in bt_at_previous_tick.nodes:
+    #         for n2 in self.nodes:
+    #             if n1.status != n2.status:
+    #                 print(n1.status.__str__() + n2.status.__str__() + "not same")
+    #                 return False
+    #             else:
+    #                 print(n1.status.__str__() + n2.status.__str__() + "same")
+
+    #     print('================== AT EQUIL ===================')
+    #     return False
+
     def generate_nodes_list(self):
         # This function fills in self.nodes
         # Note that if parse_config is used, this is not necessary (done internally)
@@ -682,7 +700,23 @@ class BehaviorTree:
             active_conditions.data = active_conditions.data[:-2] # strip the final comma and space
             self.active_conditions_pub.publish(active_conditions)
 
-    #def get
+    def at_node_activity_equilibrium(self, bt_at_previous_tick):
+        '''
+         - Returns Bool denoting whether or not there has been a change in any node's status or activity
+         between current and previous tick
+        '''
+        print('================== CHECKING IF AT EQUIL ===================')
+        at_equil = True
+        for n1 in bt_at_previous_tick.nodes:
+            for n2 in self.bt.nodes:
+                if n1.status != n2.status:
+                    print(n1.status.__str__() + n2.status.__str__() + "not same")
+                    return False
+                else:
+                    print(n1.status.__str__() + n2.status.__str__() + "same")
+
+        print('================== AT EQUIL ===================')
+        return False
 
     def print_BT(self):
         for node in self.nodes:
@@ -772,6 +806,22 @@ class BehaviorTree:
                 active_actions.append(n[0].label)
 
         return active_actions
+
+    def getActiveConditions(self):
+        # returns list of all actions that are active currently as a list of strings (i.e. names)
+        # Pulled from bt_interface in MCDAGS work
+
+        active_conditions = []
+        
+        for n in list(self.condition_nodes.values()):
+            is_active = False
+            for node in n:
+                if node.is_active:
+                    is_active = True
+            if is_active:
+                active_conditions.append(n[0].label)
+
+        return active_conditions
 
     def changeConditionStatus(self): 
 
