@@ -3,9 +3,11 @@
 import rospy
 from behavior_tree.behavior_tree import *
 import behavior_tree.behavior_tree_graphviz as gv
+from bt_interface import *
 from behavior_tree_msgs.msg import Status, Active
 import zlib
 import copy
+
 
 
 class EvaluateBTCompactness():
@@ -16,7 +18,9 @@ class EvaluateBTCompactness():
         self.old_statuses = None
         self.prev_active_actions = None
         self.prev_active_conditions = None
-        self.run()
+        #self.run()
+        self.bt_interface = BT_Interface(self.bt)
+        self.less_complex_run()
 
     def init_bt(self):
         # print("BT_Interface initialising BT...")
@@ -28,9 +32,6 @@ class EvaluateBTCompactness():
     def tick_bt(self):
         self.bt.tick() #root.tick(True)
 
-        # if self.bt_at_previous_tick: # i.e., it don't check during first tick, no comparison
-        #     self.at_node_activity_equilibrium(self.bt_at_previous_tick)
-
         source = gv.get_graphviz(self.bt)
         source_msg = String()
         source_msg.data = source
@@ -40,48 +41,6 @@ class EvaluateBTCompactness():
         compressed.data = zlib.compress(source.encode("utf-8"))
         compressed_pub.publish(compressed)
 
-        #self.bt_at_previous_tick = copy.deepcopy(self.bt)
-
-
-    # def get_publish_function(widget, button, other_buttons, node, message_type, message_data):
-    #     pub = rospy.Publisher(node.get_subscriber_name(), message_type, queue_size=1)
-
-    # def active_callback(msg):
-    #     id_container.id = msg.id
-
-    # def add_publish_function():
-    #     def publish_function():
-    #         if message_data != 'NO MESSAGE':
-    #             msg = message_type()
-    #             if isinstance(msg, Bool):
-    #                 msg.data = message_data
-    #             elif isinstance(msg, Status):
-    #                 msg.status = message_data
-    #                 msg.id = id_container.id
-    #             pub.publish(msg)
-
-    def get_publish_function(self, node, message_type, message_data):
-                pub = rospy.Publisher(node.get_subscriber_name(), message_type, queue_size=1)
-                class IDContainer:
-                    def __init__(self):
-                        self.id = 0
-                id_container = IDContainer()
-                def active_callback(msg):
-                    id_container.id = msg.id
-                if isinstance(message_type(), Status):
-                    print(node.get_publisher_name())
-                    sub = rospy.Subscriber(node.get_publisher_name(), Active, active_callback)
-                def add_publish_function():
-                    def publish_function():
-                        if message_data != 'NO MESSAGE':
-                            msg = message_type()
-                            if isinstance(msg, Bool):
-                                msg.data = message_data
-                            elif isinstance(msg, Status):
-                                msg.status = message_data
-                                msg.id = id_container.id
-                            pub.publish(msg)
-
     def print_condition_info(self):
 
         print(self.bt.condition_nodes)
@@ -90,61 +49,6 @@ class EvaluateBTCompactness():
                 print('\ninstance: ' + condition_node.label)
                 print("is_active: " + str(condition_node.is_active))
                 print("status: " + str(condition_node.status.__str__()))
-
-    def changeNodeActivtyOrStatus(self):
-
-        # I think this should make the given node active as well as assign the noted status
-        # first test node label: "drop-off(x: x)"
-
-        for node in self.bt.nodes:
-            if node.label == 'drop-off(x: x)':
-                if isinstance(node, Action):
-                    message_data = Status.SUCCESS
-                    self.get_publish_function(node, Status, message_data)
-
-                elif isinstance(node, Condition):
-                    message_data = True
-                    self.get_publish_function(node, Bool, message_data)
-
-
-    # def at_node_activity_equilibrium(self):
-    #     '''
-    #      - Returns Bool denoting whether or not there has been a change in any node's status or activity
-    #      between current and previous tick
-    #      - Returns True if no change
-    #     '''
-    #     print('================== CHECKING IF AT EQUIL ===================')
-    #     for i in range(len(self.bt.nodes)):
-    #         n1 = self.bt_at_previous_tick.nodes[i]
-    #         n2 = self.bt.nodes[i]
-    #         # print(n1.label, n1.status.status)
-    #         # print(n2.label, n2.status.status)
-    #         if n1.status.status != n2.status.status:
-    #             print(n1.label, n1.status.status)
-    #             print(n2.label, n2.status.status)
-    #             print('==========/========== NOT AT EQUIL ==========/==========')
-    #             return False
-
-    #     print('================== AT EQUIL ===================')
-    #     return True
-
-
-
-        # for n1 in self.bt_at_previous_tick.nodes:
-        #     for n2 in self.bt.nodes:
-        #         if n1.status != n2.status:
-        #             print(n1.label, n1.status.status.__str__())
-        #             print(n2.label, n2.status.status)
-        #             print("not same")
-        #             print('==========/========== NOT AT EQUIL ==========/==========')
-        #             return False
-        #         else:
-        #             print(n1.label, n1.status.status)
-        #             print(n2.label, n2.status.status)
-        #             print("same")
-
-        # print('================== AT EQUIL ===================')
-        #return True
 
     def get_all_node_activities(self):
         ## subscribe to the topics
@@ -161,6 +65,7 @@ class EvaluateBTCompactness():
     def get_condition_statuses(self):
 
         # Self.bt.condition_nodes is a dict where keys are conditions labels and values are instances
+        # Returns statuses in a list of ALL condition node instances (not just by type)
 
         statuses = []
         for lst in list(self.bt.condition_nodes.values()):
@@ -191,7 +96,71 @@ class EvaluateBTCompactness():
 
         return active_conds_per_active_actions
 
+    def define_state(self):
 
+        # Initial state, all conditions have a status of Failure
+
+        state = {}
+        for c in self.condition_labels:
+            state[c] = False
+
+        return state
+
+    def redefine_state(self, state):
+
+        state[self.condition_labels[0]] = True # example change
+        return state
+
+    def update_bt(self, state):
+
+        # Condition label, T/F
+        for c_label in list(state.keys()):
+            self.bt_interface.setConditionStatus(c_label, state[c_label])
+
+        rospy.loginfo("updating BT given new state") # Could probably just print instead
+
+    def less_complex_run(self):
+        try:
+            
+            self.init_bt()
+            self.condition_labels = list(self.bt.condition_nodes.keys())
+
+            # Create output file
+            f = open("/home/scheidee/Desktop/AURO_results/activity_results.txt", "w+")
+
+            count = 1
+            while not rospy.is_shutdown():
+                #states = [[]] 
+                #for state in states:
+                #print('Tick %d' % count) 
+                
+                self.bt.tick()
+                c_stats = self.get_condition_statuses()
+                f.write(str(c_stats) + "\n")
+                state = self.define_state()
+                #print(state)
+                state = self.redefine_state(state)
+                # print(state)
+
+                self.update_bt(state) # not showing anything in active a and c rostopics currently...
+                #rospy.spin() # Keep it running to view rostopics active_actions and active_conditions
+
+                # This block is redundant with self.bt.tick() but seems to be needed 
+                source = gv.get_graphviz(self.bt)
+                source_msg = String()
+                source_msg.data = source
+                graphviz_pub.publish(source_msg) 
+
+                compressed = String()
+                compressed.data = zlib.compress(source.encode("utf-8"))
+                compressed_pub.publish(compressed)
+
+                # self.old_statuses = copy.deepcopy(current_statuses)
+                # self.prev_active_actions = copy.deepcopy(active_actions)
+                # self.prev_active_conditions = copy.deepcopy(active_conditions)
+                count += 1
+
+        except rospy.ROSInterruptException: pass
 
     def run(self):
 
