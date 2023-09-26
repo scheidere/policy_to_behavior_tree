@@ -106,9 +106,23 @@ class EvaluateBTCompactness():
 
         return state
 
-    def redefine_state(self, state):
+    def redefine_state(self, state, change_index):
 
-        state[self.condition_labels[0]] = True # example change
+        # The change_index denotes which type of condition we are changing the status of
+        # T->F or F->T
+
+        # print('change_index: %d' %change_index)
+        # print(state)
+        # print("hi" + str(self.condition_labels[change_index]))
+
+        change_label = self.condition_labels[change_index]
+        if state[change_label] == True:
+            state[change_label] = False
+        elif state[change_label] == False:
+            # print('CHANGE')
+            state[change_label] = True
+
+        # print(state)
         return state
 
     def update_bt(self, state):
@@ -117,13 +131,14 @@ class EvaluateBTCompactness():
         for c_label in list(state.keys()):
             self.bt_interface.setConditionStatus(c_label, state[c_label])
 
-        rospy.loginfo("updating BT given new state") # Could probably just print instead
+        #rospy.loginfo("updating BT given new state") # Could probably just print instead
 
     def less_complex_run(self):
         try:
             
             self.init_bt()
             self.condition_labels = list(self.bt.condition_nodes.keys())
+            state = self.define_state()
 
             # Create output file
             f = open("/home/scheidee/Desktop/AURO_results/activity_results.txt", "w+")
@@ -136,16 +151,28 @@ class EvaluateBTCompactness():
                 
                 self.bt.tick()
                 c_stats = self.get_condition_statuses()
-                f.write(str(c_stats) + "\n")
-                state = self.define_state()
+                active_actions = self.bt.getActiveActions()
+                num_active_a = len(active_actions)
+                active_conditions = self.bt.getActiveConditions()
+                num_active_c = len(active_conditions)
+                f.write("Active actions: " + str(active_actions) + ", %d\n" %num_active_a)
+                f.write("Active conditions: " + str(active_conditions) + ", %d\n" %num_active_c)
+                f.write("Current condition statuses (from BT): " + str(c_stats) + "\n")
                 #print(state)
-                state = self.redefine_state(state)
+                f.write("======\n")
+                f.write("Changing state (locally, i.e., independent of BT)\n")
+                f.write("Before: " + str(state) +"\n")
+                if count == 1:
+                    state = self.redefine_state(state,2)
+                    state = self.redefine_state(state,4)
+                #state = self.redefine_state(state,0)
                 # print(state)
+                f.write("After: " + str(state) +"\n")
+                f.write("++++++\n")
 
-                self.update_bt(state) # not showing anything in active a and c rostopics currently...
-                #rospy.spin() # Keep it running to view rostopics active_actions and active_conditions
+                self.update_bt(state) 
 
-                # This block is redundant with self.bt.tick() but seems to be needed 
+                # This block is seemingly redundant with self.bt.tick() but seems to be needed for the rqt plugin
                 source = gv.get_graphviz(self.bt)
                 source_msg = String()
                 source_msg.data = source
@@ -155,14 +182,14 @@ class EvaluateBTCompactness():
                 compressed.data = zlib.compress(source.encode("utf-8"))
                 compressed_pub.publish(compressed)
 
-                # self.old_statuses = copy.deepcopy(current_statuses)
-                # self.prev_active_actions = copy.deepcopy(active_actions)
-                # self.prev_active_conditions = copy.deepcopy(active_conditions)
+                #rospy.spin()
                 count += 1
 
         except rospy.ROSInterruptException: pass
 
     def run(self):
+
+        # deprecated
 
         try:
             
