@@ -76,6 +76,8 @@ def main(domain, problem, config):
     # Solve for a policy (and also return updated action list, only including those actions that actually appear in the policy)
     policy = matrices_to_policy.solve(solver,P,R)
     solver_runtime = time.time() - start_time_solver
+    f = open("/home/scheidee/Desktop/AURO_results/bla.txt", "w+")
+    f.write(str(policy)+"\n")
 
     
     if save_raw_policy_bt:
@@ -98,7 +100,7 @@ def main(domain, problem, config):
     if do_simplification:
         print('Simplified policy behavior tree:\n')
         test_time_start = time.time()
-        simplify = Simplify(states, actions_with_params, policy, domain, problem, ignore_dontcares, default_action_order)
+        simplify = Simplify(states, actions_with_params, policy, domain, problem, ignore_dontcares, default_action_order, f)
         simplified_policy_bt = simplify.bt
         simplification_runtime = simplify.simplification_runtime
         policy_to_bt_runtime = simplify.policy_to_bt_runtime
@@ -113,10 +115,11 @@ def main(domain, problem, config):
     # Save the behavior trees in .tree files in behavior_tree/config
     print('Saving behavior trees to files...\n')
     if save_raw_policy_bt:
-        raw_policy_bt.write_config('/home/parallels/auro_ws/src/policy_to_behavior_tree/behavior_tree/config/AURO_final_synthesized_BTs/raw_policy_bt.tree')
-    
+        #raw_policy_bt.write_config('/home/parallels/auro_ws/src/policy_to_behavior_tree/behavior_tree/config/AURO_final_synthesized_BTs/raw_policy_bt.tree')
+        raw_policy_bt.write_config('/home/scheidee/auro_ws/src/policy_to_behavior_tree/behavior_tree/config/AURO_final_synthesized_BTs/raw_policy_bt.tree')
     if do_simplification:
-        simplified_policy_bt.write_config('/home/parallels/auro_ws/src/policy_to_behavior_tree/behavior_tree/config/AURO_final_synthesized_BTs/final_synth_bt.tree')
+        #simplified_policy_bt.write_config('/home/parallels/auro_ws/src/policy_to_behavior_tree/behavior_tree/config/AURO_final_synthesized_BTs/final_synth_bt.tree')
+        simplified_policy_bt.write_config('/home/scheidee/auro_ws/src/policy_to_behavior_tree/behavior_tree/config/AURO_final_synthesized_BTs/final_synth_bt.tree')
     else:
         print('SKIPPING SAVE OF SIMPLIFIED POLICY WHILE GENERATING RESULTS')
         raw_policy_bt.evaluate_bt_compactness()
@@ -138,7 +141,8 @@ def main(domain, problem, config):
     #path = "/home/scheidee/new_bt_generation_ws/src/bt_generation/policy_to_behavior_tree/mdp_to_bt/src/mdp_to_bt/policy_eval_output/"
     # Laptop (Mac OS)
     #path = "/home/scheidee/bt_synthesis_ws/src/policy_to_behavior_tree/mdp_to_bt/src/mdp_to_bt/policy_eval_output/"
-    path = "/home/parallels/auro_ws/src/policy_to_behavior_tree/mdp_to_bt/src/mdp_to_bt/policy_eval_output/"
+    #path = "/home/parallels/auro_ws/src/policy_to_behavior_tree/mdp_to_bt/src/mdp_to_bt/policy_eval_output/"
+    path = "/home/scheidee/auro_ws/src/policy_to_behavior_tree/mdp_to_bt/src/mdp_to_bt/policy_eval_output/"
     pickle.dump(policy, open( path + "policy.p", "wb" ) )
     pickle_runtime = time.time() - pickle_start
     print(('pickle runtime: ', pickle_runtime))
@@ -164,7 +168,8 @@ def run():
     start_time_milli = int(time.time()*1000) #milliseconds
 
     # Create output file
-    f = open("/home/parallels/Desktop/AURO_results/bla.txt", "w+")
+    #f = open("/home/parallels/Desktop/AURO_results/bla.txt", "w+")
+    f = open("/home/scheidee/Desktop/AURO_results/bla.txt", "w+")
 
     # Get the domain and problem
     domain_path = rospy.get_param('~domain')

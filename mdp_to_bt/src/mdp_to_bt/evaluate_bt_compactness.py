@@ -7,7 +7,8 @@ from bt_interface import *
 from behavior_tree_msgs.msg import Status, Active
 import zlib
 import copy
-
+import itertools
+from statistics import mean
 
 
 class EvaluateBTCompactness():
@@ -18,9 +19,10 @@ class EvaluateBTCompactness():
         self.old_statuses = None
         self.prev_active_actions = None
         self.prev_active_conditions = None
-        #self.run()
         self.bt_interface = BT_Interface(self.bt)
-        self.less_complex_run()
+        #self.less_complex_run()
+        self.run()
+
 
     def init_bt(self):
         # print("BT_Interface initialising BT...")
@@ -50,10 +52,6 @@ class EvaluateBTCompactness():
                 print("is_active: " + str(condition_node.is_active))
                 print("status: " + str(condition_node.status.__str__()))
 
-    def get_all_node_activities(self):
-        ## subscribe to the topics
-        pass
-
     def get_all_node_statuses(self):
 
         statuses = []
@@ -82,11 +80,6 @@ class EvaluateBTCompactness():
 
         return old_statuses == current_statuses
 
-    def at_action_activity_equilibrium(self, prev_active_actions, active_actions):
-
-        for i in range(len(active_actions)):
-            pass
-
     def record_active_conds_per_active_action(self, active_actions, active_conditions, active_conds_per_active_actions):
 
         # For a certain BT static state
@@ -106,7 +99,8 @@ class EvaluateBTCompactness():
 
         return state
 
-    def redefine_state(self, state, change_index):
+    #def redefine_state(self, state, change_index):
+    def redefine_state(self, state, new_bools):
 
         # The change_index denotes which type of condition we are changing the status of
         # T->F or F->T
@@ -115,15 +109,25 @@ class EvaluateBTCompactness():
         # print(state)
         # print("hi" + str(self.condition_labels[change_index]))
 
-        change_label = self.condition_labels[change_index]
-        if state[change_label] == True:
-            state[change_label] = False
-        elif state[change_label] == False:
-            # print('CHANGE')
-            state[change_label] = True
+        for i in range(len(state)):
+            new_bool = new_bools[i]
+            state[self.condition_labels[i]] = new_bool
+
+        # change_label = self.condition_labels[change_index]
+        # if state[change_label] == True:
+        #     state[change_label] = False
+        # elif state[change_label] == False:
+        #     # print('CHANGE')
+        #     state[change_label] = True
 
         # print(state)
         return state
+
+
+    def get_all_bool_combos(self, n):
+
+        return [list(i) for i in itertools.product([False,True], repeat=n)]
+
 
     def update_bt(self, state):
 
@@ -133,46 +137,137 @@ class EvaluateBTCompactness():
 
         #rospy.loginfo("updating BT given new state") # Could probably just print instead
 
-    def less_complex_run(self):
+    def get_active_action_and_condition_nodes(self):
+
+        # instances of active action or condition nodes, including duplicates of the same type (different location in tree)
+
+        active_action_nodes = []
+        active_condition_nodes = []
+        for node in self.bt.nodes:
+            if node.is_active and isinstance(node,Action):
+                active_action_nodes.append(node)
+            elif node.is_active and isinstance(node,Condition):
+                active_condition_nodes.append(node)
+
+        return active_action_nodes, active_condition_nodes
+
+    def count_condition_node_instances(self):
+
+        condition_count = 0
+        for lst in self.bt.condition_nodes.values():
+            condition_count += len(lst)
+
+        return condition_count
+
+    def count_action_node_instances(self):
+
+        action_count = 0
+        for lst in self.bt.action_nodes.values():
+            action_count += len(lst)
+
+        return action_count
+
+    def run(self):
         try:
-            
-            self.init_bt()
-            self.condition_labels = list(self.bt.condition_nodes.keys())
-            state = self.define_state()
 
             # Create output file
             f = open("/home/scheidee/Desktop/AURO_results/activity_results.txt", "w+")
+            f.write("Config: %s\n" %self.config_filename)
+            f.write("Total number of condition nodes in tree: %d \n" %(self.count_condition_node_instances()))
+            f.write("Total number of action nodes in tree: %d \n" %(self.count_action_node_instances()))
 
-            count = 1
+            self.init_bt()
+            self.condition_labels = list(self.bt.condition_nodes.keys())
+            state = self.define_state()
+            n = len(self.condition_labels) # get number of condition types
+            all_test_bools = self.get_all_bool_combos(n) # list of lists, each represents a state
+            #all_test_bools = [[False, False, True, False, True],[False, False, True, True, True]]
+            conditions_per_actions = [] # active conditions per active actions
+            episode_c_per_a_avgs = [] # active c per a
+            all_states_evaluated = False
+
+            f.write('Examining %d state(s)\n' %len(all_test_bools))
+            print('Examining %d state(s)\n' %len(all_test_bools))
+
+            tick_count = 1 # Overall tick counter
+            episode = 1
             while not rospy.is_shutdown():
-                #states = [[]] 
-                #for state in states:
-                #print('Tick %d' % count) 
                 
+                # Every tick start
                 self.bt.tick()
+                current_statuses = self.get_all_node_statuses()
                 c_stats = self.get_condition_statuses()
                 active_actions = self.bt.getActiveActions()
                 num_active_a = len(active_actions)
                 active_conditions = self.bt.getActiveConditions()
                 num_active_c = len(active_conditions)
-                f.write("Active actions: " + str(active_actions) + ", %d\n" %num_active_a)
-                f.write("Active conditions: " + str(active_conditions) + ", %d\n" %num_active_c)
-                f.write("Current condition statuses (from BT): " + str(c_stats) + "\n")
-                #print(state)
-                f.write("======\n")
-                f.write("Changing state (locally, i.e., independent of BT)\n")
-                f.write("Before: " + str(state) +"\n")
-                if count == 1:
-                    state = self.redefine_state(state,2)
-                    state = self.redefine_state(state,4)
-                #state = self.redefine_state(state,0)
-                # print(state)
-                f.write("After: " + str(state) +"\n")
-                f.write("++++++\n")
 
-                self.update_bt(state) 
 
-                # This block is seemingly redundant with self.bt.tick() but seems to be needed for the rqt plugin
+                if tick_count == 1: # First tick ONLY
+
+                    # Get a set of bools to define the state and remove from list
+                    current_bools = all_test_bools.pop()
+
+                    # Get state based on current bools
+                    state = self.redefine_state(state, current_bools)
+
+                    # Update BT given new state
+                    self.update_bt(state)
+
+                    print("Episode %d" %episode)
+
+
+                elif tick_count%10000==0: # Evaluate result of each state change over 10k ticks
+
+                    # Get average number of condition nodes per action nodes, C/A
+                    avg_c_per_a = mean(conditions_per_actions)
+                    episode_c_per_a_avgs.append(avg_c_per_a) # Retain episode averages to be averaged at end
+
+                    # Reset raw C/A list
+                    conditions_per_actions = []
+
+                    # Get new bools for definition of new state (as long as list not empty) and remove from list
+                    if all_test_bools:
+                        current_bools = all_test_bools.pop()
+                    else: # All states have been evaluated
+                        all_states_evaluated = True
+
+                    # Get state based on current bools
+                    state = self.redefine_state(state, current_bools)
+
+                    # Update BT given new state
+                    self.update_bt(state)
+
+                    episode+=1
+                    print("Episode %d" %episode)
+                    
+
+                else: # Most ticks
+
+                    # Get number of active condition nodes per active action nodes, C/A
+
+                    # Number of active condition/action nodes
+                    active_a_nodes, active_c_nodes = self.get_active_action_and_condition_nodes()
+
+                    # Check if c,a pair are unique, only save if so for efficiency
+                    # Add ^^^ later if necessary to alleviate slowness
+
+                    # Add C/A to list for current state/10k tick episode
+                    if active_a_nodes: # Check at least one action is active, otherwise ignore
+                        conditions_per_actions.append(len(active_c_nodes)/len(active_a_nodes))
+
+
+                if all_states_evaluated:
+
+                    # Get final average C/A
+                    avg_active_conditions_per_active_action = mean(episode_c_per_a_avgs)
+                    f.write("Number of episodes: %d\n" %len(episode_c_per_a_avgs))
+                    f.write("Average active conditions per action per episode: \n%s\n" %str(episode_c_per_a_avgs))
+                    f.write("The average number of active conditions per active action is: %f\n" % avg_active_conditions_per_active_action)
+                    print("Evaluation complete.")
+                    rospy.spin()
+
+                # # This block is seemingly redundant with self.bt.tick() but seems to be needed for the rqt plugin
                 source = gv.get_graphviz(self.bt)
                 source_msg = String()
                 source_msg.data = source
@@ -182,123 +277,11 @@ class EvaluateBTCompactness():
                 compressed.data = zlib.compress(source.encode("utf-8"))
                 compressed_pub.publish(compressed)
 
-                #rospy.spin()
-                count += 1
+                tick_count += 1
 
         except rospy.ROSInterruptException: pass
 
-    def run(self):
 
-        # deprecated
-
-        try:
-            
-            self.init_bt()
-
-            # Create output file
-            f = open("/home/scheidee/Desktop/AURO_results/activity_results.txt", "w+")
-
-            #self.print_condition_info()
-
-            # node_label = 'test'
-            # node = Action(node_label)
-            # message_type = Status
-            # message_data = Status.SUCCESS
-            # #message_data = 'NO MESSAGE'
-            # print(node, message_type, message_data)
-            # input('yo')
-
-            #self.bt.print_BT()
-            #self.bt.changeConditionStatus()
-            #bt.write_config('onr_example2.tree') # need to manually add in decorator nodes to config file/ implement it dur
-            count = 1
-            while not rospy.is_shutdown():  
-                #print('Tick %d' % count) 
-                
-                self.bt.tick()
-
-                current_statuses = self.get_all_node_statuses()
-                current_condition_statuses = self.get_condition_statuses()
-                active_actions = self.bt.getActiveActions()
-                num_active_a = len(active_actions)
-                active_conditions = self.bt.getActiveConditions()
-                num_active_c = len(active_conditions)
-
-                if count == 1:
-                    active_conds_per_active_actions = {}
-                    action_labels = list(self.bt.action_nodes.keys())
-                    for k in action_labels:
-                        active_conds_per_active_actions[k] = []
-                    print(active_conds_per_active_actions)
-                    f.write("Tick %d\n" %count)
-                    #f.write("Node statuses: " + str(current_statuses) + "\n") # all node statuses
-                    f.write('Condition order: ' + str(list(self.bt.condition_nodes.keys())) + "\n")
-                    f.write("Condition statuses: " + str(current_condition_statuses)+ "\n") # just condition statuses
-                    f.write("Active actions: " + str(active_actions) + ", %d\n" %num_active_a)
-                    f.write("Active conditions: " + str(active_conditions) + ", %d\n" %num_active_c)
-                    f.write("Tracker (list of active condition nums per active action): \n" + str(active_conds_per_active_actions) + "\n")
-                    f.write("+++++++++++++++++++++ EVALUATION BELOW +++++++++++++++++++++\n")
-
-                elif count > 1:
-                    if not self.at_node_status_equilibrium(self.old_statuses, current_statuses):
-                        f.write("Tick %d\n" %count)
-                        #f.write("Node statuses: " + str(current_statuses) + "\n") # all node statuses
-                        f.write("Condition statuses: " + str(current_condition_statuses)+ "\n") # just condition statuses
-                        f.write("Active actions: " + str(active_actions) + ", %d\n" %num_active_a)
-                        f.write("Active conditions: " + str(active_conditions) + ", %d\n" %num_active_c)
-                        # print("Tick %d\n" %count)
-                        # print("Node statuses: " + str(current_statuses) + "\n")
-                        # print("Active actions: " + str(active_actions) + "\n")
-                        # print("Active conditions: " + str(active_conditions) + "\n")
-
-                        active_conds_per_active_actions = self.record_active_conds_per_active_action(active_actions, active_conditions, active_conds_per_active_actions)
-                        f.write("Tracker: " + str(active_conds_per_active_actions) + "\n")
-
-
-                # if self.bt_at_previous_tick:
-                #     self.at_node_activity_equilibrium()
-
-                #self.bt_at_previous_tick = copy.deepcopy(self.bt) # how do i copy this without breaking things 
-                # self.bt.print_BT()
-
-                # Print when statuses of any nodes change in the tree
-                # current_statuses = self.get_all_node_statuses()
-                # active_actions = self.bt.getActiveActions()
-                # active_conditions = self.bt.getActiveConditions()
-
-                # if self.old_statuses and not self.at_node_status_equilibrium(self.old_statuses, current_statuses):
-                #     f.write("Tick %d\n" %count)
-                #     f.write('old' + str(self.old_statuses))
-                #     print('old', self.old_statuses)
-                #     print('new', current_statuses)
-                #     print("++++++++++ CHANGE OCCURRED ++++++++++")
-
-                
-
-                # # Print when node activity change occurs
-                # if self.prev_active_actions and self.prev_active_actions != active_actions:  
-                #     print('prev_active_actions ', self.prev_active_actions)
-                #     print('active_actions ', active_actions)
-                # if self.prev_active_conditions and self.prev_active_conditions != active_conditions:  
-                #     print('prev_active_conditions ', self.prev_active_conditions)
-                #     print('active_conditions ', active_conditions)
-
-                # This block is redundant with self.bt.tick() but seems to be needed 
-                source = gv.get_graphviz(self.bt)
-                source_msg = String()
-                source_msg.data = source
-                graphviz_pub.publish(source_msg) 
-
-                compressed = String()
-                compressed.data = zlib.compress(source.encode("utf-8"))
-                compressed_pub.publish(compressed)
-
-                self.old_statuses = copy.deepcopy(current_statuses)
-                self.prev_active_actions = copy.deepcopy(active_actions)
-                self.prev_active_conditions = copy.deepcopy(active_conditions)
-                count += 1
-
-        except rospy.ROSInterruptException: pass
 
 if __name__ == "__main__":
 
@@ -310,8 +293,22 @@ if __name__ == "__main__":
     path_to_bts = "/home/scheidee/auro_ws/src/policy_to_behavior_tree/behavior_tree/config/AURO_final_synthesized_BTs"
 
     marine_simplified_bt = "/marine/final_synth_bt.tree"
+    marine_raw_bt = "/marine/raw_policy_bt.tree"
+    marine_simplified_reorder_bt = "/marine/final_synth_bt_reorder.tree" # random action order reordered for simplification
+    marine_simplified_cares_bt = "/marine/final_synth_bt_cares.tree" # not removing dontcares
 
-    config_filename = path_to_bts + marine_simplified_bt
+    infant_simplified_bt = "/infant/final_synth_bt.tree"
+    infant_raw_bt = "/infant/raw_policy_bt.tree"
+
+    tree = marine_simplified_bt
+    #tree = marine_raw_bt
+    #tree = marine_simplified_reorder_bt
+    #tree = marine_simplified_cares_bt
+
+    #tree = infant_simplified_bt 
+    #tree = infant_raw_bt
+
+    config_filename = path_to_bts + tree
 
     ebtc = EvaluateBTCompactness(config_filename)
 
