@@ -6,18 +6,21 @@
 			(found-mine_x)
 		[report(x: x)]
 	->
+		(found-target-to-report_x)
 		<!>
 			(found-mine_x)
+		[go-to-comms(x: x)]
+	->
 		<!>
-			(found-target-to-report_x)
+			(found-mine_x)
 		<!>
 			(has-object_x)
 		[explore(x: x)]
 	->
-		(at-drop-off_x)
+		(found-mine_x)
+		[disarm(x: x)]
+	->
 		<!>
-			(found-mine_x)
-		<!>
-			(found-target-to-report_x)
-		[drop-off(x: x)]
-	[go-to-drop-off(x: x)]
+			(at-drop-off_x)
+		[go-to-drop-off(x: x)]
+	[drop-off(x: x)]

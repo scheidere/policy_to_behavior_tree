@@ -292,18 +292,18 @@ if __name__ == "__main__":
     # path_to_bts = "/home/parallels/auro_ws/src/policy_to_behavior_tree/behavior_tree/config/AURO_final_synthesized_BTs"
     path_to_bts = "/home/scheidee/auro_ws/src/policy_to_behavior_tree/behavior_tree/config/AURO_final_synthesized_BTs"
 
-    marine_simplified_bt = "/marine/final_synth_bt.tree"
-    marine_raw_bt = "/marine/raw_policy_bt.tree"
-    marine_simplified_reorder_bt = "/marine/final_synth_bt_reorder.tree" # random action order reordered for simplification
-    marine_simplified_cares_bt = "/marine/final_synth_bt_cares.tree" # not removing dontcares
+    marine_simplified_bt = "/marine/final_synth_bt.tree" # NEED TO REGEN post bug fix
+    marine_raw_bt = "/marine/raw_policy_bt.tree" # NEED TO REGEN post bug fix
+    marine_simplified_reorder_bt = "/marine/final_synth_bt_reorder.tree" # random action order reordered for simplification # NEED TO REGEN post bug fix
+    marine_simplified_cares_bt = "/marine/final_synth_bt_cares.tree" # not removing dontcares # NEED TO REGEN post bug fix
 
     infant_simplified_bt = "/infant/final_synth_bt.tree"
     infant_raw_bt = "/infant/raw_policy_bt.tree"
 
-    tree = marine_simplified_bt
+    #tree = marine_simplified_bt
     #tree = marine_raw_bt
     #tree = marine_simplified_reorder_bt
-    #tree = marine_simplified_cares_bt
+    tree = marine_simplified_cares_bt
 
     #tree = infant_simplified_bt 
     #tree = infant_raw_bt

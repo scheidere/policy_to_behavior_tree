@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 from ppddl_to_matrices import getStateList
+import behavior_tree.behavior_tree_graphviz as gv
 import rospy
 from bt_interface import *
 from behavior_tree_msgs.msg import Status, Active
@@ -31,8 +32,10 @@ class CompareBTPolicy():
             self.init_bt()
             states = getStateList(domain, problem)
 
-            test_state = states[7] # explore then report
-            #test_state = states[17]
+            #test_state = states[7] # explore then report
+            #test_state = states[17] # this state uncovers a BUG because the 0 baseline state results in the same activity
+            # so nothing changes after the bt update to state 17 from all 0 baseline state (How do I fix this??)
+            test_state = states[34] # this state does not have that issue, getting first active and running action seems to work
 
             #print(test_state)
 
@@ -45,23 +48,56 @@ class CompareBTPolicy():
             policy = [] # list of action names (idk which nums they would be anyway)
 
             active_actions = self.bt.getActiveActions()
+            active_action_statuses = self.print_active_action_statuses(active_actions)
             print("BEFORE", active_actions)
 
             self.print_bt_cond_statuses()
 
+            # first keep statuses all 0s for a while to give me a chance to get rqt up to see the change
+            wait_for_rqt_count_threshold = 20000
+
+            first_active_running_action = None
+
+
+            count = 0
             while not rospy.is_shutdown():
 
                 self.bt.tick()
-                self.update_bt(test_state)
-                new_active_actions = self.bt.getActiveActions()
-                if active_actions != new_active_actions:
-                    active_actions = new_active_actions
-                    print("++++++++++")
-                    print('active actions: %s' %str(active_actions))
-                    #statuses = self.get_condition_statuses()
-                    #print('conds: %s\n' %str(statuses))
-                    self.print_bt_cond_statuses()
-                    print("==========")
+                if count >= wait_for_rqt_count_threshold:
+                    #input("hype")
+                    self.update_bt(test_state)
+                    new_active_actions = self.bt.getActiveActions()
+                    new_active_action_statuses = self.print_active_action_statuses(active_actions)
+                    if active_actions != new_active_actions or new_active_action_statuses != active_action_statuses:
+                        active_actions = new_active_actions
+                        active_action_statuses = new_active_action_statuses
+                        print("++++++++++")
+                        print('active actions (+statuses): %s (%s)\n' %(str(active_actions),active_action_statuses))
+
+                        #self.print_active_action_statuses(active_actions)
+                        #statuses = self.get_condition_statuses()
+                        #print('conds: %s\n' %str(statuses))
+                        self.print_bt_cond_statuses()
+                        running_active_actions = self.get_running_actions_from_active_actions(active_actions)
+                        if running_active_actions and not first_active_running_action:
+                            first_active_running_action = running_active_actions
+                        print("ANSWER: %s\n" %first_active_running_action)
+                        print("==========")
+                        #input("hi")
+
+                # # This block is seemingly redundant with self.bt.tick() but seems to be needed for the rqt plugin
+                source = gv.get_graphviz(self.bt)
+                source_msg = String()
+                source_msg.data = source
+                graphviz_pub.publish(source_msg) 
+
+                compressed = String()
+                compressed.data = zlib.compress(source.encode("utf-8"))
+                compressed_pub.publish(compressed)
+
+                count += 1
+                #print('Count %d\n' %count)
+                #self.print_bt_cond_statuses()
 
         except rospy.ROSInterruptException: pass
 
@@ -79,6 +115,29 @@ class CompareBTPolicy():
             state_from_bt.append([c,status])
 
         print(state_from_bt)
+
+    def get_running_actions_from_active_actions(self, active_actions):
+
+        # There should only ever be one active running action (ignoring parallel nodes)
+        running_actions = []
+        for a_label in active_actions:
+            action_node_list = self.bt.action_nodes[a_label]
+            status = action_node_list[0].status.status
+            if status == 1:
+                running_actions.append(a_label)
+
+        return running_actions # Plz tell be there is only one
+
+    def print_active_action_statuses(self, active_actions):
+
+        statuses = []
+        for a_label in active_actions:
+            action_node_list = self.bt.action_nodes[a_label]
+            status = action_node_list[0].status.status
+            #print(a_label, status)
+            statuses.append(status)
+
+        return statuses
 
     def get_condition_statuses(self):
 

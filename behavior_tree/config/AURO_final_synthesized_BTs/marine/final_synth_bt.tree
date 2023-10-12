@@ -8,6 +8,9 @@
 			(found-target-to-report_x)
 		[drop-off(x: x)]
 	->
+		(found-mine_x)
+		[disarm(x: x)]
+	->
 		(found-target-to-report_x)
 		<!>
 			(in-comms-range_x)

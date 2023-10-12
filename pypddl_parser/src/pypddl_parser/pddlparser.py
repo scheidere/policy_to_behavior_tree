@@ -1,4 +1,4 @@
-#!/usr/bin/env/ python3
+#!/usr/bin/env/ python
 # This file is part of pypddl-parser.
 
 # pypddl-parser is free software: you can redistribute it and/or modify
@@ -28,6 +28,7 @@ from pypddl_parser.problem   import Problem
 from pypddl_parser.constraint import Constraint
 
 import traceback 
+import io
 
 debug = False
 
@@ -661,7 +662,7 @@ class PDDLParser(object):
 
     @classmethod
     def __read_input(cls, filename):
-        with open(filename, 'r', encoding='utf-8') as file:
+        with io.open(filename, 'r', encoding='utf-8') as file:
             data = ''
             for line in file:
                 line = line.rstrip().lower()
