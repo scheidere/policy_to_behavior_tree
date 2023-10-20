@@ -1267,7 +1267,7 @@ def readPolicy(policy,states,actions_with_params):
         #print(actions_with_params[policy[i]][0].name,actions_with_params[policy[i]][1],'\n')
         print((actions_with_params[policy[i]][0],actions_with_params[policy[i]][1],'\n'))
 
-def checkPolicyPreconditions(policy, states,actions_with_params):
+def checkPolicyPreconditions(policy, states, actions_with_params):
 
     # Used to make the policy readable and check for issues with preconditions
 
@@ -1287,6 +1287,21 @@ def checkPolicyPreconditions(policy, states,actions_with_params):
         print(('\nPreconditions satisfied? %r' % precondsatisfied))
         if not precondsatisfied:
             eval(input('Found failure'))
+
+def saveReadablePolicy(policy, states, actions_with_params):
+
+    # Save readable and basic "state: action" policy form to file f
+    f = open("/home/scheidee/Desktop/AURO_results/raw_policy.txt", "w+")
+    fa = open("/home/scheidee/Desktop/AURO_results/raw_policy_actions.txt", "w+")
+
+    for i in range(len(policy)):
+
+        f.write("State count: %d\n"%(i+1))
+        f.write("State: %s\n" %str(states[i]))
+        action = actions_with_params[policy[i]][0]
+        f.write("Action: %s\n" %str(action.name))
+        fa.write("%s\n" %str(action.name))
+
 
 
 def get_average_reward(num_runs, mdp_problem, policy):

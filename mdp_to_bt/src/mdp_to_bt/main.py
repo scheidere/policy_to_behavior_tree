@@ -32,6 +32,8 @@ import pickle
 
 def main(domain, problem, config):
 
+    # f = open("/home/scheidee/Desktop/AURO_results/raw_policy.txt", "w+")
+
     test = False
     save_raw_policy_bt = True
 
@@ -79,6 +81,9 @@ def main(domain, problem, config):
     f = open("/home/scheidee/Desktop/AURO_results/bla.txt", "w+")
     f.write(str(policy)+"\n")
 
+    # Uncomment line below to (re)generate readable policy to a file (see saveReadablePolicy in ppddl_to_matrices.py for file location)
+    saveReadablePolicy(policy,states,actions_with_params)
+
     
     if save_raw_policy_bt:
         # Convert policy to BT and save as
@@ -89,7 +94,7 @@ def main(domain, problem, config):
 
     # Translate policy to readable form
     # choice = input('Press r to print policy in readable form. To skip press any other key.')
-    choice = 'nope'
+    choice = 'Nope'
     if choice == 'r':
         #readPolicy(policy,states,actions_with_params)
         checkPolicyPreconditions(policy,states,actions_with_params) #Value iteration passes, Q-learning fails

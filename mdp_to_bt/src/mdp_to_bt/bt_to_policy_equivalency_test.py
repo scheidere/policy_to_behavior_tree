@@ -12,6 +12,9 @@ from statistics import mean
 from pypddl_parser.pddlparser import PDDLParser
 from bt_interface import *
 
+
+import time
+
 class CompareBTPolicy():
     def __init__(self, bt_path, domain, problem):
         self.bt = BehaviorTree(bt_path)
@@ -29,13 +32,220 @@ class CompareBTPolicy():
 
         try:
 
+            # just for testing remote launch
+            t = round(time.time())
+
+            # f_path = "/home/scheidee/Desktop/AURO_results/policy_from_bt_YOO" + str(t) + ".txt"
+            # fa_path = "/home/scheidee/Desktop/AURO_results/policy_actions_from_bt_YOO" + str(t) + ".txt"
+            # f = open(f_path, "w+")
+            # fa = open(fa_path, "w+")
+            f = open("/home/scheidee/Desktop/AURO_results/policy_from_bt.txt", "w+")
+            fa = open("/home/scheidee/Desktop/AURO_results/policy_actions_from_bt.txt", "w+")
+            # f.write("hi\n")
+
             self.init_bt()
             states = getStateList(domain, problem)
+            states.reverse() # reversing the list order so pop chooses them in order below
+            num_states = len(states)
+            #states = states[:5]   
+            state0 = states[-1] # -1 or 0???            
+            state_count = 0
 
-            #test_state = states[7] # explore then report
-            #test_state = states[17] # this state uncovers a BUG because the 0 baseline state results in the same activity
-            # so nothing changes after the bt update to state 17 from all 0 baseline state (How do I fix this??)
-            test_state = states[34] # this state does not have that issue, getting first active and running action seems to work
+            current_state_eval_done = True # Trigger update to first state
+            running_active_actions = None
+            first_active_running_action = None
+
+            count = 0
+            # saved = False
+            done = False
+            old_running_active_actions = None
+            update_state = True
+            state = None
+
+            while not rospy.is_shutdown():
+
+                self.bt.tick()
+                count += 1
+
+                # if intermediate_update_state:
+
+
+                #     update_state = True
+                #     intermediate_update_state = False
+
+                # Update state
+                if len(states) >= 1 and update_state:
+                    # active_actions = self.bt.getActiveActions()
+                    # running_active_actions = self.get_running_actions_from_active_actions(active_actions)
+                    # print('pre update', running_active_actions)
+                    # if state:
+                    #     print('pre update', state)
+                    # else:
+                    #     print('no state yet')
+                    state = states.pop()
+                    self.update_bt(state)
+                    state_count +=1
+                    f.write("State count: %d\n" %state_count)
+                    f.write("State: %s\n" %str(state))
+                    update_state = False
+                    prev = first_active_running_action
+                    first_active_running_action = None
+                    # active_actions = self.bt.getActiveActions()
+                    # running_active_actions = self.get_running_actions_from_active_actions(active_actions)
+                    # print('post update', running_active_actions)
+                    # print('post update', state)
+
+                elif state_count == num_states and not done:
+                    print("DONE!!!")
+                    done = True
+
+
+                # Monitor active running actions
+                active_actions = self.bt.getActiveActions()
+                running_active_actions = self.get_running_actions_from_active_actions(active_actions)
+
+                if count%100:
+
+                    # print('running_active_actions', running_active_actions)
+                    # print('state', state)
+
+                    if running_active_actions and not first_active_running_action:
+                        print(running_active_actions)
+                        first_active_running_action = running_active_actions[0]
+                        first_active_running_action = first_active_running_action.split("(",1)[0] # removing (x: x)
+                        f.write("Action: %s\n" %str(first_active_running_action))
+                        fa.write("%s\n" %str(first_active_running_action))
+                        print(state)
+                        print(first_active_running_action)
+                        update_state = True
+                        # intermediate_update_state = True
+                    # elif not running_active_actions and first_active_running_action:
+                    #     update_state = True # Only update state if there are no running active actions for state update clarity?
+
+
+        except rospy.ROSInterruptException: pass
+
+
+    def bt_to_policy2(self, bt, domain, problem):
+
+        try:
+
+            f = open("/home/scheidee/Desktop/AURO_results/policy_from_bt.txt", "w+")
+            # f.write("hi\n")
+
+            self.init_bt()
+            states = getStateList(domain, problem)
+            #states.reverse() # reversing the list order so pop chooses them in order below
+            #states = states[:5]
+            states = states[:5]
+            state = None
+            state_count = 0
+
+            current_state_eval_done = True # Trigger update to first state
+            running_active_actions = None
+            first_active_running_action = None
+
+            count = 0
+            # saved = False
+            exit_print = False
+            old_running_active_actions = None
+
+            while not rospy.is_shutdown():
+
+                self.bt.tick()
+                count += 1
+
+                if not state:
+                    print('change', state, len(states))
+                    state = states.pop() # This pulls the states in order because the list has been reversed above
+                    self.update_bt(state)
+                    state_count += 1
+
+                if count%100 == 0:
+                    # f.write(str(state_count))
+                    # if not saved and len(states) >= 1:
+                    #     print('changin', len(states))
+                    #     state = states.pop() # This pulls the states in order because the list has been reversed above
+                    #     self.update_bt(state)
+                    #     state_count += 1
+                    #     saved = False
+                    # elif not states and not exit_print and not running_active_actions: 
+                    #     print("BT to policy check complete.")
+                    #     exit_print = True
+
+                    if not len(states) and not exit_print:
+                        print("BT to policy check complete.")
+                        exit_print = True
+                        first_active_running_action = None
+                
+                    active_actions = self.bt.getActiveActions()
+                    running_active_actions = self.get_running_actions_from_active_actions(active_actions)
+
+                    # An active action is now running, so record it
+                    if running_active_actions and not first_active_running_action:
+                        print('running_active_actions', running_active_actions)
+                        first_active_running_action = running_active_actions[0]
+
+                    # No more running active actions, save previously recorded action and update to new state
+                    if not running_active_actions and first_active_running_action:
+                        print('Saving %s\n' %first_active_running_action)
+                        f.write("%d %s: %s\n" %(state_count, str(state), first_active_running_action))
+                        first_active_running_action = None # Reset
+                        if len(states) >= 1:
+                            print('changin', state, len(states))
+                            state = states.pop() # This pulls the states in order because the list has been reversed above
+                            self.update_bt(state)
+                            first_active_running_action = None
+                            state_count +=1
+
+
+
+                    # new_running_active_actions = self.get_running_actions_from_active_actions(active_actions)
+
+                    # if new_running_active_actions != running_active_actions:
+                    #     running_active_actions = new_running_active_actions
+                    #     print('running_active_actions', running_active_actions)
+                    #     # If there are active running actions, and you haven't saved first running active action yet
+                    #     if not first_active_running_action and running_active_actions: 
+                    #         first_active_running_action = running_active_actions[0] # Save it
+                    # elif new_running_active_actions == []: # Same as previous, staying at [], i.e., no running active actions
+                    #     # Now that changes are done, do the save and move on to next state
+                    #     #print(saved)
+
+                    #     if first_active_running_action: # If there is one to save, i.e., not None, save it
+                    #         # Save first active and running action with state
+                    #         print('Saving %s\n' %first_active_running_action, len(states))
+                    #         # first_active_running_action = running_active_actions[0] # should only be 1 because no parallel nodes
+                    #         f.write("%d %s: %s\n" %(state_count, str(state), first_active_running_action))
+                            
+                    #         # Now that the first running active action for the last state was saved, update the state (if any left)
+                    #         if len(states) >= 1:
+                    #             print('changin', len(states))
+                    #             state = states.pop() # This pulls the states in order because the list has been reversed above
+                    #             self.update_bt(state)
+                    #             first_active_running_action = None
+                    #             state_count +=1
+
+
+
+
+
+        except rospy.ROSInterruptException: pass
+
+    def bt_to_policy_old(self, bt, domain, problem):
+
+        try:
+
+            f = open("/home/scheidee/Desktop/AURO_results/policy_from_bt.txt", "w+")
+
+            self.init_bt()
+            states = getStateList(domain, problem)
+            states.reverse() # reversing the list order so pop chooses them in order below
+            states = states[:2]
+
+            #test_state = states[34]
+            #test_state = states[17]
+
 
             #print(test_state)
 
@@ -58,32 +268,70 @@ class CompareBTPolicy():
 
             first_active_running_action = None
 
+            current_state_eval_done = True # To trigger first state change immediately
+
+            state_count = 0
+
+            saved = False
+
 
             count = 0
             while not rospy.is_shutdown():
 
-                self.bt.tick()
-                if count >= wait_for_rqt_count_threshold:
-                    #input("hype")
-                    self.update_bt(test_state)
-                    new_active_actions = self.bt.getActiveActions()
-                    new_active_action_statuses = self.print_active_action_statuses(active_actions)
-                    if active_actions != new_active_actions or new_active_action_statuses != active_action_statuses:
-                        active_actions = new_active_actions
-                        active_action_statuses = new_active_action_statuses
-                        print("++++++++++")
-                        print('active actions (+statuses): %s (%s)\n' %(str(active_actions),active_action_statuses))
+                count += 1
 
-                        #self.print_active_action_statuses(active_actions)
-                        #statuses = self.get_condition_statuses()
-                        #print('conds: %s\n' %str(statuses))
-                        self.print_bt_cond_statuses()
-                        running_active_actions = self.get_running_actions_from_active_actions(active_actions)
-                        if running_active_actions and not first_active_running_action:
-                            first_active_running_action = running_active_actions
+                if current_state_eval_done:
+                    # reset state and thus begin next evaluation
+                    if len(states) >= 1:
+                        state = states.pop() # This pulls the states in order because the list has been reversed above
+                        self.update_bt(state)
+                        state_count += 1
+                        saved = False
+                    else: 
+                        input("BT to policy check complete.")
+
+                    current_state_eval_done = False
+
+                self.bt.tick()
+                #if count >= wait_for_rqt_count_threshold: # ONLY FOR RQT (to leave time to pull up window and view tree prior to status changes)
+                # To use the delay line above for rqt, move everything up (aka not including) the rviz block
+                #self.update_bt(test_state) # only for single state testing, not full bt to policy regeneration runs
+                new_active_actions = self.bt.getActiveActions()
+                new_active_action_statuses = self.print_active_action_statuses(active_actions)
+                if active_actions != new_active_actions or new_active_action_statuses != active_action_statuses:
+                    active_actions = new_active_actions
+                    active_action_statuses = new_active_action_statuses
+                    print("++++++++++")
+                    print('Count: %d' %count)
+                    print('active actions (+statuses): %s (%s)\n' %(str(active_actions),active_action_statuses))
+
+                    #self.print_active_action_statuses(active_actions)
+                    #statuses = self.get_condition_statuses()
+                    #print('conds: %s\n' %str(statuses))
+                    self.print_bt_cond_statuses()
+                    running_active_actions = self.get_running_actions_from_active_actions(active_actions)
+                    print('running_active_actions', running_active_actions)
+                    print('2 active actions (+statuses): %s (%s)\n' %(str(active_actions),active_action_statuses))
+                    # Save first active running action if you haven't already
+                    if running_active_actions and not first_active_running_action:
+                        if len(running_active_actions) == 1:
+                            print("HELLO")
+                            first_active_running_action = running_active_actions[0]
+                        else: # Check for more than 1 running action at a time, without parallel nodes, there should only ever be 1
+                            input("ERROR - Line 85 - bt_to_policy_equivalency_test.py")
+                    elif not first_active_running_action and count%100 == 0: # No running active actions and haven't saved one
+                        print('HERE')
+                        # For cases like state 17, where it results in same outcome as baseline 0 state, so no actions listed as running
+                        # Added this else to catch that, and avoid just returning None
+                        first_active_running_action = active_actions[0] # first action that became active (presumably was running given baseline state)
+                    
+                    if first_active_running_action and not saved:
+                        f.write("%d %s: %s\n" %(state_count, str(state), first_active_running_action))
+                        current_state_eval_done = True # Trigger change to next state during next iteration
+                        saved = True
                         print("ANSWER: %s\n" %first_active_running_action)
+                        print('Count: %d' %count)
                         print("==========")
-                        #input("hi")
 
                 # # This block is seemingly redundant with self.bt.tick() but seems to be needed for the rqt plugin
                 source = gv.get_graphviz(self.bt)
@@ -124,9 +372,10 @@ class CompareBTPolicy():
             action_node_list = self.bt.action_nodes[a_label]
             status = action_node_list[0].status.status
             if status == 1:
+                #print('status is 1')
                 running_actions.append(a_label)
 
-        return running_actions # Plz tell be there is only one
+        return running_actions # Plz tell me there is only one
 
     def print_active_action_statuses(self, active_actions):
 
@@ -207,7 +456,5 @@ if __name__ == "__main__":
     # Get the domain and problem
     domain  = PDDLParser.parse(domain_path)
     problem = PDDLParser.parse(problem_path)
-
-    
 
     cbtp = CompareBTPolicy(bt_final_path,domain,problem)
