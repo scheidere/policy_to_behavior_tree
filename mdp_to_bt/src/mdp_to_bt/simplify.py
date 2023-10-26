@@ -296,6 +296,56 @@ class Simplify:
             #     print(state)
             print('states ', a)
 
+    def getConditionsFromOR(self, or_sop_simplify):
+
+        # Given sop_simply with at least one OR | in it
+        # return list of all conditions that appear at least once (not per term, just at all)
+        conditions = []
+        for term in or_sop_simplify.args:
+            for c in term.args:
+                if c not in conditions:
+                    conditions.append(c)
+
+
+        return conditions
+
+    def getConditionsInAllORTerms(self, all_conds, or_terms):
+
+        common_conditions = []
+        condition_in_all_terms = True
+        for c in all_conds:
+            #self.f.write('idk' + str(c)+"\n")
+            for term in or_terms:
+                c_in_term = c in term.args
+                #self.f.write("c vs term "+str(c) + " " +str(term.args) + str(c_in_term) + "\n")
+                if not c_in_term:
+                    break
+
+            #self.f.write('y '+ str(c_in_term) + " " + str(c) + "\n")
+            if c_in_term:
+                #self.f.write('yep' + str(c)+"\n")
+                common_conditions.append(c)
+
+
+        return common_conditions
+
+    def getUniqueConditionListsInORTerms(self, common_conditions, or_terms):
+
+        # Record conditions that are not common to all terms, every term
+
+        unique_condition_lists = [] # Will be a list of lists, each list of one or more condition terms
+
+        for term in or_terms:
+            term_list = []
+            for c in term.args:
+                if c not in common_conditions:
+                    term_list.append(c)
+
+            unique_condition_lists.append(term_list)
+
+        return unique_condition_lists
+
+
     def buildSubtree(self, sop_simplify, action):
 
         self.f.write("+++++++++++++=in buildSubtree for this action: %s\n" %action[0])
@@ -308,14 +358,59 @@ class Simplify:
 
             self.f.write("Or\n")
 
+
+            # BUG FIX IN PROGRESS - COMMENTED OUT FOR MEETING 10/23
+            self.f.write(str(sop_simplify)+"\n")
+
             # "Or" found, therefore must be multiple subtrees
-            #terms = sop_simplify.args
-            conditions = sop_simplify.args
+            or_terms = sop_simplify.args 
+            all_conds = self.getConditionsFromOR(sop_simplify)
+            self.f.write('all conds ' + str(all_conds) + "\n")
+
+            common_conditions = self.getConditionsInAllORTerms(all_conds, or_terms)
+            self.f.write("common conditions: "+str(common_conditions)+"\n")
+
+            unique_condition_lists = self.getUniqueConditionListsInORTerms(common_conditions, or_terms)
+
+            self.f.write("unique_condition_lists: " + str(unique_condition_lists) + "\n")
+
+            sequence_node = Sequence()
+
+            # Add common condition nodes beneath the sequence node
+            for condition in common_conditions:
+
+                self.f.write("condition: %s\n" %str(condition))
+
+                sequence_node = self.createConditionNode(condition, sequence_node)
+
+            # Add unique conditions lists to fallback
+            fallback_node = Fallback()
+            for lst in unique_condition_lists:
+                new_sequence_node = Sequence()
+                if len(lst) == 1:
+                    fallback_node = self.createConditionNode(lst[0], fallback_node)
+                else:
+                    for c in lst:
+                        new_sequence_node = self.createConditionNode(c, new_sequence_node)
+                    
+                    fallback_node.children.append(new_sequence_node)
+
+            sequence_node.children.append(fallback_node)
+
+            # Add the action beneath the sequence node last
+            action_node = self.createActionNode(action)
+            self.f.write("action_node: %s, %s\n" %(str(action_node),action_node.label))
+            sequence_node.children.append(action_node) # Add action to subtree
+            new_subtrees.append(sequence_node) # Add subtree to list
+            
+            #conditions = sop_simplify.args # This is wrong. Fix in progress above, currently commented out.
+            return new_subtrees
             #print('OR')
 
         elif type(sop_simplify) == And:
 
             self.f.write("And\n")
+            self.f.write(str(sop_simplify))
 
             # "And" found, therefore must be a single subtree
             # Put the subtree in a list so it is compatible with the following loop
@@ -379,7 +474,7 @@ class Simplify:
             # This case should be impossible
             ERROR
 
-        self.f.write("Does Symbol case get here? 1\n")
+        #self.f.write("Does Symbol case get here? 1\n")
         #self.f.write("terms: %s\n" %str(terms))
 
         # For creating a subtree for an action with conditions (Or, And, Not, Symbol) 
@@ -524,7 +619,7 @@ class Simplify:
 
         # print('++++++++++++++++++++++++++end')
 
-    def createConditionNode(self, condition, sequence_node):
+    def createConditionNode(self, condition, node):
 
         # Determine if it is positive or negative
         if type(condition) == Not:
@@ -544,7 +639,7 @@ class Simplify:
             decorator_node.add_child(condition_node)
 
             # Add decorator to subtree
-            sequence_node.children.append(decorator_node)
+            node.children.append(decorator_node)
 
         else:
 
@@ -556,9 +651,9 @@ class Simplify:
             #print("\t",condition_label)
 
             # Add condition to subtree
-            sequence_node.children.append(condition_node)
+            node.children.append(condition_node)
 
-        return sequence_node
+        return node
 
     def createActionNode(self, action):
 

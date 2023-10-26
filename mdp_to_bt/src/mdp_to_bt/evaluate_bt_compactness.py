@@ -296,14 +296,19 @@ if __name__ == "__main__":
     marine_raw_bt = "/marine/raw_policy_bt.tree" # NEED TO REGEN post bug fix
     marine_simplified_reorder_bt = "/marine/final_synth_bt_reorder.tree" # random action order reordered for simplification # NEED TO REGEN post bug fix
     marine_simplified_cares_bt = "/marine/final_synth_bt_cares.tree" # not removing dontcares # NEED TO REGEN post bug fix
+    marine_simplified_deterministic_bt = "/marine/final_synth_bt_deterministic.tree" # final method, but deterministic version of specification
+    marine_raw_deterministic_bt = "/marine/raw_policy_bt_deterministic.tree"
 
     infant_simplified_bt = "/infant/final_synth_bt.tree"
     infant_raw_bt = "/infant/raw_policy_bt.tree"
+    # todo
 
     #tree = marine_simplified_bt
     #tree = marine_raw_bt
     #tree = marine_simplified_reorder_bt
-    tree = marine_simplified_cares_bt
+    #tree = marine_simplified_cares_bt
+    tree = marine_simplified_deterministic_bt
+    #tree = marine_raw_deterministic_bt
 
     #tree = infant_simplified_bt 
     #tree = infant_raw_bt

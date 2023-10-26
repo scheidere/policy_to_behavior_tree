@@ -64,8 +64,8 @@ class CompareBTPolicy():
 
             while not rospy.is_shutdown():
 
-                self.bt.tick()
-                count += 1
+                # self.bt.tick()
+                # count += 1
 
                 # if intermediate_update_state:
 
@@ -99,6 +99,8 @@ class CompareBTPolicy():
                     print("DONE!!!")
                     done = True
 
+                self.bt.tick()
+                count += 1
 
                 # Monitor active running actions
                 active_actions = self.bt.getActiveActions()
@@ -110,7 +112,8 @@ class CompareBTPolicy():
                     # print('state', state)
 
                     if running_active_actions and not first_active_running_action:
-                        print(running_active_actions)
+                        print('active_actions', active_actions)
+                        print('running_active_actions', running_active_actions)
                         first_active_running_action = running_active_actions[0]
                         first_active_running_action = first_active_running_action.split("(",1)[0] # removing (x: x)
                         f.write("Action: %s\n" %str(first_active_running_action))
@@ -121,6 +124,7 @@ class CompareBTPolicy():
                         # intermediate_update_state = True
                     # elif not running_active_actions and first_active_running_action:
                     #     update_state = True # Only update state if there are no running active actions for state update clarity?
+
 
 
         except rospy.ROSInterruptException: pass
@@ -446,9 +450,11 @@ if __name__ == "__main__":
     # Path to bt config
     bt_final_path = "/home/scheidee/auro_ws/src/policy_to_behavior_tree/behavior_tree/config/AURO_final_synthesized_BTs/bt_final.tree"
     bt_reorder_path = "/home/scheidee/auro_ws/src/policy_to_behavior_tree/behavior_tree/config/AURO_final_synthesized_BTs/bt_reorder.tree"
+    bt_deterministic_path = "/home/scheidee/auro_ws/src/policy_to_behavior_tree/behavior_tree/config/AURO_final_synthesized_BTs/final_synth_bt_deterministic.tree"
 
     # Path to domain file
     domain_path = "/home/scheidee/auro_ws/src/policy_to_behavior_tree/pypddl_parser/src/pypddl_parser/pddl/AURO/marine/final_domain.ppddl"
+    #domain_path = "/home/scheidee/auro_ws/src/policy_to_behavior_tree/pypddl_parser/src/pypddl_parser/pddl/AURO/marine/domain_deterministic.ppddl"
 
     # Path to problem file
     problem_path = "/home/scheidee/auro_ws/src/policy_to_behavior_tree/pypddl_parser/src/pypddl_parser/pddl/AURO/marine/problem.ppddl"
@@ -458,3 +464,4 @@ if __name__ == "__main__":
     problem = PDDLParser.parse(problem_path)
 
     cbtp = CompareBTPolicy(bt_final_path,domain,problem)
+    #cbtp = CompareBTPolicy(bt_deterministic_path,domain,problem)

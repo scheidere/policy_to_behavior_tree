@@ -1,0 +1,44 @@
+?
+	->
+		(found-object_x)
+		<!>
+			(found-mine_x)
+		<!>
+			(has-object_x)
+		?
+			<!>
+				(found-target-to-report_x)
+			->
+				(at-drop-off_x)
+				<!>
+					(in-comms-range_x)
+		[pick-up(x: x)]
+	->
+		(at-drop-off_x)
+		(has-object_x)
+		<!>
+			(found-mine_x)
+		?
+			<!>
+				(found-target-to-report_x)
+			<!>
+				(in-comms-range_x)
+		[drop-off(x: x)]
+	->
+		(found-mine_x)
+		[disarm(x: x)]
+	->
+		(found-target-to-report_x)
+		<!>
+			(in-comms-range_x)
+		[go-to-comms(x: x)]
+	->
+		(has-object_x)
+		<!>
+			(found-target-to-report_x)
+		[go-to-drop-off(x: x)]
+	->
+		<!>
+			(found-target-to-report_x)
+		[explore(x: x)]
+	[report(x: x)]
