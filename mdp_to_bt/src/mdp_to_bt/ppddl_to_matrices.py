@@ -1046,7 +1046,7 @@ def getPandR(domain,problem):
 
     if problem != None:
 
-        #print('Problem exists')
+        # print('Problem exists')
 
         # Get valid action/param combos
         actions = getActionsWithParamsList(domain,problem) # old var name: actions_with_params
@@ -1057,7 +1057,10 @@ def getPandR(domain,problem):
         #     print(action[0]._name, action[1])
         # input('yo2')
 
-        #input("YOU ARE HERE")
+        # for a in actions:
+        #     print(a)
+
+        # input("YOU ARE HERE")
 
     else:
         #print('Problem is None')

@@ -9,6 +9,7 @@ import zlib
 import copy
 import itertools
 from statistics import mean
+import time
 
 
 class EvaluateBTCompactness():
@@ -168,7 +169,9 @@ class EvaluateBTCompactness():
         return action_count
 
     def run(self):
+
         try:
+            start = time.time()
 
             # Create output file
             f = open("/home/scheidee/Desktop/AURO_results/activity_results.txt", "w+")
@@ -190,7 +193,7 @@ class EvaluateBTCompactness():
             print('Examining %d state(s)\n' %len(all_test_bools))
 
             tick_count = 1 # Overall tick counter
-            episode = 1
+            episode = 0
             while not rospy.is_shutdown():
                 
                 # Every tick start
@@ -201,6 +204,7 @@ class EvaluateBTCompactness():
                 num_active_a = len(active_actions)
                 active_conditions = self.bt.getActiveConditions()
                 num_active_c = len(active_conditions)
+                print('active_actions: ' + str(active_actions) + "\n") # do see more than one over 10k tick episodes... Not sure why, sticking to 100 ticks
 
 
                 if tick_count == 1: # First tick ONLY
@@ -213,11 +217,12 @@ class EvaluateBTCompactness():
 
                     # Update BT given new state
                     self.update_bt(state)
+                    self.bt.tick()
 
                     print("Episode %d" %episode)
 
 
-                elif tick_count%10000==0: # Evaluate result of each state change over 10k ticks
+                elif tick_count%100==0: # Evaluate result of each state change over 10k ticks --> changed to 100
 
                     # Get average number of condition nodes per action nodes, C/A
                     avg_c_per_a = mean(conditions_per_actions)
@@ -237,6 +242,7 @@ class EvaluateBTCompactness():
 
                     # Update BT given new state
                     self.update_bt(state)
+                    self.bt.tick()
 
                     episode+=1
                     print("Episode %d" %episode)
@@ -245,6 +251,7 @@ class EvaluateBTCompactness():
                 else: # Most ticks
 
                     # Get number of active condition nodes per active action nodes, C/A
+                    self.bt.tick()
 
                     # Number of active condition/action nodes
                     active_a_nodes, active_c_nodes = self.get_active_action_and_condition_nodes()
@@ -279,6 +286,10 @@ class EvaluateBTCompactness():
 
                 tick_count += 1
 
+            t = time.time() - start
+            print("Time: %f\n" %t)
+            f.write("Time: " + str(t) + "\n")
+
         except rospy.ROSInterruptException: pass
 
 
@@ -307,12 +318,13 @@ if __name__ == "__main__":
     #tree = marine_raw_bt
     #tree = marine_simplified_reorder_bt
     #tree = marine_simplified_cares_bt
-    tree = marine_simplified_deterministic_bt
-    #tree = marine_raw_deterministic_bt
+    #tree = marine_simplified_deterministic_bt
+    #tree = marine_raw_deterministic_bt # todo
 
     #tree = infant_simplified_bt 
-    #tree = infant_raw_bt
+    tree = infant_raw_bt
 
+    # tree = "/raw_policy_bt_MARINE.tree"
     config_filename = path_to_bts + tree
 
     ebtc = EvaluateBTCompactness(config_filename)

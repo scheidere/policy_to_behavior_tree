@@ -1,55 +1,52 @@
 ?
 	->
-		(infant-activity_moving-toward)
-		<!>
-			(infant-orientation_toward)
-		[spi)]
+		(infant-activity{moving-toward})
+		?
+			<!>
+				(infant-orientation{toward})
+			<!>
+				(infant-robot-distance{direct-social-interaction})
+		[spin]
 	->
-		(infant-activity_moving-toward)
-		<!>
-			(infant-robot-distance_direct-social-interaction)
-		[spi)]
-	->
-		(infant-robot-distance_solitary-play)
-		<!>
-			(infant-orientation_away)
-		[move-towar)]
-	->
-		<!>
-			(infant-activity_moving-away)
-		<!>
-			(infant-orientation_toward)
-		<!>
-			(infant-robot-distance_direct-social-interaction)
-		[move-towar)]
-	->
-		(infant-activity_stationary)
-		<!>
-			(infant-robot-distance_social-interaction)
-		[move-awa)]
+		?
+			->
+				(infant-robot-distance{solitary-play})
+				<!>
+					(infant-orientation{away})
+			->
+				<!>
+					(infant-activity{moving-away})
+				<!>
+					(infant-orientation{toward})
+				<!>
+					(infant-robot-distance{direct-social-interaction})
+		[move-toward]
 	->
 		<!>
-			(infant-activity_moving-toward)
-		<!>
-			(infant-orientation_away)
-		<!>
-			(infant-robot-distance_social-interaction)
-		[move-awa)]
+			(infant-robot-distance{social-interaction})
+		?
+			(infant-activity{stationary})
+			->
+				<!>
+					(infant-activity{moving-toward})
+				<!>
+					(infant-orientation{away})
+		[move-away]
 	->
-		(has-bubbles_x)
+		(has-bubbles{x})
 		<!>
-			(infant-activity_moving-toward)
+			(infant-activity{moving-toward})
 		<!>
-			(infant-orientation_away)
-		[blow-bubbles(x: x)]
-	->
-		<!>
-			(infant-activity_moving-toward)
-		<!>
-			(infant-orientation_away)
-		[refill-bubbles(x: x)]
+			(infant-orientation{away})
+		[blow-bubbles]
 	->
 		<!>
-			(infant-activity_moving-toward)
-		[lights-and-sound)]
-	[keep-awa)]
+			(infant-activity{moving-toward})
+		<!>
+			(infant-orientation{away})
+		[refill-bubbles]
+	->
+		<!>
+			(infant-activity{moving-toward})
+		[lights-and-sounds]
+	[keep-away]

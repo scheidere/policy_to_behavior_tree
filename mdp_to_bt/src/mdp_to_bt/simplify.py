@@ -136,46 +136,28 @@ class Simplify:
         #print(actions_with_params)
         return conditions_with_params
 
-    # def getConditions(self, domain):
-
-    #     condition_names = []
-
-    #     for pred in domain.predicates:
-
-    #         #print(pred.name)
-    #         condition_names.append(pred.name)
-
-    #     return condition_names
 
     def setConditionSymbols(self):
-
-        # Issue: symbols() does not like when cond has 
 
         conds_string = ''
 
         for i in range(len(self.conditions)):
-
-            #print(self.conditions[i][1])
-            #print(self.conditions[i][1].values)
 
             string = ''
             lst = list(self.conditions[i][1].values())
             for j in range(len(lst)):
                 el = lst[j]
                 if j > 0:
-                    string += '_'
+                    string += ','
                 string += el
 
-            cond = self.conditions[i][0] + '_' + string
-
-            #print('cond ', cond)
+            #cond = self.conditions[i][0] + '_' + string
+            cond = self.conditions[i][0] + '{' + string + '}'
 
             conds_string += cond
 
             if i <= len(self.conditions)-2:
                 conds_string += ', '
-
-        #print(conds_string)
 
         c = symbols(conds_string)
 
@@ -630,6 +612,7 @@ class Simplify:
 
             # Get condition label
             condition_label = str(condition.args[0])
+            print('cond label 1 ' + condition_label + "\n")
 
             # Make condition node
             condition_node = Condition(condition_label)
@@ -647,6 +630,7 @@ class Simplify:
 
             # Get condition label
             condition_label = str(condition)
+            print('cond label 2 ' + condition_label + "\n")
             condition_node = Condition(condition_label)
             #print("\t",condition_label)
 
@@ -660,14 +644,22 @@ class Simplify:
         # Get action label with parameters
         action_name = action[0].name
         params = action[1]
-        action_label = action_name + '('
-        for key in params.keys():
-            variable = key[1:]
-            value = params[key]
-            action_label = action_label + variable + ': ' + value + ', '
-        action_label = action_label[:-2] # remove extra comma and space
-        action_label = action_label + ')'
-        #print('action label', action_label)
+        action_label = None
+        params_included = False
+        if params.keys():
+            action_label = action_name
+            for key in params.keys():
+                variable = key[1:]
+                value = params[key]
+                if variable != 'x' or value !='x':
+                    action_label = action_label + variable + ': ' + value + ', '
+                    params_included = True
+            if action_label and params_included:
+                action_label = action_label[:-2] # remove extra comma and space
+                action_label = '(' + action_label + ')'
+
+        if not action_label: # no params
+            action_label = action_name
 
         # Make action node
         action_node = Action(action_label)

@@ -121,10 +121,10 @@ def main(domain, problem, config):
     print('Saving behavior trees to files...\n')
     if save_raw_policy_bt:
         #raw_policy_bt.write_config('/home/parallels/auro_ws/src/policy_to_behavior_tree/behavior_tree/config/AURO_final_synthesized_BTs/raw_policy_bt.tree')
-        raw_policy_bt.write_config('/home/scheidee/auro_ws/src/policy_to_behavior_tree/behavior_tree/config/AURO_final_synthesized_BTs/raw_policy_bt.tree')
+        raw_policy_bt.write_config('/home/scheidee/auro_ws/src/policy_to_behavior_tree/behavior_tree/config/AURO_final_synthesized_BTs/raw_policy_bt_MARINE.tree')
     if do_simplification:
         #simplified_policy_bt.write_config('/home/parallels/auro_ws/src/policy_to_behavior_tree/behavior_tree/config/AURO_final_synthesized_BTs/final_synth_bt.tree')
-        simplified_policy_bt.write_config('/home/scheidee/auro_ws/src/policy_to_behavior_tree/behavior_tree/config/AURO_final_synthesized_BTs/final_synth_bt.tree')
+        simplified_policy_bt.write_config('/home/scheidee/auro_ws/src/policy_to_behavior_tree/behavior_tree/config/AURO_final_synthesized_BTs/final_synth_bt_MARINE.tree')
     else:
         print('SKIPPING SAVE OF SIMPLIFIED POLICY WHILE GENERATING RESULTS')
         raw_policy_bt.evaluate_bt_compactness()

@@ -19,7 +19,7 @@ class CompareBTPolicy():
     def __init__(self, bt_path, domain, problem):
         self.bt = BehaviorTree(bt_path)
         self.bt_interface = BT_Interface(self.bt)
-        policy = self.bt_to_policy(self.bt, domain, problem)
+        policy = self.bt_to_policy(self.bt, domain, problem) #works
 
     def init_bt(self):
         # print("BT_Interface initialising BT...")
@@ -156,8 +156,8 @@ class CompareBTPolicy():
 
             while not rospy.is_shutdown():
 
-                self.bt.tick()
-                count += 1
+                ###self.bt.tick()
+                ###count += 1
 
                 if not state:
                     print('change', state, len(states))
@@ -181,8 +181,12 @@ class CompareBTPolicy():
                         print("BT to policy check complete.")
                         exit_print = True
                         first_active_running_action = None
+
+                    self.bt.tick()
+                    count += 1
                 
                     active_actions = self.bt.getActiveActions()
+                    print('active_actions: %s' %str(active_actions))
                     running_active_actions = self.get_running_actions_from_active_actions(active_actions)
 
                     # An active action is now running, so record it

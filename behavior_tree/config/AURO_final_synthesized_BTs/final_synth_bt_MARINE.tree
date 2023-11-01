@@ -1,0 +1,27 @@
+?
+	->
+		(at-drop-off{x})
+		(has-object{x})
+		<!>
+			(found-mine{x})
+		<!>
+			(found-target-to-report{x})
+		[drop-off]
+	->
+		(found-mine{x})
+		[disarm]
+	->
+		(found-target-to-report{x})
+		<!>
+			(in-comms-range{x})
+		[go-to-comms]
+	->
+		(has-object{x})
+		<!>
+			(found-target-to-report{x})
+		[go-to-drop-off]
+	->
+		<!>
+			(found-target-to-report{x})
+		[explore]
+	[report]
