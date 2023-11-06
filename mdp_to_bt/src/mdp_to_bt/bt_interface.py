@@ -133,6 +133,7 @@ class BT_Interface():
         try:
             nodes = self.condition_nodes[condition]
         except KeyError:
+            #input("ISSUE HERE - Maybe no match?")
             pass
             #print("setConditionStatus condition " + condition + " does not exist in BT")
         else:

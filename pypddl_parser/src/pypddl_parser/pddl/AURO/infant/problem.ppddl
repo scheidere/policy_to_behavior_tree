@@ -1,13 +1,11 @@
 (define (problem infant-mobility-problem)
 	
-	(:domain infant-mobility-domain)
-
-	;(:objects X - None )
+	(:domain infant-mobility)
 
 	(:objects
 		direct-social-interaction social-interaction solitary-play - distance
 		moving-toward moving-away stationary - activity
-		toward away - orientation
+		toward away obstructed - orientation
 		X - None
 	)
 

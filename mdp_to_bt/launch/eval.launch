@@ -3,6 +3,9 @@
 <launch>
 
 	<node pkg="mdp_to_bt" type="evaluate_bt_compactness.py" name="eval_bt_compactness" output="screen">
+		<param name="tree" type="string" value="$(arg tree)"/>
+		<param name="domain" type="string" value="$(arg domain)" />
+		<param name="problem" type="string" value="$(arg problem)" />
 	</node>
 
 </launch>

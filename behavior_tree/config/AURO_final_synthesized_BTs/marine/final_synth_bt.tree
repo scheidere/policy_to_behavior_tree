@@ -1,27 +1,27 @@
 ?
 	->
-		(at-drop-off_x)
-		(has-object_x)
+		(at-drop-off{x})
+		(has-object{x})
 		<!>
-			(found-mine_x)
+			(found-mine{x})
 		<!>
-			(found-target-to-report_x)
-		[drop-off(x: x)]
+			(found-target-to-report{x})
+		[drop-off]
 	->
-		(found-mine_x)
-		[disarm(x: x)]
+		(found-mine{x})
+		[disarm]
 	->
-		(found-target-to-report_x)
+		(found-target-to-report{x})
 		<!>
-			(in-comms-range_x)
-		[go-to-comms(x: x)]
+			(in-comms-range{x})
+		[go-to-comms]
 	->
-		(has-object_x)
+		(has-object{x})
 		<!>
-			(found-target-to-report_x)
-		[go-to-drop-off(x: x)]
+			(found-target-to-report{x})
+		[go-to-drop-off]
 	->
 		<!>
-			(found-target-to-report_x)
-		[explore(x: x)]
-	[report(x: x)]
+			(found-target-to-report{x})
+		[explore]
+	[report]

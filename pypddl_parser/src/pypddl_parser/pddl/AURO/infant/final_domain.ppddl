@@ -1,6 +1,6 @@
-(define (domain infant-mag-match)
-    
-    ;previously named penalty_reward_mag_match.ppddl
+(define (domain infant-mobility)
+
+    ; Ensure that each effect term associated with a given probability only refers to a single state, otherwise add more terms to accomodate ambiguity
     
     (:requirements :equality :typing :probabilistic-effects)
 
@@ -30,7 +30,6 @@
     (:action spin
 
         :parameters ()
-        ;:precondition (and (infant-robot-distance direct-social-interaction) (infant-activity stationary) (not (infant-orientation obstructed)))
         :precondition (and (infant-activity stationary) (not (infant-orientation obstructed)))
         :effect (probabilistic 0.7 (and (infant-activity moving-toward) (increase reward 2))
                                0.15 (increase reward -2)
@@ -51,7 +50,7 @@
     (:action move-away
 
         :parameters ()
-        :precondition (or (infant-robot-distance direct-social-interaction) (infant-robot-distance social-interaction) (infant-robot-distance solitary-play)) ;(or (direct-social-interaction) (social-interaction) (solitary-play))
+        :precondition (or (infant-robot-distance direct-social-interaction) (infant-robot-distance social-interaction) (infant-robot-distance solitary-play))
         :effect (probabilistic 0.7 (and (infant-activity moving-toward) (increase reward 2))
                                0.15 (increase reward -2)
                                0.15 (increase reward -2)
@@ -61,7 +60,6 @@
     (:action blow-bubbles
 
         :parameters (?x - None)
-        ;:precondition (and (infant-robot-distance social-interaction) (has-bubbles ?x))
         :precondition (and (infant-robot-distance social-interaction) (has-bubbles ?x) (infant-orientation toward))
         :effect (probabilistic 0.9 (and (infant-activity moving-toward) (increase reward 3))
                                0.05 (increase reward -3)
@@ -79,8 +77,7 @@
     (:action play-sounds
 
         :parameters ()
-        ;:precondition (not (infant-activity moving-toward))
-        :precondition (and (infant-activity moving-away) (infant-orientation away))
+        :precondition (and (not (infant-activity moving-toward)) (infant-orientation away))
         :effect (probabilistic 0.7 (and (infant-activity moving-toward) (increase reward 2))
                                0.15 (increase reward -2)
                                0.15 (increase reward -2)
@@ -90,7 +87,6 @@
     (:action lights-and-sounds
 
         :parameters ()
-        ;:precondition (or (infant-robot-distance direct-social-interaction) (infant-robot-distance social-interaction) (infant-robot-distance solitary-play))
         :precondition (and (infant-activity moving-away) (infant-orientation away))
         :effect (probabilistic 0.8 (and (infant-activity moving-toward) (increase reward 2))
                                0.1 (increase reward -2)
@@ -101,7 +97,6 @@
     (:action keep-away
 
         :parameters ()
-        ;:precondition (infant-robot-distance direct-social-interaction)
         :precondition (and (infant-robot-distance direct-social-interaction) (infant-orientation toward))
         :effect (probabilistic 0.9 (and (infant-robot-distance social-interaction) (infant-activity moving-toward) (increase reward 2))
                                0.05 (and (infant-robot-distance social-interaction) (infant-activity stationary) (increase reward -2)) 
@@ -110,11 +105,11 @@
     )
 
     (:action go-to-infant
-
+     
         :parameters ()
-        ;:precondition (not (infant-robot-distance direct-social-interaction)) ; solitary play or social interaction distances
         :precondition (and (infant-robot-distance solitary-play) (infant-orientation obstructed))
-        :effect (probabilistic 0.9 (and (infant-robot-distance direct-social-interaction) (infant-activity moving-toward) (not (infant-orientation obstructed)) (increase reward 2))
+        :effect (probabilistic 0.45 (and (infant-robot-distance direct-social-interaction) (infant-activity moving-toward) (infant-orientation toward) (increase reward 2))
+                               0.45 (and (infant-robot-distance direct-social-interaction) (infant-activity moving-toward) (infant-orientation away) (increase reward 2))
                                0.05 (and (infant-robot-distance direct-social-interaction) (infant-activity moving-away) (increase reward -2))
                                0.05 (and (infant-robot-distance social-interaction) (infant-activity moving-away) (increase reward -2))
                 )

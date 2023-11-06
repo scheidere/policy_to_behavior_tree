@@ -1,36 +1,49 @@
 ?
 	->
-		(infant-activity{moving-toward})
 		?
-			<!>
-				(infant-orientation{toward})
-			<!>
-				(infant-robot-distance{direct-social-interaction})
+			->
+				(infant-orientation{away})
+				<!>
+					(infant-activity{moving-away})
+			->
+				(infant-activity{moving-toward})
+				<!>
+					(infant-orientation{obstructed})
+				<!>
+					(infant-robot-distance{direct-social-interaction})
+			->
+				(infant-activity{moving-toward})
+				<!>
+					(infant-orientation{toward})
+				<!>
+					(infant-robot-distance{solitary-play})
+			->
+				(infant-activity{stationary})
+				<!>
+					(infant-orientation{obstructed})
+				<!>
+					(infant-robot-distance{social-interaction})
 		[spin]
 	->
+		<!>
+			(infant-activity{moving-toward})
 		?
+			->
+				(infant-orientation{obstructed})
+				<!>
+					(infant-robot-distance{direct-social-interaction})
 			->
 				(infant-robot-distance{solitary-play})
 				<!>
 					(infant-orientation{away})
-			->
-				<!>
-					(infant-activity{moving-away})
-				<!>
-					(infant-orientation{toward})
-				<!>
-					(infant-robot-distance{direct-social-interaction})
 		[move-toward]
 	->
 		<!>
+			(infant-activity{moving-toward})
+		<!>
+			(infant-orientation{away})
+		<!>
 			(infant-robot-distance{social-interaction})
-		?
-			(infant-activity{stationary})
-			->
-				<!>
-					(infant-activity{moving-toward})
-				<!>
-					(infant-orientation{away})
 		[move-away]
 	->
 		(has-bubbles{x})
@@ -49,4 +62,8 @@
 		<!>
 			(infant-activity{moving-toward})
 		[lights-and-sounds]
-	[keep-away]
+	->
+		<!>
+			(infant-robot-distance{solitary-play})
+		[keep-away]
+	[go-to-infant]

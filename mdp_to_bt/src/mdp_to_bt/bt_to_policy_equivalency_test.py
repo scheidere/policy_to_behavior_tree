@@ -424,25 +424,61 @@ class CompareBTPolicy():
                 return label
         return None # ERROR
 
+    def get_condition_label(self, condition_term):
+
+        num_c_terms = len(condition_term)-1 # Last term of state is 0/1 representing False/True
+
+        for label in self.bt.condition_nodes.keys():
+            found = True
+            for j in range(num_c_terms): 
+
+                if condition_term[j] not in label:
+                    found = False
+                    break
+
+            # If here without break, all terms e.g. 'infant-orientation' and 'toward' in label so condition label found
+            if found:
+                return label
+
     def update_bt(self, state):
 
-        #follow method in compactness eval except from pddl state format not my format for state
+        # update this to match fix in compactness, needs to account for params or will break for infant domain and others like it
 
-        #print("condies%s\n" %self.bt.condition_nodes.keys()) # have x param references in names
+        # #follow method in compactness eval except from pddl state format not my format for state
+
+        # #print("condies%s\n" %self.bt.condition_nodes.keys()) # have x param references in names
+
+        # for i in range(len(state)):
+
+        #     c_label_pure = state[i][0] # pure meaning 'found_mine' as opposed to the 'found_mine_x' found in the tree due to params
+        #     c_label = self.get_c_label(c_label_pure)
+        #     #print('c_label %s'%str(c_label))
+
+        #     if state[i][-1]: #1
+        #         boolean = True
+        #     else:
+        #         boolean = False
+        #     self.bt_interface.setConditionStatus(c_label,boolean)
+
+        # return
+
+        # Update below!
+        # Takes state format generated from getStatesList that pulls from the PPDDL domain and problem directly
+        # Does include constraints
 
         for i in range(len(state)):
 
-            c_label_pure = state[i][0] # pure meaning 'found_mine' as opposed to the 'found_mine_x' found in the tree due to params
-            c_label = self.get_c_label(c_label_pure)
-            #print('c_label %s'%str(c_label))
+            c = state[i] # e.g. ['infant-orientation', 'toward', 1] but could have more than one param like 'toward'
+
+            c_label = self.get_condition_label(c)
+            
+            #print('c_label', c_label)
 
             if state[i][-1]: #1
                 boolean = True
             else:
                 boolean = False
             self.bt_interface.setConditionStatus(c_label,boolean)
-
-        return
 
 
 if __name__ == "__main__":
@@ -452,16 +488,21 @@ if __name__ == "__main__":
     compressed_pub = rospy.Publisher('behavior_tree_graphviz_compressed', String, queue_size=1)
 
     # Path to bt config
-    bt_final_path = "/home/scheidee/auro_ws/src/policy_to_behavior_tree/behavior_tree/config/AURO_final_synthesized_BTs/bt_final.tree"
-    bt_reorder_path = "/home/scheidee/auro_ws/src/policy_to_behavior_tree/behavior_tree/config/AURO_final_synthesized_BTs/bt_reorder.tree"
-    bt_deterministic_path = "/home/scheidee/auro_ws/src/policy_to_behavior_tree/behavior_tree/config/AURO_final_synthesized_BTs/final_synth_bt_deterministic.tree"
+    # bt_final_path = "/home/scheidee/auro_ws/src/policy_to_behavior_tree/behavior_tree/config/AURO_final_synthesized_BTs/bt_final.tree"
+    # bt_reorder_path = "/home/scheidee/auro_ws/src/policy_to_behavior_tree/behavior_tree/config/AURO_final_synthesized_BTs/bt_reorder.tree"
+    # bt_deterministic_path = "/home/scheidee/auro_ws/src/policy_to_behavior_tree/behavior_tree/config/AURO_final_synthesized_BTs/final_synth_bt_deterministic.tree"
 
     # Path to domain file
-    domain_path = "/home/scheidee/auro_ws/src/policy_to_behavior_tree/pypddl_parser/src/pypddl_parser/pddl/AURO/marine/final_domain.ppddl"
+    # domain_path = "/home/scheidee/auro_ws/src/policy_to_behavior_tree/pypddl_parser/src/pypddl_parser/pddl/AURO/marine/final_domain.ppddl"
     #domain_path = "/home/scheidee/auro_ws/src/policy_to_behavior_tree/pypddl_parser/src/pypddl_parser/pddl/AURO/marine/domain_deterministic.ppddl"
 
     # Path to problem file
-    problem_path = "/home/scheidee/auro_ws/src/policy_to_behavior_tree/pypddl_parser/src/pypddl_parser/pddl/AURO/marine/problem.ppddl"
+    # problem_path = "/home/scheidee/auro_ws/src/policy_to_behavior_tree/pypddl_parser/src/pypddl_parser/pddl/AURO/marine/problem.ppddl"
+
+
+    bt_final_path = "/home/scheidee/auro_ws/src/policy_to_behavior_tree/behavior_tree/config/AURO_final_synthesized_BTs/infant/final_synth_bt.tree"
+    domain_path = "/home/scheidee/auro_ws/src/policy_to_behavior_tree/pypddl_parser/src/pypddl_parser/pddl/AURO/infant/final_domain.ppddl"
+    problem_path = "/home/scheidee/auro_ws/src/policy_to_behavior_tree/pypddl_parser/src/pypddl_parser/pddl/AURO/infant/problem.ppddl"
 
     # Get the domain and problem
     domain  = PDDLParser.parse(domain_path)

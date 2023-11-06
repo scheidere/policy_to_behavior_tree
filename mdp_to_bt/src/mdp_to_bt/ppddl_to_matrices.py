@@ -73,7 +73,9 @@ def getStateList(domain,problem):
 
     # print('In getStateList')
     # print('domain types', domain.types)
-    print(('HELLO', problem.objects))
+    #print(('HELLO', problem.objects))
+    #print(len(domain.predicates))
+    #input("hi")
 
     # Get all states (valid and invalid)
 
@@ -92,6 +94,8 @@ def getStateList(domain,problem):
                     state_sub_list = [str(domain.predicates[i].name),value,1]
                     single_state.append(state_sub_list)
 
+    #input("ho")
+
     states = []
     for tup in list(itertools.product([0,1],repeat=len(single_state))):
         # tup = (0,1,0,0) for example, representing (False, True, False, False)
@@ -104,7 +108,9 @@ def getStateList(domain,problem):
 
         states.append(full_state)
 
-    #print('states ', states)
+    # print('states ', states)
+    # print(len(states))
+    # input('its')
 
     # Remove invalid states per constraints in domain
     if domain.constraints:
@@ -685,7 +691,8 @@ def outcome(start_state, action, param_values = None, test=False):
 
     # param_values same as combo_dict
 
-    #input('entering new outcome function')
+    print('entering new outcome function')
+    probflag = None
 
     precond_satisfied = True
 
@@ -736,6 +743,9 @@ def outcome(start_state, action, param_values = None, test=False):
 
                 probs.append(prob)
 
+                if prob == 0.45: # for print test
+                    probflag = True
+
                 #print('prob: ', prob)
 
                 effects = action_effects[i+1]
@@ -771,8 +781,12 @@ def outcome(start_state, action, param_values = None, test=False):
     # if precond_satisfied:
     #     input('Wait')
 
-    #print('exiting new outcome')
-    #print('outcome list ', outcome_list)
+    # print('exiting new outcome')
+    # print('outcome list ', outcome_list)
+    # for o in outcome_list:
+    #     print(o)
+    # if probflag:
+    #     input('here for %s' %action.name)
     return outcome_list, precond_satisfied
 
 
@@ -1042,7 +1056,8 @@ def getPandR(domain,problem):
 
     # Number of states
     N = len(states)
-    #print('Number of states, N: ',N)
+    print('Number of states, N: ',N)
+    #input('plz')
 
     if problem != None:
 
@@ -1050,17 +1065,17 @@ def getPandR(domain,problem):
 
         # Get valid action/param combos
         actions = getActionsWithParamsList(domain,problem) # old var name: actions_with_params
-        #print('actions: ', actions)
-        # input('yo1')
-        # print('actions: ')
-        # for action in actions:
-        #     print(action[0]._name, action[1])
-        # input('yo2')
+        print('actions: ', actions)
+        input('yo1')
+        print('actions: ')
+        for action in actions:
+            print(action[0]._name, action[1])
+        input('yo2')
 
-        # for a in actions:
-        #     print(a)
+        for a in actions:
+            print(a)
 
-        # input("YOU ARE HERE")
+        input("YOU ARE HERE")
 
     else:
         #print('Problem is None')
@@ -1150,16 +1165,27 @@ def getPandR(domain,problem):
                 r[j,i] = r_sum
                 p_sum_check.append(p_sum)
                 r_sum_check.append(r_sum)
-            #print('p', p_sum_check)
-            #print('r', r_sum_check)
-                #input('Wait')
+            print('p sum', sum(p_sum_check))
+            print('r', r_sum_check)
+            #input("um")
+
+            if sum(p_sum_check) != 1:
+                print('dang', sum(p_sum_check))
+                input('wait')
+
+            #input('Wait')
 
             # if len(np.unique(all_js)) != len(all_js):
             #     print(all_js)
             #     print(np.unique(all_js))
             #     input('found overwrite issue')
 
+
+
         # Check for p row that does not sum to 1 (it should because it is a probability distribution)!
+        # print("hi p ", p, type(p))
+        # print(p)
+        # print(sum(p))
         # if sum(p) != 1:
         #     input('shooooot', sum(p))
                 
@@ -1170,14 +1196,28 @@ def getPandR(domain,problem):
     # Convert list of matrices to 3d numpy array
     P = np.dstack(P).transpose()
     R = np.dstack(R).transpose()
+    print(P.shape, R.shape)
+    print("P ", P)
+    check_sums(P) # error when obstructed added to problem in addition to toward and away
     # actions = []
     # for action in domain.operators:
     #     actions.append(action.name)
 
-    #input("YOU ARE HERE NOW")
+    input("YOU ARE HERE NOW")
 
 
     return P, R, states, actions
+
+def check_sums(P):
+
+    for i in range(P.shape[0]):
+       for j in range(P.shape[1]):
+            # print(P[i,j])
+            # input('temp')
+            if sum(P[i,j]) != 1:
+                print(P[i,j])
+                input('whyyyy')
+
 
 def test_outcome(domain):
 

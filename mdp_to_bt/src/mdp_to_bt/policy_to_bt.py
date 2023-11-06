@@ -41,7 +41,7 @@ class PolicyToBT:
         for i in range(len(self.states)):
 
             state = self.states[i]
-            
+                        
             # Add subtree sequence root
             sequence = Sequence()
             root.children.append(sequence)

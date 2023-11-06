@@ -8,11 +8,11 @@ def compare():
     # f1 = open("/home/scheidee/Desktop/AURO_results/raw_policy_actions.txt","r")
     # f2 = open("/home/scheidee/Desktop/AURO_results/policy_actions_from_bt.txt", "r")
 
-    with open(r"/home/scheidee/Desktop/AURO_results/raw_policy_actions_deterministic.txt","r") as f1:
+    with open(r"/home/scheidee/Desktop/AURO_results/raw_policy_actions.txt","r") as f1:
         f1_lines = f1.readlines()
         f1_num = len(f1_lines)
 
-    with open(r"/home/scheidee/Desktop/AURO_results/policy_actions_from_bt_deterministic.txt","r") as f2:
+    with open(r"/home/scheidee/Desktop/AURO_results/policy_actions_from_bt.txt","r") as f2:
         f2_lines = f2.readlines()
         f2_num = len(f2_lines)
 

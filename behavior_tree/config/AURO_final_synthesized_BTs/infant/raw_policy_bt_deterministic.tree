@@ -17,7 +17,7 @@
 		<!>
 			(infant-orientation{away})
 		(infant-orientation{obstructed})
-		[move-toward]
+		[go-to-infant]
 	->
 		<!>
 			(has-bubbles{x})
@@ -169,7 +169,7 @@
 			(infant-orientation{away})
 		<!>
 			(infant-orientation{obstructed})
-		[spin]
+		[keep-away]
 	->
 		<!>
 			(has-bubbles{x})
@@ -188,7 +188,7 @@
 		<!>
 			(infant-orientation{away})
 		(infant-orientation{obstructed})
-		[move-toward]
+		[go-to-infant]
 	->
 		<!>
 			(has-bubbles{x})
@@ -207,7 +207,7 @@
 		(infant-orientation{away})
 		<!>
 			(infant-orientation{obstructed})
-		[lights-and-sounds]
+		[move-toward]
 	->
 		<!>
 			(has-bubbles{x})
@@ -264,7 +264,7 @@
 		(infant-orientation{away})
 		<!>
 			(infant-orientation{obstructed})
-		[lights-and-sounds]
+		[move-toward]
 	->
 		<!>
 			(has-bubbles{x})
@@ -321,7 +321,7 @@
 		(infant-orientation{away})
 		<!>
 			(infant-orientation{obstructed})
-		[lights-and-sounds]
+		[move-away]
 	->
 		<!>
 			(has-bubbles{x})
@@ -340,7 +340,7 @@
 			(infant-orientation{away})
 		<!>
 			(infant-orientation{obstructed})
-		[move-away]
+		[keep-away]
 	->
 		<!>
 			(has-bubbles{x})
@@ -378,7 +378,7 @@
 		(infant-orientation{away})
 		<!>
 			(infant-orientation{obstructed})
-		[spin]
+		[move-toward]
 	->
 		<!>
 			(has-bubbles{x})
@@ -397,7 +397,7 @@
 			(infant-orientation{away})
 		<!>
 			(infant-orientation{obstructed})
-		[spin]
+		[move-toward]
 	->
 		<!>
 			(has-bubbles{x})
@@ -416,7 +416,7 @@
 		<!>
 			(infant-orientation{away})
 		(infant-orientation{obstructed})
-		[spin]
+		[move-toward]
 	->
 		<!>
 			(has-bubbles{x})
@@ -435,7 +435,7 @@
 		(infant-orientation{away})
 		<!>
 			(infant-orientation{obstructed})
-		[spin]
+		[move-toward]
 	->
 		<!>
 			(has-bubbles{x})
@@ -454,7 +454,7 @@
 			(infant-orientation{away})
 		<!>
 			(infant-orientation{obstructed})
-		[spin]
+		[refill-bubbles]
 	->
 		<!>
 			(has-bubbles{x})
@@ -473,7 +473,7 @@
 		<!>
 			(infant-orientation{away})
 		(infant-orientation{obstructed})
-		[spin]
+		[move-away]
 	->
 		<!>
 			(has-bubbles{x})
@@ -492,7 +492,7 @@
 		(infant-orientation{away})
 		<!>
 			(infant-orientation{obstructed})
-		[spin]
+		[move-away]
 	->
 		<!>
 			(has-bubbles{x})
@@ -529,7 +529,7 @@
 		<!>
 			(infant-orientation{away})
 		(infant-orientation{obstructed})
-		[move-toward]
+		[go-to-infant]
 	->
 		(has-bubbles{x})
 		<!>
@@ -673,7 +673,7 @@
 			(infant-orientation{away})
 		<!>
 			(infant-orientation{obstructed})
-		[spin]
+		[keep-away]
 	->
 		(has-bubbles{x})
 		<!>
@@ -691,7 +691,7 @@
 		<!>
 			(infant-orientation{away})
 		(infant-orientation{obstructed})
-		[move-toward]
+		[go-to-infant]
 	->
 		(has-bubbles{x})
 		<!>
@@ -709,7 +709,7 @@
 		(infant-orientation{away})
 		<!>
 			(infant-orientation{obstructed})
-		[lights-and-sounds]
+		[move-toward]
 	->
 		(has-bubbles{x})
 		<!>
@@ -763,7 +763,7 @@
 		(infant-orientation{away})
 		<!>
 			(infant-orientation{obstructed})
-		[lights-and-sounds]
+		[move-toward]
 	->
 		(has-bubbles{x})
 		<!>
@@ -817,7 +817,7 @@
 		(infant-orientation{away})
 		<!>
 			(infant-orientation{obstructed})
-		[lights-and-sounds]
+		[move-away]
 	->
 		(has-bubbles{x})
 		<!>
@@ -835,7 +835,7 @@
 			(infant-orientation{away})
 		<!>
 			(infant-orientation{obstructed})
-		[move-away]
+		[keep-away]
 	->
 		(has-bubbles{x})
 		(infant-activity{moving-toward})
@@ -871,7 +871,7 @@
 		(infant-orientation{away})
 		<!>
 			(infant-orientation{obstructed})
-		[spin]
+		[move-toward]
 	->
 		(has-bubbles{x})
 		(infant-activity{moving-toward})
@@ -889,7 +889,7 @@
 			(infant-orientation{away})
 		<!>
 			(infant-orientation{obstructed})
-		[spin]
+		[move-toward]
 	->
 		(has-bubbles{x})
 		(infant-activity{moving-toward})
@@ -907,7 +907,7 @@
 		<!>
 			(infant-orientation{away})
 		(infant-orientation{obstructed})
-		[spin]
+		[move-toward]
 	->
 		(has-bubbles{x})
 		(infant-activity{moving-toward})
@@ -925,7 +925,7 @@
 		(infant-orientation{away})
 		<!>
 			(infant-orientation{obstructed})
-		[spin]
+		[move-toward]
 	->
 		(has-bubbles{x})
 		(infant-activity{moving-toward})
@@ -943,7 +943,7 @@
 			(infant-orientation{away})
 		<!>
 			(infant-orientation{obstructed})
-		[spin]
+		[blow-bubbles]
 	->
 		(has-bubbles{x})
 		(infant-activity{moving-toward})
@@ -961,7 +961,7 @@
 		<!>
 			(infant-orientation{away})
 		(infant-orientation{obstructed})
-		[spin]
+		[move-away]
 	->
 		(has-bubbles{x})
 		(infant-activity{moving-toward})
@@ -979,7 +979,7 @@
 		(infant-orientation{away})
 		<!>
 			(infant-orientation{obstructed})
-		[spin]
+		[move-away]
 	->
 		(has-bubbles{x})
 		(infant-activity{moving-toward})
