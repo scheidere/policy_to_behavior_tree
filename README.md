@@ -35,13 +35,13 @@ There are five main stages to this method:
 
 * What is the problem path? Specify or locate the associated problem. The following is associated with the above domain: ```~/your_workspace/src/policy_to_behavior_tree/pypddl_parser/src/pypddl_parser/pddl/AURO/marine/problem.ppddl```
 
-* To run the **full method**: ```roslaunch main.launch config:=final domain:=domain-path problem:=problem-path``` where domain-path and problem-path are as defined above.
+* To run the **full method**: ```roslaunch mdp_to_bt main.launch config:=final domain:=domain-path problem:=problem-path``` where domain-path and problem-path are as defined above.
 
 * The generated behavior tree before and after simplification will be saved as ```raw_policy_bt.tree``` and ```final_synth_bt.tree``` respectively. You will need to update their paths in main.py here: ```raw_policy_bt.write_config('your-path')``` and```simplified_policy_bt.write_config('your-path')```.
 
 * Next, similarly update the path variable in main.py where intermediate data will be stored. Currently, the path points to the mdp_to_bt/src/mdp_to_bt/policy_eval_output/ directory.
 
-* To run the **method without policy simplification**: ```roslaunch main.launch config:=no_simp domain:=domain-path problem:=problem-path```
+* To run the **method without policy simplification**: ```roslaunch mdp_to_bt main.launch config:=no_simp domain:=domain-path problem:=problem-path```
 
 ## Executing the program (deprecated)
 
