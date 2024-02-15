@@ -1,0 +1,82 @@
+(define (domain marine-p40)
+
+	(:requirements :equality :typing :probabilistic-effects)
+
+	(:types None)
+
+	(:predicates
+		(has-object ?x - None) ;Group 1
+		(found-object ?x - None) ;Group 1
+		(found-mine ?x - None) ;Group 2
+		(at-drop-off ?x - None) ;Group 1
+		(found-target-to-report ?x - None) ;Group 3
+		(in-comms-range ?x - None) ;Group 3
+	)
+
+	(:action pick-up
+
+		:parameters (?x - None)
+		:precondition (and (found-object ?x) (not (has-object ?x)))
+		:effect (probabilistic 0.6 (and (has-object ?x) (not (found-object ?x)) (increase reward 1)) ; True negative
+							   0.2 (and (not (has-object ?x)) (not (found-object ?x)) (increase reward -3)) ; False negative
+							   0.2 (increase reward -3) ; False positive, i.e. precondition(s) not True 
+				)
+	)
+
+	(:action drop-off
+
+		:parameters (?x - None)
+		:precondition (and (has-object ?x) (at-drop-off ?x))
+		:effect (probabilistic 0.6 (and (not (has-object ?x)) (increase reward 2)) ; True negative
+							   0.2 (and (has-object ?x) (increase reward -3)) ; False negative
+							   0.2 (and (not (at-drop-off ?x)) (increase reward -3)) ; False positive
+				)
+
+	)
+
+	(:action disarm
+
+		:parameters (?x - None)
+		:precondition (found-mine ?x)
+		:effect (probabilistic 0.6 (and (increase reward 4) (not (found-mine ?x))) ; True negative
+							   0.2 (and (found-mine ?x) (increase reward -3)) ; False negative
+							   0.2 (increase reward -3) ; False positive
+				)
+	)
+
+	(:action go-to-comms
+
+		:parameters (?x - None)
+		:precondition (and (not (in-comms-range ?x)) (found-target-to-report ?x))
+		:effect (in-comms-range ?x)
+	)
+
+	(:action go-to-drop-off
+
+		:parameters (?x - None)
+		:precondition (and (has-object ?x) (not (at-drop-off ?x)))
+		:effect (at-drop-off ?x)
+	)
+
+	(:action explore
+
+		:parameters (?x - None)
+		:precondition (and (not (has-object ?x)) (not (found-mine ?x)) (not (found-target-to-report ?x)))
+		:effect (probabilistic 0.2 (found-target-to-report ?x)
+							   0.15 (found-object ?x)
+							   0.1 (found-mine ?x)
+							   0.55 (has-object ?x)
+				)
+	)
+
+	(:action report
+
+		:parameters (?x - None)
+		:precondition (and (found-target-to-report ?x) (in-comms-range ?x))
+		:effect (probabilistic 0.6 (and (not (found-target-to-report ?x)) (increase reward 3)) ; True negative
+							   0.2 (and (found-target-to-report ?x) (increase reward -3)) ; False negative
+							   0.2 (and (not (in-comms-range ?x)) (increase reward -3)) ; False positive
+				)
+	)
+
+)

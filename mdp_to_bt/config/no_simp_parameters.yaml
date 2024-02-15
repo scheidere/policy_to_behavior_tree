@@ -1,0 +1,4 @@
+# Full method, but without simplification
+do_simplification: False
+ignore_dontcares: True
+default_action_order: True

@@ -1,0 +1,71 @@
+(define (domain infant-p50)
+
+	(:requirements :equality :typing :probabilistic-effects :disjunctive-preconditions)
+
+	(:types None)
+
+	(:predicates
+		(has-bubble-juice)
+		; Only one of the following three can be true at a time
+		(child-moving-away) ;?? should all these have robot and child location params
+		(child-moving-toward)
+		(child-stationary)
+		; Only one of the following three can be true at a time
+		(direct-social-interaction)
+		(social-interaction)
+		(solitary-play)
+	)
+
+	(:action spin
+
+		:parameters (?x - None)
+		:precondition (or (direct-social-interaction) (social-interaction) (solitary-play) );testing purposes, should be empty ;;(not (child-moving-toward))
+		:effect (probabilistic 0.5 (and (child-moving-toward) (increase reward 2))
+						       0.5 (and (not (child-moving-toward)) (increase reward -2))
+				)
+	)
+
+	(:action move-toward
+		:parameters (?x - None)
+		:precondition (and (not (direct-social-interaction)) (not (child-moving-away)))
+		:effect (probabilistic 0.5 (and (child-moving-toward) (increase reward 2))
+							   0.5 (and (not (child-moving-toward)) (increase reward -2))
+				)
+			
+	)
+
+	(:action move-away
+		:parameters (?x - None)
+		:precondition (or (direct-social-interaction) (social-interaction) (solitary-play) );testing purposes, should be empty ;;(not (child-moving-toward))
+		:effect (probabilistic 0.5 (and (child-moving-toward) (increase reward 2))
+							   0.5 (and (not (child-moving-toward)) (increase reward -2))
+				)
+			
+	)
+
+	(:action blow-bubbles
+		:parameters (?x - None)
+		:precondition (and (direct-social-interaction) (has-bubbles))
+		:effect (probabilistic 0.5 (and (child-moving-toward) (increase reward 2))
+							   0.5 (and (not (child-moving-toward)) (increase reward -2))
+				)
+	)
+
+	(:action play-sounds
+		:parameters (?x - None)
+		:precondition (not (child-moving-away))
+		:effect (probabilistic 0.5 (and (child-moving-toward) ( increase reward 2))
+							   0.5 (and (not (child-moving-toward)) (increase reward -2))
+				)
+	)
+
+	(:action lights-and-sounds
+		:parameters (?x - None)
+		:precondition (or (direct-social-interaction) (social-interaction) (solitary-play) );testing purposes, should be empty ;;(not (child-moving-toward))
+		:effect (probabilistic 0.5 (and (child-moving-toward) ( increase reward 2))
+							   0.5 (and (not (child-moving-toward)) (increase reward -2))
+				)
+	)
+	
+
+)

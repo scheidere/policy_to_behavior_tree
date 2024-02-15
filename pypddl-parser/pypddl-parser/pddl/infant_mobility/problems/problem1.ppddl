@@ -1,5 +1,0 @@
-(define (problem infant-mobility-problem)
-	
-	(:domain infant-mobility-domain)
-	
-)

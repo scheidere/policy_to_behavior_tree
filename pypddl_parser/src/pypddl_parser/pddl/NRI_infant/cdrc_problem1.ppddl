@@ -1,0 +1,20 @@
+(define (problem CDRC-problem)
+	
+	(:domain CDRC)
+
+	(:objects
+		direct-social-interaction social-interaction solitary-play - distance
+		moving-toward moving-away stationary - activity
+		X - None
+	)
+
+	(:init
+
+		(infant-robot-distance solitary-play)
+		(infant-activity moving-away)
+		(is-song-off X)
+	)
+
+	(:goal (and (infant-activity moving-toward)) )
+	
+)

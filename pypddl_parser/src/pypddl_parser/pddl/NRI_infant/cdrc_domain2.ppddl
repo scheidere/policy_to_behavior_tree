@@ -1,0 +1,90 @@
+(define (domain CDRC)
+
+    (:requirements :equality :typing :probabilistic-effects)
+
+    (:types None activity distance)
+
+    (:predicates
+        (infant-activity ?x - activity)
+        (infant-robot-distance ?x - distance)
+        (is-song-off ?x - None)
+    )
+
+    (:constants
+        direct-social-interaction social-interaction solitary-play - distance
+        moving-toward moving-away stationary - activity
+    )
+    
+    (:constraints
+        (and
+            (forall (?act - activity) (at-most-once (infant-activity ?act)))
+            (forall (?dst - distance) (at-most-once (infant-robot-distance ?dst)))
+        )
+    )
+
+    (:action songs
+        :parameters (?x - None)
+        :precondition (is-song-off ?x)
+        :effect (probabilistic 0.7 (and (not (is-song-off ?x)) (infant-activity moving-toward) (increase reward 2))
+                               0.15 (and (not (is-song-off ?x)) (infant-activity moving-away) (increase reward -2))
+                               0.15 (and (not (is-song-off ?x)) (infant-activity stationary) (increase reward -2))
+                )
+
+    )
+
+    (:action add-on
+
+        :parameters (?x - None)
+        :precondition (and (not (is-song-off ?x)) (infant-robot-distance solitary))
+        :effect (probabilistic 0.7 (and (infant-activity moving-toward) (increase reward 2))
+                               0.15 (and (infant-activity moving-away) (increase reward -2))
+                               0.15 (and (infant-activity stationary) (increase reward -2))
+                )
+    )
+
+    
+    (:action lights
+
+        :parameters (?x - None)
+        :precondition (and (not (is-song-off ?x)) (infant-robot-distance direct-social-interaction) (infant-activity stationary))
+        :effect (probabilistic 0.7 (and (infant-activity moving-toward) (increase reward 3))
+                               0.15 (and (infant-activity moving-away) (increase reward -3))
+                               0.15 (and (infant-activity stationary) (increase reward -3))
+                )
+    )
+    
+    (:action lights-add-on
+
+        :parameters (?x - None)
+        :precondition (and (not (is-song-off ?x)) (infant-robot-distance social-interaction) (not (infant-activity moving-away)))
+        :effect (probabilistic 0.7 (and (infant-activity moving-toward) (increase reward 3))
+                               0.15 (and (infant-activity moving-away) (increase reward -3))
+                               0.15 (and (infant-activity stationary) (increase reward -3))
+                )
+    )
+    
+    (:action keep-away-add-on
+
+        :parameters (?x - None)
+        :precondition (and (not (is-song-off ?x)) (not (infant-robot-distance solitary-play)) (not (infant-activity moving-away))) 
+        :effect (probabilistic 0.7 (and (infant-robot-distance social-interaction) (infant-activity moving-toward) (increase reward 3))
+                               0.075 (and (infant-robot-distance social-interaction) (infant-activity stationary) (increase reward -3)) 
+                               0.075 (and (infant-robot-distance solitary-play) (infant-activity stationary) (increase reward -3))
+                               0.075 (and (infant-robot-distance social-interaction) (infant-activity moving-away) (increase reward -3)) 
+                               0.075 (and (infant-robot-distance solitary-play) (infant-activity moving-away) (increase reward -3))
+                )
+    )
+    
+    (:action follow
+
+        :parameters (?x - None)
+        :precondition (and (not (is-song-off ?x)) (not (infant-activity moving-toward)) (not (infant-robot-distance direct-social-interaction)))
+        :effect (probabilistic 0.7 (and (infant-robot-distance social-interaction) (infant-activity moving-toward) (increase reward 1))
+                               0.075 (and (infant-robot-distance social-interaction) (infant-activity stationary) (increase reward -1)) 
+                               0.075 (and (infant-robot-distance solitary-play) (infant-activity stationary) (increase reward -1))
+                               0.075 (and (infant-robot-distance social-interaction) (infant-activity moving-away) (increase reward -1)) 
+                               0.075 (and (infant-robot-distance solitary-play) (infant-activity moving-away) (increase reward -1))
+                )
+    )
+
+)

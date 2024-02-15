@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+
+<launch>
+
+	<node pkg="mdp_to_bt" type="bt_to_policy_equivalency_test.py" name="compare_bt_to_policy" output="screen">
+	</node>
+
+</launch>

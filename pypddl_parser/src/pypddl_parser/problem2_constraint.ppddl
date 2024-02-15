@@ -1,0 +1,22 @@
+(define (problem infant-mobility-problem)
+	
+	(:domain infant-mobility-domain)
+
+	;(:objects X - None )
+
+	(:objects
+		direct-social-interaction social-interaction solitary-play - distance
+		moving-toward moving-away stationary - activity
+		X - None
+	)
+
+	(:init
+
+		(has-bubbles X)
+		(infant-robot-distance solitary-play)
+		(infant-activity moving-away)
+	)
+
+	(:goal (and (infant-activity moving-toward)) )
+	
+)

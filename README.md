@@ -22,25 +22,39 @@ There are five main stages to this method:
 
 ### Dependencies
 
-* Ubuntu 18.04 Bionic Beaver 
-* ROS Melodic
-* See import almost inevitable errors for library dependencies (lol)
+* Ubuntu 20.04 Focal Fossa and ROS Noetic
 
 ### Installation
 
 * Create a catkin workspace like [this](http://wiki.ros.org/catkin/Tutorials/create_a_workspace)
 * Navigate to the src directory in your workspace and clone this repo
 
-### Executing the program
+### Executing the program 
+
+* What is the domain path? Specify a domain or pick one like the following: ```~/your_workspace/src/policy_to_behavior_tree/pypddl_parser/src/pypddl_parser/pddl/AURO/marine/final_domain.ppddl```
+
+* What is the problem path? Specify or locate the associated problem. The following is associated with the above domain: ```~/your_workspace/src/policy_to_behavior_tree/pypddl_parser/src/pypddl_parser/pddl/AURO/marine/problem.ppddl```
+
+* To run the **full method**: ```roslaunch main.launch config:=final domain:=domain-path problem:=problem-path``` where domain-path and problem-path are as defined above.
+
+* The generated behavior tree before and after simplification will be saved as ```raw_policy_bt.tree``` and ```final_synth_bt.tree``` respectively. You will need to update their paths in main.py here: ```raw_policy_bt.write_config('your-path')``` and```simplified_policy_bt.write_config('your-path')```.
+
+* Next, similarly update the path variable in main.py where intermediate data will be stored. Currently, the path points to the mdp_to_bt/src/mdp_to_bt/policy_eval_output/ directory.
+
+* To run the **method without policy simplification**: ```roslaunch main.launch config:=no_simp domain:=domain-path problem:=problem-path```
+
+## Executing the program (deprecated)
 
 * Navigate to the following location: 
 ```~/your_workspace/src/policy_to_behavior_tree/mdp_to_bt/src/mdp_to_bt```
 * Locate your domain and problem file paths, which we will refer to as domain-path and problem-path.
 * Open another terminal window and run ```roscore```.
 * Run the main method:
-```python3 ppddl_to_matrices.py domain-path problem-path```
-* The solved for policy and simplified policy will both be converted to and saved as behavior trees. You can access these .tree files in ```~/your_workspace/src/policy_to_behavior_tree/behavior_tree/config```.
+```python3 main.py domain-path problem-path```
+* The solved for policy and simplified policy will both be converted to and saved as behavior trees. You can access these .tree files in ```~/your_workspace/src/policy_to_behavior_tree/behavior_tree/config```. They are raw_policy_bt.tree and simplified_bt.tree.
 * To visualize these trees, ```rosrun behavior_tree show_tree.py file_name```, where ```file_name``` is the .tree file you want to show. Once this is running, run ```rqt``` in a new terminal window.
+* To evaluate a probabilistic domain against the deterministic version (given ```roscore``` is running) run:
+```python3 policy_comparison.py```
 
 ## Help
 

@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+
+<launch>
+
+	<arg name="config" />
+	<arg name="domain" />
+	<arg name="problem" />
+
+	<node pkg="mdp_to_bt" type="main.py" name="main" output="screen">
+		<param name="config" type="string" value="$(arg config)_parameters.yaml" />
+		<param name="domain" type="string" value="$(arg domain)" />
+		<param name="problem" type="string" value="$(arg problem)" />
+	</node>
+</launch>

@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import os
 import time
 import rospy
@@ -25,7 +27,14 @@ from behavior_tree import behavior_tree_graphviz as gv
 #import graphviz
 import cv2
 from threading import Lock
+import sympy
+#import sys
+#import pprint
+#pprint.pprint(sys.path)
+#sys.path.append('/home/parallels/.local/lib/python3.8/site-packages')
+#pprint.pprint(sys.path)
 from xdot.xdot_qt import DotWidget
+##from xdot.ui.window import DotWidget #parallels
 
 class BehaviorTreePlugin(Plugin):
     def __init__(self, context):
@@ -173,6 +182,10 @@ class BehaviorTreePlugin(Plugin):
                 added_node_labels.append(node.label)
                 
                 def get_publish_function(widget, button, other_buttons, node, message_type, message_data):
+                    # print('in get_publish_function')
+                    # print('node', node)
+                    # print('message_type', message_type)
+                    # print('message_data', message_data)
                     pub = rospy.Publisher(node.get_subscriber_name(), message_type, queue_size=1)
                     class IDContainer:
                         def __init__(self):

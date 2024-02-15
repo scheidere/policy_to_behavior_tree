@@ -1,0 +1,16 @@
+?
+	->
+		(infant-activity_moving-away)
+		(infant-robot-distance_direct-social-interaction)
+		[play-sound)]
+	->
+		(infant-activity_moving-toward)
+		(infant-robot-distance_solitary-play)
+		[bubbles-lights-sounds(x: x)]
+	->
+		<!>
+			(infant-activity_moving-away)
+		<!>
+			(infant-robot-distance_solitary-play)
+		[keep-away-bubble)]
+	[follow-sound)]

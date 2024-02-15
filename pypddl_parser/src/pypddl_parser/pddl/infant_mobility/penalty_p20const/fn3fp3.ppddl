@@ -1,0 +1,121 @@
+(define (domain infant-fn3fp3)
+
+    (:requirements :equality :typing :probabilistic-effects)
+
+    (:types None activity distance orientation)
+
+    (:predicates
+        (has-bubbles ?x - None)
+        (infant-activity ?x - activity)
+        (infant-robot-distance ?x - distance)
+        (infant-orientation ?x - orientation)
+    )
+
+    (:constants
+        direct-social-interaction social-interaction solitary-play - distance
+        moving-toward moving-away stationary - activity
+        toward away obstructed - orientation
+    )
+    
+    (:constraints
+        (and
+            (forall (?act - activity) (at-most-once (infant-activity ?act)))
+            (forall (?dst - distance) (at-most-once (infant-robot-distance ?dst)))
+            (forall (?otn - orientation) (at-most-once (infant-orientation ?otn)))
+        )
+    )
+
+    (:action spin
+
+        :parameters ()
+        ;:precondition (and (infant-robot-distance direct-social-interaction) (infant-activity stationary) (not (infant-orientation obstructed)))
+        :precondition (and (infant-activity stationary) (not (infant-orientation obstructed)))
+        :effect (probabilistic 0.8 (and (infant-activity moving-toward) (increase reward 2))
+                               0.1 (increase reward -3)
+                               0.1 (increase reward -3)
+                )
+    )
+
+    (:action move-toward
+
+        :parameters ()
+        :precondition (not (infant-robot-distance direct-social-interaction))
+        :effect (probabilistic 0.8 (and (infant-activity moving-toward) (increase reward 2))
+                               0.1 (increase reward -3)
+                               0.1 (increase reward -3)
+                )
+    )
+
+    (:action move-away
+
+        :parameters ()
+        :precondition (or (infant-robot-distance direct-social-interaction) (infant-robot-distance social-interaction) (infant-robot-distance solitary-play)) ;(or (direct-social-interaction) (social-interaction) (solitary-play))
+        :effect (probabilistic 0.8 (and (infant-activity moving-toward) (increase reward 2))
+                               0.1 (increase reward -3)
+                               0.1 (increase reward -3)
+                )
+    )
+
+    (:action blow-bubbles
+
+        :parameters (?x - None)
+        ;:precondition (and (infant-robot-distance social-interaction) (has-bubbles ?x))
+        :precondition (and (infant-robot-distance social-interaction) (has-bubbles ?x) (infant-orientation toward))
+        :effect (probabilistic 0.8 (and (infant-activity moving-toward) (increase reward 3))
+                               0.1 (increase reward -3)
+                               0.1 (and (not (has-bubbles ?x)) (increase reward -3))
+                )
+    )
+
+    (:action refill-bubbles
+
+        :parameters (?x - None)
+        :precondition (not (has-bubbles ?x))
+        :effect (and (has-bubbles ?x))
+    )
+
+    (:action play-sounds
+
+        :parameters ()
+        ;:precondition (not (infant-activity moving-toward))
+        :precondition (and (infant-activity moving-away) (infant-orientation away))
+        :effect (probabilistic 0.8 (and (infant-activity moving-toward) (increase reward 2))
+                               0.1 (increase reward -3)
+                               0.1 (increase reward -3)
+                )
+    )
+
+    (:action lights-and-sounds
+
+        :parameters ()
+        ;:precondition (or (infant-robot-distance direct-social-interaction) (infant-robot-distance social-interaction) (infant-robot-distance solitary-play))
+        :precondition (and (infant-activity moving-away) (infant-orientation away))
+        :effect (probabilistic 0.8 (and (infant-activity moving-toward) (increase reward 2))
+                               0.1 (increase reward -3)
+                               0.1 (increase reward -3)
+                )
+    )
+
+    (:action keep-away
+
+        :parameters ()
+        ;:precondition (infant-robot-distance direct-social-interaction)
+        :precondition (and (infant-robot-distance direct-social-interaction) (infant-orientation toward))
+        :effect (probabilistic 0.8 (and (infant-robot-distance social-interaction) (infant-activity moving-toward) (increase reward 2))
+                               0.1 (and (infant-robot-distance social-interaction) (infant-activity stationary) (increase reward -3)) 
+                               0.1 (and (infant-robot-distance solitary-play) (infant-activity stationary) (increase reward -3))
+                )
+    )
+
+    (:action go-to-infant
+
+        :parameters ()
+        ;:precondition (not (infant-robot-distance direct-social-interaction)) ; solitary play or social interaction distances
+        :precondition (and (infant-robot-distance solitary-play) (infant-orientation obstructed))
+        :effect (probabilistic 0.8 (and (infant-robot-distance direct-social-interaction) (infant-activity moving-toward) (not (infant-orientation obstructed)) (increase reward 2))
+                               0.1 (and (infant-robot-distance direct-social-interaction) (infant-activity moving-away) (increase reward -3))
+                               0.1 (and (infant-robot-distance social-interaction) (infant-activity moving-away) (increase reward -3))
+                )
+    )
+
+)

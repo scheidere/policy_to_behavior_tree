@@ -1,0 +1,930 @@
+# This file is part of pypddl-PDDLParser.
+
+# pypddl-parser is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# pypddl-parser is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with pypddl-parser.  If not, see <http://www.gnu.org/licenses/>.
+
+# Emily Scheide
+# Use of pyppdl-parser + additions
+
+# NOTE THIS FILE IS CURRENTLY BEING USED AS MAIN FILE 
+# FOR RUNNING PPDDL TO SIMPLIFIED BEHAVIOR TREE METHOD
+# (This is because of simplicity with pointing to the pddl files, but I will update this and create a main file)
+
+from policy_to_bt import *
+from simplify import * # NEW WAY
+from evaluate_mdp_policy import *
+
+import mdptoolbox
+import numpy as np
+import mdptoolbox.example
+
+import argparse
+import sys
+sys.path.append('../../../pypddl-parser/pypddl-parser')
+from pddlparser import PDDLParser
+from literal import Literal #used for isinstance()
+
+import itertools
+from itertools import product
+import numpy as np
+import copy
+
+np.set_printoptions(threshold=sys.maxsize) # So you can see matrices without truncation
+
+def parse():
+    usage = 'python3 main.py <DOMAIN> <INSTANCE>'
+    description = 'pypddl-parser is a PDDL parser built on top of ply.'
+    parser = argparse.ArgumentParser(usage=usage, description=description)
+
+    parser.add_argument('domain',  type=str, help='path to PDDL domain file')
+    parser.add_argument('problem', type=str, help='path to PDDL problem file')
+
+    return parser.parse_args()
+
+def dictproduct(dct):
+    for t in product(*dct.values()):
+        yield dict(zip(dct.keys(), t))
+
+def getParamCombos(action):
+
+    combo_list = []
+
+    # Dict of param name keys, with possible value list as arg for each
+    param_values_dict = {}
+    for param in action.params:
+
+        param_values_dict[param._name] = problem.objects[param.type]
+
+    #print('param val dict', param_values_dict)
+
+    # Get all combinations of param values in dictionaries, congregate in list
+    combo_list = list(dictproduct(param_values_dict))
+
+    return combo_list
+
+def getStateList():
+
+    # Get all states (valid and invalid)
+
+    single_state = []
+    for i in range(len(domain.predicates)):
+        #print('Predicate is %s' % str(domain.predicates[i]))
+        for variable_type in domain.types:
+            #print(variable_type)
+            if variable_type in str(domain.predicates[i]):
+                #print('This predicate has variable type %s' % variable_type)
+                for value in problem.objects[variable_type]:
+
+                    state_sub_list = [str(domain.predicates[i].name),value,1]
+                    single_state.append(state_sub_list)
+
+    states = []
+    for tup in list(itertools.product([0,1],repeat=len(single_state))):
+        # tup = (0,1,0,0) for example, representing (False, True, False, False)
+        #print(tup)
+
+        # Distribute True/False options for each condition (predicate) in a state
+        full_state = copy.deepcopy(single_state)
+        for i in range(len(single_state)):
+            full_state[i][-1] = tup[i]
+
+        states.append(full_state)
+
+    #print('states ', states)
+
+    # Remove invalid states per constraints in domain
+    if domain.constraints:
+        states = removeInvalidStates(states)
+
+
+    return states
+
+def removeInvalidStates(state_list):
+
+    # This would need to have more constraint types added to be entirely complete
+
+    valid_states_list = []
+    removal_indices = [] # Indices of all invalid states
+
+    # For each constraint, remove states that do not satisfy 
+    for i in range(len(domain.constraints)):
+        constraint = domain.constraints[i]
+        # print('Constraint: ', constraint)
+        # print(constraint._name)
+        # print(constraint._literal._predicate._name)
+        # print(''.join(map(str, constraint._params)))
+
+        # Check each state for failure, per kind of constraint (currently only at-most-once)
+        for j in range(len(state_list)):
+            state = state_list[j]
+            #print('state ', state)
+            if constraint._name == 'at-most-once':
+                # Find all terms in state with the literal that is in the constraint
+                # Simplest case (one literal, one param, two param values): [literal,param value 1, 0],[literal,param value 2, 1]
+                # Only 0 and 1, or 1 and 0 are allowed
+
+                # Satisfy constraint: One 1, rest are 0s
+                # Fail to satisfy: All zeros, or more than one 1
+                num=None
+                found_a_one = False
+                for term in state:
+                    if term[0] == constraint._literal._predicate._name:
+                        if num==None:
+                            num=term[-1] # 0 or 1
+                            #print('num ',num)
+                            continue
+                        elif num==1 and term[-1]==num: # Found another 1, so constraint is not satisfied
+                            removal_indices.append(j)
+                            #print("More than one 1 found")
+                            break
+                        elif num==0:
+                            if term[-1] == 1: # found a one
+                                if not found_a_one:
+                                    found_a_one = True # found first 1
+                                else: # found second 1, constraint not satisfied
+                                    removal_indices.append(j)
+                                    #print("More than one 1 found*")
+                                    break
+
+
+                # After searching whole state
+                if num == 0 and not found_a_one: # If all zeros -> failure
+                    removal_indices.append(j)
+                    #print('all zeros')
+ 
+
+
+    # Only retain valid states
+    for idx in range(len(state_list)):
+        if idx not in removal_indices:
+            # Then state at idx in list is valid
+            valid_states_list.append(state_list[idx])
+
+    return valid_states_list
+
+
+def testRemoveInvalidStates():
+
+    states = getStateList()
+
+    for s in states:
+        print(s)
+
+    print('{{{{{{{{{{{{')
+
+    valid = removeInvalidStates(states)
+    for s in valid:
+        print(s)
+
+
+def getComboArgValues(args,combo_dict):
+
+    # E.g. args = ['?x','?a','?b']
+
+    values = []
+    for arg in args:
+        values.append(combo_dict[arg])
+
+    return values
+
+
+def preconditionSatisfied(start_state,action,combo_dict=None,test=False):
+
+    # Check that parameter values in combo match start state per action precondition 
+    for precond in action.precond:
+
+        if test:
+            print('precond type ', type(precond))
+
+        if precond._predicate.name != '=':
+            match_found = False
+            
+            precond_args = precond._predicate.args
+            if test:
+                print(precond._predicate.name, precond_args)
+
+            # Search start state for precondition predicate name where true
+            for term in start_state:
+                # True is defined by term[-1] == 1
+
+                if test:
+                    print(type(term[0]))
+
+                # First, check that the state term is the same as the precondition term
+                if term[0] == precond._predicate.name:
+
+                    # Second, check that the Boolean value is the same for both
+                    if precond.is_positive() and term[-1] == 1 or precond.is_negative() and term[-1] == 0:
+
+                        # Third, check that the parameters/args are the same
+                        term_arg_vals = term[1:-1] # if are no parameters this is = [] or has dummy var like 'x'
+                        if test:
+                            print('term_arg_vals: ', term_arg_vals)
+
+                        if combo_dict: # if there are parameters to compare at all (might be None)
+                            # Get parameter values to compare with from the param_combo given
+                            combo_arg_vals = getComboArgValues(precond_args,combo_dict)
+                        else:
+                            combo_arg_vals = None
+
+                        if test:
+                            print('Comparing %s to %s' % (term_arg_vals,combo_arg_vals))
+
+                        # Compare start state term with combo
+                        if term_arg_vals != combo_arg_vals:
+                            # Term does not match arg vals in give combo
+                            if test:
+                                print('Discrepancy found')
+                            else:
+                                pass
+                        else:
+                            if test:
+                                print('Match found') # precondition is satisfied
+                            match_found = True
+                            continue
+
+
+            if not match_found: # Precondition fails for given state and param combo
+                if test:
+                    print('Failure because no match found between state and param combo')
+                return False
+
+        # Check equation preconditions with combo parameter values
+        elif precond._predicate.name == '=':
+            args = precond._predicate.args
+
+            if precond.is_positive(): # =
+
+                if combo_dict[args[0]] != combo_dict[args[1]]:
+                    if test:
+                        print('Failure due to params not being equal...')
+                    return False
+            else: # !=
+
+                if combo_dict[args[0]] == combo_dict[args[1]]:
+                    if test:
+                        print('Failure due to params being equal...')
+                    return False
+
+
+    return True
+
+def equal(state1, state2):
+
+    #need to check if states have all the same terms
+    #even if the terms are not in the same order
+
+    #returns True or False
+
+    for i in range(len(state1)):
+
+        term1 = state1[i]
+
+        if term1 not in state2:
+            #print(term1)
+            #print(state2)
+            return False
+
+    return True
+
+
+def testEqual():
+
+    # State 1 and state 2 are actually the same, same terms and same order (Should return TRUE)
+    state1 = [['robot-at', 'left-cell', 1], ['robot-at', 'right-cell', 1], ['dirty-at', 'left-cell', 1], ['dirty-at', 'right-cell', 1]]
+    state2 = [['robot-at', 'left-cell', 1], ['robot-at', 'right-cell', 1], ['dirty-at', 'left-cell', 1], ['dirty-at', 'right-cell', 1]]
+    print(equal(state1,state2))
+
+    # States 3 and 4 are equal but the terms are in different orders (should return TRUE)
+    state3 = [['robot-at', 'left-cell', 0], ['robot-at', 'right-cell', 1], ['dirty-at', 'left-cell', 1], ['dirty-at', 'right-cell', 0]]
+    state4 = [['robot-at', 'right-cell', 1], ['dirty-at', 'right-cell', 0], ['dirty-at', 'left-cell', 1], ['robot-at', 'left-cell', 0]]
+    print(equal(state3,state4))
+
+    # States 5 and 6 are not equal, one term does not match (should return FALSE)
+    state5 = [['robot-at', 'left-cell', 1], ['robot-at', 'right-cell', 1], ['dirty-at', 'left-cell', 1], ['dirty-at', 'right-cell', 1]]
+    state6 = [['robot-at', 'left-cell', 1], ['robot-at', 'right-cell', 0], ['dirty-at', 'left-cell', 1], ['dirty-at', 'right-cell', 1]]
+    print(equal(state5,state6))
+
+
+def getStateIndex(state, states):
+
+    for i in range(len(states)):
+
+        if equal(states[i],state):
+
+            #print("match")
+            #print(states[i])
+            #print(state)
+
+            return i
+
+def testGetStateIndex():
+
+    states = getStateList()
+
+    state = [['robot-at', 'right-cell', 1], ['dirty-at', 'right-cell', 0], ['dirty-at', 'left-cell', 1], ['robot-at', 'left-cell', 0]]
+
+    #print(getStateIndex(state,states))
+
+def outcome(start_state, action, param_values = None, test=False):
+
+    #print('entering new outcome function')
+
+    precond_satisfied = True
+
+    # List of lists
+    # Each sub list includes an outcome state with probability p and reward r, [state,p,r]
+    outcome_list = []
+
+    # Initialize state terms left over after given action is taken in the start state
+    unchanged_state_terms = copy.deepcopy(start_state)
+
+    #test (remove these lines after you can access the else below)
+    action_effects = action.effects[0] # Indexed to remove duplicate outer list
+    #print('Action effect: ', action_effects)
+    #input('Waiting')
+
+
+    if not preconditionSatisfied(start_state,action, combo_dict=param_values):
+
+        #print('Precondition not satisfied...')
+
+        outcome_sublist = [unchanged_state_terms,1.0,0]
+        outcome_list.append(outcome_sublist)
+        precond_satisfied = False
+
+    else:
+
+        replacement_state_terms = [] # [state,p,r]
+
+        action_effects = action.effects[0]
+        #print('action effects ', action_effects)
+
+        for i in range(len(action_effects)):
+
+            term = action_effects[i]
+
+            literals = []
+
+            reward = 0
+
+            if isinstance(term, float):
+                prob = term
+                #print('prob: ', prob)
+
+                effects = action_effects[i+1]
+                #print('effects: ', effects)
+
+                for effect_term in effects:
+
+                    if isinstance(effect_term, Literal):
+                                #print('is literal')
+
+                        literals.append(effect_term)
+
+                    elif effect_term[0] == 'reward':
+                        #print('is reward')
+
+                        reward = effect_term[1]
+
+                outcome_sublist = getOutcomeSublist(literals,prob,reward,start_state,param_values,is_probabilistic=True)
+                # print('1 ', start_state)
+                # print('2 ', outcome_sublist)
+                outcome_list.append(outcome_sublist)
+
+    # if precond_satisfied:
+    #     input('Wait')
+
+    #print('exiting new outcome')
+    return outcome_list, precond_satisfied
+
+
+def getOutcomeSublist(literals, prob, reward, start_state, param_values, is_probabilistic=False):
+
+    #print('agh lit', literals)
+
+    #print('LOOOOOOOOOOK prob ', prob)
+
+    if not literals: # No state changes, just prob and reward
+        end_state = copy.deepcopy(start_state)
+        outcome_sublist = [end_state,prob,reward]
+        #print('outcome_sublist 1', outcome_sublist)
+        return outcome_sublist
+
+    if is_probabilistic:
+        # Initialize state terms left over after given action is taken in the start state
+        unchanged_state_terms = copy.deepcopy(start_state)
+
+        replacement_state_terms = [] # [state,p,r]
+
+    # [outcome_state, prob, reward]
+    for literal in literals:
+        predicate = literal._predicate
+        #print('predicate', predicate)
+        predicate_name = predicate.name
+        params = predicate._args
+        values = []
+        for param in params:
+            values.append(param_values[param])
+
+        #print('values ', values)
+    
+        #print('values', values)
+        # Search for relevant terms in start state, those that will be affected
+        for i in range(len(start_state)):
+            term = start_state[i]
+            #print('start state term', term)
+
+            # Find term that will change due to effect of taking action in start state
+            if term[0] == predicate_name and term[1:-1] == values:
+
+                #print('match')
+                #print('unchanged_state_terms',unchanged_state_terms)
+
+                unchanged_state_terms.remove(term)
+
+                # Initialize term for end state, state that results from action occurance
+                new_term = copy.deepcopy(term[0:-1])
+
+                if literal.is_positive():
+                    new_term.append(1)
+                else:
+                    new_term.append(0)
+
+                replacement_state_terms.append(new_term)
+                #print('replacement_state_terms', replacement_state_terms)
+
+        end_state = replacement_state_terms + unchanged_state_terms
+        outcome_sublist = [end_state,prob,reward]
+        #print('prob type', type(prob))
+        #print('outcome_sublist 2', outcome_sublist)
+
+    return outcome_sublist
+
+def preconditionSatisfiedActionParams(action, combo_dict, test=False):
+
+    #Need to remove things like move(left,left) and move(right,right) by checking preconditions
+
+    #Might also be able to merge with preconditionSatisfied, but not sure what is most elegant option
+
+    #use this in getPandR to ammend the actions_with_params list to only contain valid actions_with_params
+
+    #then update loops so you only consider those actions for p and r
+
+    # Check equation preconditions with combo parameter values
+    for precond in action.precond:
+        if precond._predicate.name == '=':
+            args = precond._predicate.args
+
+            if precond.is_positive(): # =
+
+                if combo_dict[args[0]] != combo_dict[args[1]]:
+                    if test:
+                        print('Failure due to params not being equal...')
+                    return False
+            else: # !=
+
+                if combo_dict[args[0]] == combo_dict[args[1]]:
+                    if test:
+                        print('Failure due to params being equal...')
+                    return False
+
+    return True
+
+def getActionsWithParamsList():
+
+    # Get all action/param combos
+
+    # Initialize actions with parameters list (used for reading policy)
+    actions_with_params = []
+
+    # Loop through all actions in domain
+    for action in domain.operators:
+
+        # Get all possible combos of action parameter values
+        param_combos = getParamCombos(action)
+
+        for combo_dict in param_combos:
+
+            # Make sure parameters pass the preconditions that can be checked at this stage
+            # e.g. params == or != to each other or something
+            if preconditionSatisfiedActionParams(action,combo_dict):
+
+                #actions_with_params.append([action.name,combo_dict])
+                actions_with_params.append([action,combo_dict])
+
+    #print(actions_with_params)
+    return actions_with_params
+
+def getActions():
+
+    actions = []
+
+    for action in domain.operators:
+
+        actions.append(action)
+
+    return actions
+
+
+def getPandR():
+
+    # Init main lists, NxN arrays will be added to (later converted to 3d numpy array)
+    P,R = [],[]
+
+    # Get valid states
+    states = getStateList()
+
+    # Initialize actions with parameters list (used for reading policy)
+    #actions_with_params = []
+
+    # Number of states
+    N = len(states)
+    #print('Number of states, N: ',N)
+
+    if problem != None:
+
+        #print('Problem exists')
+
+        # Get valid action/param combos
+        actions = getActionsWithParamsList() # old var name: actions_with_params
+        #print('actions: ', actions)
+        #print('actions: ')
+        # for action in actions:
+        #     print(action[0]._name, action[1])
+
+        #input("YOU ARE HERE")
+
+    else:
+        #print('Problem is None')
+        actions = getActions()
+        #print('actions: ', actions)
+
+    for action_term in actions:
+
+        if problem != None:
+            action, combo_dict = action_term # action term is [action, params]
+        else:
+            action = action_term
+
+        # Init two NxN arrays with zeros (one for P_a and one for R_a)
+        p, r = np.zeros((N,N)), np.zeros((N,N))
+
+        # Loop through start states s, indexing with i
+        for i in range(len(states)):
+            start_state = states[i]
+
+            # print('+++++++++++++++++++')
+            # print('action ',action)
+            # print('params ', combo_dict)
+            # print('start state ', start_state)
+
+            # Get list of [end state, prob, reward] terms, given action and start state
+            # Also return only the actions_with_params that satisfy preconds
+            if combo_dict:
+                outcome_list, precond_satisfied = outcome(start_state,action,param_values=combo_dict)
+            else: # no parameters
+                outcome_list, precond_satisfied = outcome(start_state,action)
+            #print("outcome_list: ",outcome_list)
+
+            # if precond_satisfied: # i.e. list not empty
+            #     print(action.name, combo_dict)
+            #     actions_with_params.append([action.name,combo_dict])
+
+            # Update NxN matrices, p and r according to outcome
+            #print('outcome_list ', outcome_list)
+            for outcome_sublist in outcome_list:
+
+                #print('outcome_sublist ', outcome_sublist)
+
+                #print('outcome_sublist', outcome_sublist)
+
+                # Get index of end state where outcome_sublist = [end state, prob, reward]
+                #print(outcome_sublist[0])
+                j = getStateIndex(outcome_sublist[0],states)
+                # print('j', j, type(j))
+                # print('i', i, type(i))
+                # print(outcome_sublist[1]) # expected to be a probability, but some probs are associated with certain components so its a tuple
+
+                p[j,i] = outcome_sublist[1]
+                r[j,i] = outcome_sublist[2]
+
+                #input('Wait')
+                
+        # Add NxN matrices to lists P and R
+        P.append(p)
+        R.append(r)
+
+    # Convert list of matrices to 3d numpy array
+    P = np.dstack(P).transpose()
+    R = np.dstack(R).transpose()
+    # actions = []
+    # for action in domain.operators:
+    #     actions.append(action.name)
+
+    #input("YOU ARE HERE NOW")
+
+
+    return P, R, states, actions
+
+def test_outcome():
+
+    # Need to confirm this test is updated, so it can actually be used to test...
+
+    states = getStateList()
+
+    for action in domain.operators:
+
+        combos = getParamCombos(action)
+
+        for start_state in states:
+
+            for combo_dict in combos:
+
+                #if preconditionSatisfied(combo_dict,start_state,action): 
+                    # ??? move precond satisfied to inside outcome function
+                    # when precond not satisfied for certain action/param combo/state 
+                    # you still want to add a 1 at i,j where i=j for the unchanged start state
+
+                print('\n')
+                print('Start state: ', start_state)
+                print('Combo dict: ', combo_dict)
+                print('Action: ', action.name)
+                ps = preconditionSatisfied(start_state,action, combo_dict=combo_dict)
+                print('Precondition satisfied? ', ps)
+                outcome_list = outcome(start_state,action,param_values=combo_dict)
+                for o in outcome_list:
+                    print(o)
+                
+
+                print('\n')
+
+
+def precondSatisfiedTest():
+
+    # Need to confirm this test is updated, so it can actually be used to test...
+
+    states = getStateList()
+
+    for action in domain.operators:
+    #action = domain.operators[0]
+    #print('Action: ', action)
+
+        param_combos = getParamCombos(action)
+
+        for i in range(len(states)):
+            start_state = states[i]
+            
+
+            for combo_dict in param_combos:
+
+                print('Action: ', action)
+
+                print('Start: ', start_state)
+
+                print('Param combo: ', combo_dict)
+
+                print('Precond satisfied? %s\n' % preconditionSatisfied(start_state,action, combo_dict=param_values,test=True))
+
+
+def solve(solver,P,R):
+
+    # Get transition probabality and reward matrices from PPDDL
+
+    if solver == 'v':
+        val_it = mdptoolbox.mdp.ValueIteration(P, R, 0.96)
+        val_it.run()
+        policy = val_it.policy
+        print('\nPolicy: ', val_it.policy)
+    elif solver == 'q':
+        q_learn = mdptoolbox.mdp.QLearning(P, R, 0.96)
+        q_learn.run()
+        policy = q_learn.policy
+        print('\nPolicy: ', q_learn.policy)
+    else:
+        print("That is not a valid solver...")
+
+    return policy
+
+def readPolicy(policy,states,actions_with_params):
+
+    print('Policy in readable form: ')
+
+    for i in range(len(policy)):
+
+        print('Index in policy: ', i)
+        print('Action index: ', policy[i])
+        print(states[i])
+        #print(actions_with_params[policy[i]][0].name,actions_with_params[policy[i]][1],'\n')
+        print(actions_with_params[policy[i]][0],actions_with_params[policy[i]][1],'\n')
+
+def checkPolicyPreconditions(policy, states,actions_with_params):
+
+    # Used to make the policy readable and check for issues with preconditions
+
+    print('Policy in readable form: \n')
+
+    for i in range(len(policy)):
+
+        print('====================')
+        print('Index in policy: ', i)
+        print('Action index: ', policy[i])
+        print('State: \n', states[i])
+        action = actions_with_params[policy[i]][0]
+        print('\nAction: \n %s' % action)
+        param_values = actions_with_params[policy[i]][1]
+        print('Params: \n', param_values)
+        precondsatisfied = preconditionSatisfied(states[i],action, combo_dict=param_values)
+        print('\nPreconditions satisfied? %r' % precondsatisfied)
+        if not precondsatisfied:
+            input('Found failure')
+
+def main():
+
+    # Convert to MDP, i.e. generate transition probability matrix P and reward matrix R
+    print('The follow matrices represent the transition probabilities\n and rewards for all state transitions: ')
+    P, R, states, actions_with_params = getPandR()
+
+    print('P:\n', P, '\n')
+    print('R:\n', R, '\n')
+
+    # print('actions_with_params: ')
+    # for action in actions_with_params:
+    #     print(action)
+
+    # Choose method of solving for a policy given P and R
+    #solver = input("Enter value iteration (v) or Q-learning (q): ") 
+    solver = 'v' # Q-learning does not work, so always use value iteration
+
+    print(type(P), shape(P))
+    print(type(R), shape(R))
+
+    input('wait')
+
+    # Solve for a policy
+    policy = solve(solver,P,R)
+    # if domain == prob_domain:
+    #     print('Probabilistic')
+    #     prob_policy = policy
+    # elif domain == det_domain:
+    #     print('Deterministic')
+    #     det_policy = policy
+
+    input('wait2')
+
+    # Convert policy to BT and save as
+    print('\n++++++++++++++++++\n')
+    print('Raw policy behavior tree:\n')
+    p2bt = PolicyToBT(states, actions_with_params, policy)
+    raw_policy_bt = p2bt.behavior_tree
+
+    # Translate policy to readable form
+    # choice = input('Press r to print policy in readable form. To skip press any other key.')
+    choice = 'nope'
+    if choice == 'r':
+        #readPolicy(policy,states,actions_with_params)
+        checkPolicyPreconditions(policy,states,actions_with_params) #Value iteration passes, Q-learning fails
+
+        input('Scroll up to read the policy. Press return to simplify and evaluate.')
+
+    # print('Simplifying policy...')
+    # print('old policy', policy)
+    # Simplify the policy using Boolean logic and the resulting behavior tree in a .tree file
+    print('Simplified policy behavior tree:\n')
+    print("COMMENTED OUT SIMPLIFICATION BC OF MARINE BUG with domain.ppddl")
+    # simplify = Simplify(states, actions_with_params, policy, domain, problem)
+    # simplified_policy_bt = simplify.bt
+
+    # Save the behavior trees in .tree files in behavior_tree/config
+    print('Saving behavior trees to files...\n')
+    raw_policy_bt.write_config('../../../behavior_tree/config/raw_policy_bt.tree')
+    # simplified_policy_bt.write_config('../../../behavior_tree/config/simplified_bt.tree')
+    
+    # Evaluate the policy (simplified policy is equivalent, by definition)
+    mdp_problem = MDP_Problem(P, R, states, actions_with_params)
+    # if domain == prob_domain:
+    #     prob_mdp_problem = mdp_problem # to use in fairly evaluating policies
+    reward = evaluate_mdp_policy(mdp_problem, policy)
+    print("\nReward: %f\n" % reward)
+
+
+    # print('Now lets compare performance of the policies learned from the deterministc vs the probabilistic domains')
+    # # print('Probabilistic: ', prob_policy)
+    # # print('Deterministic: ', det_policy)
+    # num_trials = 100
+    # getAverageRewardInSameWorld(prob_mdp_problem, prob_policy, det_policy)
+
+    #input('If you want to get the average reward, press return.')
+    # Get average reward over a certain number of runs
+    #num_trials = 100
+    #avg_reward = get_average_reward(num_trials, mdp_problem, policy)
+    #print('\nAverage reward over %d trials: %f' % (num_trials, avg_reward))
+    return mdp_problem # TO BE REMOVED
+
+def get_average_reward(num_runs, mdp_problem, policy):
+
+    print('Getting average reward over %d trials... It should take about a minute.' % num_runs)
+
+    rewards = []
+    for i in range(num_runs):
+
+        reward = evaluate_mdp_policy(mdp_problem, policy)
+        #print(i,': ', reward)
+
+        rewards.append(reward)
+
+
+    return sum(rewards)/len(rewards)
+
+def getAverageRewardInSameWorldTODO(num_runs, prob_mdp_problem, p_policy, d_policy):
+
+    # prob_mdp_problem is the probabilistic MDP (otherwise wrong test)
+    # p_policy is the policy learned from the probabilistic domain version
+    # d_policy is the policy learned from the deterministic domain version
+
+    # First define the MDP based on the probabilistic domain
+    # Hardcoding so command line input can't mess this up from user error
+    # domain = PDDLParser.parse('../../../pypddl-parser/pypddl-parser/pddl/marine/domain.ppddl')
+    # problem = PDDLParser.parse('../../../pypddl-parser/pypddl-parser/pddl/marine/problems/problem1.ppddl')
+
+    # THE BELOW IS HOW I WANT IT
+    # p_avg_reward = get_average_reward(num_runs, prob_mdp_problem, p_policy)
+    # print('\nAverage reward over %d trials for probabilistic policy: %f' % (num_trials, p_avg_reward))
+    # d_avg_reward = get_average_reward(num_runs, prob_mdp_problem, d_policy)
+    # print('\nAverage reward over %d trials for deterministic policy: %f' % (num_trials, d_avg_reward))
+
+    pass
+
+def getAverageRewardInSameWorld():
+
+    # domain3
+    p_policy = (5, 5, 3, 6, 5, 5, 3, 6, 2, 2, 2, 2, 2, 2, 2, 2, 5, 5, 3, 6, 5, 5, 3, 6, 2, 2, 2, 2, 2, 2, 2, 2, 4, 4, 4, 6, 1, 1, 1, 6, 2, 2, 2, 2, 1, 1, 1, 1, 4, 4, 4, 6, 1, 1, 1, 6, 2, 2, 2, 2, 1, 1, 1, 1)
+    
+    # domain2
+    #p_policy = (5, 5, 3, 6, 5, 5, 3, 6, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 6, 0, 0, 0, 6, 2, 2, 2, 2, 2, 2, 2, 2, 4, 4, 4, 6, 1, 1, 1, 1, 4, 4, 4, 2, 1, 1, 1, 1, 4, 4, 4, 6, 1, 1, 1, 1, 4, 4, 4, 2, 1, 1, 1, 1)
+    d_policy = (5, 5, 3, 6, 5, 5, 3, 6, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 6, 0, 0, 0, 6, 2, 2, 2, 2, 2, 2, 2, 2, 4, 4, 4, 6, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 4, 4, 4, 6, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2)
+
+    num_runs = 100
+
+    p_avg_reward = get_average_reward(num_runs, mdp_problem, p_policy)
+    print('\nAverage reward over %d trials for probabilistic policy: %f' % (num_runs, p_avg_reward))
+    d_avg_reward = get_average_reward(num_runs, mdp_problem, d_policy)
+    print('\nAverage reward over %d trials for deterministic policy: %f' % (num_runs, d_avg_reward))
+
+
+
+
+if __name__ == '__main__':
+
+    # Define domain and problem to consider (they represent an MDP)
+    print('\nFor the following domain and problem: \n\n')
+    args = parse()
+    print(type(args.domain))
+    print(args.problem)
+    input('wait')
+    domain  = PDDLParser.parse(args.domain)
+    problem = PDDLParser.parse(args.problem)
+
+    # Hard-coded
+    # prob_domain = PDDLParser.parse('../../../pypddl-parser/pypddl-parser/pddl/marine/domain3.ppddl')
+    # problem = PDDLParser.parse('../../../pypddl-parser/pypddl-parser/pddl/marine/problems/problem1.ppddl')
+
+    # det_domain = PDDLParser.parse('../../../pypddl-parser/pypddl-parser/pddl/marine/domain_deterministic.ppddl')
+
+    # print(prob_domain)
+    # print('deterministic:\n', det_domain)
+    # print(problem)
+
+    # domains = [prob_domain,det_domain]
+
+    # for domain in domains:
+
+    #     main()
+
+
+    # domain = PDDLParser.parse('../../../pypddl-parser/pypddl-parser/pddl/marine/domain3.ppddl')
+    # problem = PDDLParser.parse('../../../pypddl-parser/pypddl-parser/pddl/marine/problems/problem1.ppddl')
+
+    print(domain)
+    print(problem)
+
+    mdp_problem = main()
+
+    # print('Now lets compare performance of the policies learned from the deterministc vs the probabilistic domains')
+    # # print('Probabilistic: ', prob_policy)
+    # # print('Deterministic: ', det_policy)
+    # num_trials = 100
+    # getAverageRewardInSameWorld(prob_mdp_problem, prob_policy, det_policy)
+
+    # HARDCODED FOR SPEED
+    getAverageRewardInSameWorld()

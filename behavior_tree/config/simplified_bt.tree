@@ -1,55 +1,26 @@
 ?
 	->
-		(found-object_x)
-		<!>
-			(found-mine_x)
-		<!>
-			(found-target-to-report_x)
-		<!>
-			(has-object_x)
-		[pick-up(x: x)]
+		(infant-robot-distance_solitary-play)
+		[move-towar)]
 	->
-		(found-object_x)
+		(infant-activity_moving-toward)
 		<!>
-			(found-mine_x)
-		<!>
-			(has-object_x)
-		<!>
-			(in-comms-range_x)
-		[pick-up(x: x)]
-	->
-		(at-drop-off_x)
-		(has-object_x)
-		[drop-off(x: x)]
-	->
-		(found-mine_x)
-		<!>
-			(has-object_x)
-		[disarm(x: x)]
-	->
-		(found-mine_x)
-		(found-target-to-report_x)
-		(in-comms-range_x)
-		[disarm(x: x)]
-	->
-		(found-target-to-report_x)
-		<!>
-			(has-object_x)
-		<!>
-			(in-comms-range_x)
-		[go-to-comms(x: x)]
-	->
-		(has-object_x)
-		<!>
-			(found-target-to-report_x)
-		[go-to-drop-off(x: x)]
-	->
-		(has-object_x)
-		<!>
-			(in-comms-range_x)
-		[go-to-drop-off(x: x)]
+			(infant-robot-distance_direct-social-interaction)
+		[move-towar)]
 	->
 		<!>
-			(found-target-to-report_x)
-		[explore(x: x)]
-	[report(x: x)]
+			(has-bubbles_x)
+		<!>
+			(infant-robot-distance_direct-social-interaction)
+		[move-towar)]
+	->
+		<!>
+			(infant-orientation_toward)
+		<!>
+			(infant-robot-distance_direct-social-interaction)
+		[move-towar)]
+	->
+		<!>
+			(infant-robot-distance_social-interaction)
+		[move-awa)]
+	[blow-bubbles(x: x)]

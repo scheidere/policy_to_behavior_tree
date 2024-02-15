@@ -8,23 +8,74 @@ import numpy as np
 from behavior_tree.behavior_tree import *
 from itertools import product
 import itertools
-
+import time
+import copy
 
 
 class Simplify:
-    def __init__(self, states, actions_with_params, policy, domain, problem):
+    def __init__(self, states, actions_with_params, policy, domain, problem, ignore_dontcares, default_action_order, f):
 
+        simplification_start_time = time.time()
         self.states = states
-        self.actions = actions_with_params # action names with parameters
+        self.actions = actions_with_params # all possible actions in the domain
         self.policy = policy
+        self.action_nums_in_policy = list(np.unique(self.policy))
         self.domain = domain
         self.problem = problem
+        self.simplification_runtime = None
+        self.policy_to_bt_runtime = None
+        self.ignore_dontcares = ignore_dontcares
+        self.default_action_order = default_action_order
 
+        self.f = f
+
+        #f = open("/home/scheidee/Desktop/AURO_results/bla.txt", "w+") # for reorder debugging
+        self.f.write("action nums in policy: " + str(self.action_nums_in_policy)+"\n")
+        self.f.write("actions: \n")
+        for i in range(len(self.actions)):
+            action = self.actions[i][0]
+            self.f.write(str(i) + ": " + str(action)+"\n")
+        #f.write("actions: " + str(self.actions)+"\n")
+
+        self.reorder_actions()
+        f.write("action nums in policy 2: " + str(self.action_nums_in_policy)+"\n")
+
+        # simplification_start_time = time.time()
         # Get condition names with parameters! E.g. ['robot-at', {'?x': 'left-cell'}]
         self.conditions = self.getConditionsWithParamsList()
 
-        self.run()
+        self.run(simplification_start_time)
         #self.test()
+
+    def reorder_actions(self):
+
+        print('action order default', self.action_nums_in_policy)
+        reordered_action_nums_in_policy = copy.deepcopy(self.action_nums_in_policy)
+        if not self.default_action_order: # Reorder actions randomly
+            print('Reordering actions to determine whether it changes simplification results')
+            while self.action_nums_in_policy==reordered_action_nums_in_policy:
+                random.shuffle(reordered_action_nums_in_policy)
+
+            # Now with new order, save it
+            self.action_nums_in_policy = reordered_action_nums_in_policy
+
+        print('reordered action order', self.action_nums_in_policy)
+
+        # Must reorder actions list as well to match the new action num order???
+        # new_actions = []
+        # for n in self.action_nums_in_policy:
+        #     #self.f.write(str(self.actions[n][0]))
+        #     new_actions.append(self.actions[n])
+
+
+        # self.actions = new_actions
+
+        # self.f.write("actions: \n")
+        # for i in range(len(new_actions)):
+        #     action = new_actions[i][0]
+        #     self.f.write(str(i) + ": " + str(action)+"\n")
+
+
 
     def test(self):
 
@@ -85,46 +136,28 @@ class Simplify:
         #print(actions_with_params)
         return conditions_with_params
 
-    # def getConditions(self, domain):
-
-    #     condition_names = []
-
-    #     for pred in domain.predicates:
-
-    #         #print(pred.name)
-    #         condition_names.append(pred.name)
-
-    #     return condition_names
 
     def setConditionSymbols(self):
-
-        # Issue: symbols() does not like when cond has 
 
         conds_string = ''
 
         for i in range(len(self.conditions)):
-
-            #print(self.conditions[i][1])
-            #print(self.conditions[i][1].values)
 
             string = ''
             lst = list(self.conditions[i][1].values())
             for j in range(len(lst)):
                 el = lst[j]
                 if j > 0:
-                    string += '_'
+                    string += ','
                 string += el
 
-            cond = self.conditions[i][0] + '_' + string
-
-            #print('cond ', cond)
+            #cond = self.conditions[i][0] + '_' + string
+            cond = self.conditions[i][0] + '{' + string + '}'
 
             conds_string += cond
 
             if i <= len(self.conditions)-2:
                 conds_string += ', '
-
-        #print(conds_string)
 
         c = symbols(conds_string)
 
@@ -156,6 +189,8 @@ class Simplify:
 
     def getActionNum(self, action):
 
+        # Get correct indices from the original action list, which was used to denote the policy with action nums
+
         for i in range(len(self.actions)):
 
             action_with_params = self.actions[i]
@@ -163,7 +198,6 @@ class Simplify:
             if action_with_params == action:
 
                 return i
-
 
     def getActionStates(self, action_num):
 
@@ -177,7 +211,7 @@ class Simplify:
 
         # Find all state indexes in policy that have action num
         state_indices = [index for index, element in enumerate(self.policy) if element == action_num]
-
+        
         for idx in state_indices:
 
             states_with_given_action.append(self.getNumericalState(self.states[idx]))
@@ -244,7 +278,59 @@ class Simplify:
             #     print(state)
             print('states ', a)
 
+    def getConditionsFromOR(self, or_sop_simplify):
+
+        # Given sop_simply with at least one OR | in it
+        # return list of all conditions that appear at least once (not per term, just at all)
+        conditions = []
+        for term in or_sop_simplify.args:
+            for c in term.args:
+                if c not in conditions:
+                    conditions.append(c)
+
+
+        return conditions
+
+    def getConditionsInAllORTerms(self, all_conds, or_terms):
+
+        common_conditions = []
+        condition_in_all_terms = True
+        for c in all_conds:
+            #self.f.write('idk' + str(c)+"\n")
+            for term in or_terms:
+                c_in_term = c in term.args
+                #self.f.write("c vs term "+str(c) + " " +str(term.args) + str(c_in_term) + "\n")
+                if not c_in_term:
+                    break
+
+            #self.f.write('y '+ str(c_in_term) + " " + str(c) + "\n")
+            if c_in_term:
+                #self.f.write('yep' + str(c)+"\n")
+                common_conditions.append(c)
+
+
+        return common_conditions
+
+    def getUniqueConditionListsInORTerms(self, common_conditions, or_terms):
+
+        # Record conditions that are not common to all terms, every term
+
+        unique_condition_lists = [] # Will be a list of lists, each list of one or more condition terms
+
+        for term in or_terms:
+            term_list = []
+            for c in term.args:
+                if c not in common_conditions:
+                    term_list.append(c)
+
+            unique_condition_lists.append(term_list)
+
+        return unique_condition_lists
+
+
     def buildSubtree(self, sop_simplify, action):
+
+        self.f.write("+++++++++++++=in buildSubtree for this action: %s\n" %action[0])
 
         # Create list to contain a single or multiple (if OR) subtrees
         new_subtrees = []
@@ -252,27 +338,80 @@ class Simplify:
         # Extract the subtrees from the logic
         if type(sop_simplify) == Or:
 
+            self.f.write("Or\n")
+
+
+            # BUG FIX IN PROGRESS - COMMENTED OUT FOR MEETING 10/23
+            self.f.write(str(sop_simplify)+"\n")
+
             # "Or" found, therefore must be multiple subtrees
-            terms = sop_simplify.args
+            or_terms = sop_simplify.args 
+            all_conds = self.getConditionsFromOR(sop_simplify)
+            self.f.write('all conds ' + str(all_conds) + "\n")
+
+            common_conditions = self.getConditionsInAllORTerms(all_conds, or_terms)
+            self.f.write("common conditions: "+str(common_conditions)+"\n")
+
+            unique_condition_lists = self.getUniqueConditionListsInORTerms(common_conditions, or_terms)
+
+            self.f.write("unique_condition_lists: " + str(unique_condition_lists) + "\n")
+
+            sequence_node = Sequence()
+
+            # Add common condition nodes beneath the sequence node
+            for condition in common_conditions:
+
+                self.f.write("condition: %s\n" %str(condition))
+
+                sequence_node = self.createConditionNode(condition, sequence_node)
+
+            # Add unique conditions lists to fallback
+            fallback_node = Fallback()
+            for lst in unique_condition_lists:
+                new_sequence_node = Sequence()
+                if len(lst) == 1:
+                    fallback_node = self.createConditionNode(lst[0], fallback_node)
+                else:
+                    for c in lst:
+                        new_sequence_node = self.createConditionNode(c, new_sequence_node)
+                    
+                    fallback_node.children.append(new_sequence_node)
+
+            sequence_node.children.append(fallback_node)
+
+            # Add the action beneath the sequence node last
+            action_node = self.createActionNode(action)
+            self.f.write("action_node: %s, %s\n" %(str(action_node),action_node.label))
+            sequence_node.children.append(action_node) # Add action to subtree
+            new_subtrees.append(sequence_node) # Add subtree to list
+            
+            #conditions = sop_simplify.args # This is wrong. Fix in progress above, currently commented out.
+            return new_subtrees
             #print('OR')
 
         elif type(sop_simplify) == And:
 
+            self.f.write("And\n")
+            self.f.write(str(sop_simplify))
+
             # "And" found, therefore must be a single subtree
             # Put the subtree in a list so it is compatible with the following loop
-            terms = [sop_simplify]
+            #terms = [sop_simplify]
+            conditions = sop_simplify.args
             #print('And')
 
         elif type(sop_simplify) == Not:
 
+            self.f.write("Not\n")
             #print('Not')
 
             # The tree is a single subtree with a Not decorator
             # Process this case separately
             #terms = [] # So the following loop is skipped
-            terms = [sop_simplify]
+            #terms = [sop_simplify]
             # print("==============")
             # print("subtree [single NOT] (")
+            conditions = [sop_simplify]
             name = str(sop_simplify.args[0])
             # print("\t NOT", name)
             # print("\t",action[0].name, action[1]) #.name added
@@ -280,10 +419,13 @@ class Simplify:
 
         elif type(sop_simplify) == Symbol:
 
+            self.f.write("Symbol\n")
+
             #print('Symbol')
             # The tree is a single subtree with a single condition
             # Process this case separately
-            terms = [] # So the following loop is skipped
+            #terms = [] # So the following loop is skipped
+            conditions = [sop_simplify] # single condition, ADDED due to missing action in final tree, aka missing subtree
             # print("==============")
             # print("subtree [single Condition] (")
             name = str(sop_simplify)
@@ -298,82 +440,141 @@ class Simplify:
 
         elif type(sop_simplify) == BooleanTrue:
 
+            self.f.write("BooleanTrue\n")
+
             # This action has no conditions
-            terms = [] # So the following loop is skipped
+            #terms = [] # So the following loop is skipped
             # print("==============")
             # print("subtree [always] (")
             # print("\t",action[0].name, action[1])
             # print(")")
             action_node = self.createActionNode(action)
-            return [action_node]
+            return [action_node] # don't need a sequence node, it would be redundant
 
         else:
 
             # This case should be impossible
             ERROR
 
+        #self.f.write("Does Symbol case get here? 1\n")
+        #self.f.write("terms: %s\n" %str(terms))
 
+        # For creating a subtree for an action with conditions (Or, And, Not, Symbol) 
+        # Create root of subtree, which is a sequence node
+        sequence_node = Sequence()
 
-        # Look at each subtree one at a time
-        for term in terms:
+        # Add condition nodes beneath the sequence node
+        for condition in conditions:
 
-            # Each "term" is either an And, Condition, or Decorator+Condition
-            # Treat each case slightly differently
+            self.f.write("condition: %s\n" %str(condition))
 
-            # Create root of subtree, which is a sequence node
-            sequence_node = Sequence()
+            sequence_node = self.createConditionNode(condition, sequence_node)
+
+        # Add the action beneath the sequence node last
+        action_node = self.createActionNode(action)
+        self.f.write("action_node: %s, %s\n" %(str(action_node),action_node.label))
+        sequence_node.children.append(action_node) # Add action to subtree
+        new_subtrees.append(sequence_node) # Add subtree to list
+
+        # # Look at each term and build subtree
+        # for term in terms:
+
+        #     self.f.write("term: %s\n" %str(term))
+
+        #     # Each "term" is either an And, Condition, or Decorator+Condition
+        #     # Treat each case slightly differently
+
+        #     # Create root of subtree, which is a sequence node
+        #     sequence_node = Sequence()
             
-            # Get the conditions for this subtree
-            if type(term) == And:
+        #     # Get the conditions for this subtree
+        #     if type(term) == And:
 
-                # "And" found, iterate through the list of conditions
-                # print("==============")
-                # print("subtree [multiple Conditions] (")
+        #         # "And" found, iterate through the list of conditions
+        #         # print("==============")
+        #         # print("subtree [multiple Conditions] (")
                 
-                conditions = term.args
+        #         conditions = term.args
 
-            else:
+        #     else:
 
-                # "Not" or "Condition" found
-                # Wrap it in a list, then proceed with the following loop
-                # print("==============")
-                # print("subtree [single Condition/Not] (")
-                conditions = [term]
+        #         # "Not" or "Condition" found
+        #         # Wrap it in a list, then proceed with the following loop
+        #         # print("==============")
+        #         # print("subtree [single Condition/Not] (")
+        #         conditions = [term]
 
-            # Look at each condition one at a time
-            for condition in conditions:
+        #     # Look at each condition one at a time
+        #     for condition in conditions:
 
-                # Determine if it is positive or negative
-                if type(condition) == Not:
+        #         self.f.write("condition: %s\n" %str(condition))
 
-                    # Not decorator with condition #
-                    #name = str(condition.args[0])
-                    #print("\t NOT", name)
+        #         sequence_node = self.createConditionNode(condition, sequence_node)
 
-                    # Get condition label
-                    condition_label = str(condition.args[0])
+        # # Look at each subtree one at a time
+        # for term in terms:
 
-                    # Make condition node
-                    condition_node = Condition(condition_label)
+        #     self.f.write("term: %s\n" %str(term))
 
-                    # Make decorator node
-                    decorator_node = NotDecorator()
-                    decorator_node.add_child(condition_node)
+        #     # Each "term" is either an And, Condition, or Decorator+Condition
+        #     # Treat each case slightly differently
 
-                    # Add decorator to subtree
-                    sequence_node.children.append(decorator_node)
+        #     # Create root of subtree, which is a sequence node
+        #     sequence_node = Sequence()
+            
+        #     # Get the conditions for this subtree
+        #     if type(term) == And:
 
-                else:
+        #         # "And" found, iterate through the list of conditions
+        #         # print("==============")
+        #         # print("subtree [multiple Conditions] (")
+                
+        #         conditions = term.args
 
-                    # Condition #
+        #     else:
 
-                    # Get condition label
-                    condition_label = str(condition)
-                    condition_node = Condition(condition_label)
-                    #print("\t",condition_label)
+        #         # "Not" or "Condition" found
+        #         # Wrap it in a list, then proceed with the following loop
+        #         # print("==============")
+        #         # print("subtree [single Condition/Not] (")
+        #         conditions = [term]
 
-                    # Add condition to subtree
-                    sequence_node.children.append(condition_node)
+        #     # Look at each condition one at a time
+        #     for condition in conditions:
+
+        #         self.f.write("condition: %s\n" %str(condition))
+
+        #         # Determine if it is positive or negative
+        #         if type(condition) == Not:
+
+        #             # Not decorator with condition #
+        #             #name = str(condition.args[0])
+        #             #print("\t NOT", name)
+
+        #             # Get condition label
+        #             condition_label = str(condition.args[0])
+
+        #             # Make condition node
+        #             condition_node = Condition(condition_label)
+
+        #             # Make decorator node
+        #             decorator_node = NotDecorator()
+        #             decorator_node.add_child(condition_node)
+
+        #             # Add decorator to subtree
+        #             sequence_node.children.append(decorator_node)
+
+        #         else:
+
+        #             # Condition #
+
+        #             # Get condition label
+        #             condition_label = str(condition)
+        #             condition_node = Condition(condition_label)
+        #             #print("\t",condition_label)
+
+        #             # Add condition to subtree
+        #             sequence_node.children.append(condition_node)
 
 
 
@@ -381,32 +582,84 @@ class Simplify:
             # print("\t",action[0].name, action[1])
             # print(")")
 
-            action_node = self.createActionNode(action)
+            # self.f.write("Does Symbol case get here? 2\n")
 
-            # Add action to subtree
-            sequence_node.children.append(action_node)
+            # action_node = self.createActionNode(action)
+            # self.f.write("action_node: %s, %s\n" %(str(action_node),action_node.label))
 
-            new_subtrees.append(sequence_node)
+            # # Add action to subtree
+            # sequence_node.children.append(action_node)
+
+            # new_subtrees.append(sequence_node)
+
+            # self.f.write("=========end buildSubtree==========\n")
 
         #print(len(new_subtrees))
         #print(new_subtrees)
+        self.f.write("+++++out+++++\n")
         return new_subtrees    
 
         # print('++++++++++++++++++++++++++end')
+
+    def createConditionNode(self, condition, node):
+
+        # Determine if it is positive or negative
+        if type(condition) == Not:
+
+            # Not decorator with condition #
+            #name = str(condition.args[0])
+            #print("\t NOT", name)
+
+            # Get condition label
+            condition_label = str(condition.args[0])
+            print('cond label 1 ' + condition_label + "\n")
+
+            # Make condition node
+            condition_node = Condition(condition_label)
+
+            # Make decorator node
+            decorator_node = NotDecorator()
+            decorator_node.add_child(condition_node)
+
+            # Add decorator to subtree
+            node.children.append(decorator_node)
+
+        else:
+
+            # Condition #
+
+            # Get condition label
+            condition_label = str(condition)
+            print('cond label 2 ' + condition_label + "\n")
+            condition_node = Condition(condition_label)
+            #print("\t",condition_label)
+
+            # Add condition to subtree
+            node.children.append(condition_node)
+
+        return node
 
     def createActionNode(self, action):
 
         # Get action label with parameters
         action_name = action[0].name
         params = action[1]
-        action_label = action_name + '('
-        for key in params.keys():
-            variable = key[1:]
-            value = params[key]
-            action_label = action_label + variable + ': ' + value + ', '
-        action_label = action_label[:-2] # remove extra comma and space
-        action_label = action_label + ')'
-        #print('action label', action_label)
+        action_label = None
+        params_included = False
+        if params.keys():
+            action_label = action_name
+            for key in params.keys():
+                variable = key[1:]
+                value = params[key]
+                if variable != 'x' or value !='x':
+                    action_label = action_label + variable + ': ' + value + ', '
+                    params_included = True
+            if action_label and params_included:
+                action_label = action_label[:-2] # remove extra comma and space
+                action_label = '(' + action_label + ')'
+
+        if not action_label: # no params
+            action_label = action_name
 
         # Make action node
         action_node = Action(action_label)
@@ -441,7 +694,41 @@ class Simplify:
         print('\nNumber of subtrees: ', len(bt.root.children))
         print('\n++++++++++++++++++\n')
 
-    def run(self):
+    # def evaluateBTCompactness(self, bt):
+
+    #     print('EVALUATING BT COMPACTNESS')
+
+    #     # Determine complexity of the sentence "reading" the bt results in
+    #     # Count total number of nodes
+    #     # Count conditions and actions
+
+    #     # Populate bt.nodes
+    #     bt.generate_nodes_list()
+
+    #     print('len(bt.nodes)',len(bt.nodes))
+
+    #     total_num_nodes = 0
+    #     num_action_nodes = 0
+    #     num_condition_nodes = 0
+    #     for node in bt.nodes:
+    #         total_num_nodes+=1
+    #         print(node.label)
+    #         if isinstance(node,Action):
+    #             print(node.label, 'is Action')
+    #             num_action_nodes+=1
+    #         elif isinstance(node,Condition):
+    #             print(node.label,'is Condition')
+    #             num_condition_nodes+=1
+
+    #     print("Total number of nodes: %d" %total_num_nodes)
+    #     print("Total number of action nodes: %d" %num_action_nodes)
+    #     print("Total number of condition nodes: %d" %num_condition_nodes)
+
+    #     print('DONE WITH COMPACTNESS EVAL')
+
+
+
+    def run(self, simplification_start_time):
 
         # Create list for subtrees
         subtrees = []
@@ -454,25 +741,46 @@ class Simplify:
         # print('c: ', c)
 
         # dontcares = []
-        dontcares = self.findInitialDontCares()
+        if self.ignore_dontcares:
+            dontcares = self.findInitialDontCares()
+        else:
+            print('we care now 1')
+            dontcares = [] # Not removing dontcares, so don't need to find them
+        #print('init # dontcares', len(dontcares))
+        #input('look up 1')
 
         #print('self.actions', self.actions)
-
+        self.f.write("========run() debug==============\n")
         ##for i in range(len(self.policy)):
-        for i in range(len(self.actions)):
+        #for i in range(len(self.actions)):
+        first_iter = True
+        for action_num in self.action_nums_in_policy:
 
             #print('i ', i)
 
-            action = self.actions[i]
+            #action = self.actions[i]
+            # print('action', action)
+            action = self.actions[action_num]
 
-            #print('action: ', action)
+            self.f.write(str(action[0])+"\n")
 
-            action_num = self.getActionNum(action)
+            # print('action: ', action)
+
+            # action_num = self.getActionNum(action)
+            #print('action_num', action_num)
 
             #print('action num', action_num)
 
-            if i >= 1:
-                dontcares += prev_minterms
+            #if i >= 1:
+            if not first_iter:
+                if self.ignore_dontcares:
+                    dontcares += prev_minterms
+                else:
+                    print('we care now 2')
+                    dontcares = [] # Not removing dontcares, so don't need to add them
+
+            #print('new # dontcares', len(dontcares))
+            #input('look up 2')
 
             #action_num = self.policy[i]
             #print(self.policy)
@@ -480,6 +788,8 @@ class Simplify:
 
             # Get list of numeric states the policy states action a should be taken in
             minterms = self.getActionStates(action_num) # switch to take action num
+            #print('minterms', minterms)
+            self.f.write(str(minterms)+"\n")
 
             prev_minterms = minterms
 
@@ -489,12 +799,17 @@ class Simplify:
             # Get the sum-of-product representation
             sop = SOPform(c, minterms, dontcares)
             # print('sop', sop)
+            #print('sop', sop)
+            self.f.write("sop: "+str(sop)+"\n")
 
             # Simplify it
-            sop_simplify = to_dnf(sop,simplify=True)
+            sop_simplify = to_dnf(sop,simplify=True,force=True)
             #print('sop_simplify', sop_simplify)
             # print('sop_simplify', sop_simplify)
+            #print('sop_simplify',sop_simplify)
+            self.f.write("sop_simplify: "+str(sop_simplify)+"\n")
 
+            #THE PROBLEM IS HERE, I think my BT building method loses disarm for the marine domain for "final" and another for "reorder"
             subtree_list = self.buildSubtree(sop_simplify,action)
             #print('out', subtree_list)
             #print('len',len(subtree_list))
@@ -502,13 +817,23 @@ class Simplify:
             #     subtrees.append(subtree_list[0])
             # else:
             #     subtrees.extend(subtree_list)
+
+            #self.f.write("\n\n++++++++++++++++\n\n")
             for s in subtree_list:
                 subtrees.append(s)
                 print(subtrees)
                 print(len(subtrees))
+                #self.f.write("%s\n" %str(s))
 
+            first_iter = False
+
+        self.simplification_runtime = time.time() - simplification_start_time
+
+        policy_to_bt_start_time = time.time()
         self.bt = self.buildFullTree(subtrees)
+        self.policy_to_bt_runtime = time.time() - policy_to_bt_start_time
         self.printBT(self.bt)
+        #self.bt.evaluateBTCompactness()
         
 
 

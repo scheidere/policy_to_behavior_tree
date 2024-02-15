@@ -15,7 +15,7 @@ class ReturnStatus:
         if status == Status.FAILURE or status == Status.RUNNING or status == Status.SUCCESS:
             self.status = status
         else:
-            print('Invalid return status: ' + status +', defaulting to FAILURE.')
+            print(('Invalid return status: ' + status +', defaulting to FAILURE.'))
             self.status = Status.FAILURE
 
     def __eq__(self, other):
@@ -48,13 +48,13 @@ class Node(object):
         self.children.append(node)
 
     def tick(self, active, traversal_count):
-        print('tick not implemented for node ' + self.label)
+        print(('tick not implemented for node ' + self.label))
     
     def init_ros(self):
         pass
 
     def print_node(self):
-        print(self.label)
+        print((self.label))
 
 #================================================================================================================
 # ---------------------------------------------- Control Flow Nodes ---------------------------------------------
@@ -183,6 +183,7 @@ class Condition(ExecutionNode):
     def __init__(self, label):
         ExecutionNode.__init__(self, label)
         self.current_traversal_count = -1
+        self.is_newly_active = False
 
     def tick(self, active, traversal_count):
         if self.current_traversal_count != traversal_count:
@@ -191,12 +192,42 @@ class Condition(ExecutionNode):
             if self.is_active:
                 return
         
-        if self.is_active == False and active == True and self.status == ReturnStatus.FAILURE:
-            self.set_status(ReturnStatus.FAILURE)#RUNNING)
+        # Condition activity/status before
+        # if self.is_active == False and active == True and self.status == ReturnStatus.FAILURE:
+        #     self.set_status(ReturnStatus.FAILURE)#RUNNING)
+        # if self.get_status_age() > self.max_wait_time:
+        #     self.set_status(ReturnStatus.FAILURE)
+
+        # Condition activity/status now
+        if self.is_active == False and active == True:
+            self.is_newly_active = True
+            if self.status == ReturnStatus.FAILURE:
+                self.set_status(ReturnStatus.FAILURE)
+        else:
+            self.is_newly_active = False
+
         if self.get_status_age() > self.max_wait_time:
             self.set_status(ReturnStatus.FAILURE)
+
+        # ACTION ACTIVITY/STATUS COPY - TO BE DELETED
+        # if self.is_active == False and active == True:# and self.status == ReturnStatus.FAILURE:
+        #     self.set_status(ReturnStatus.RUNNING)
+        #     self.is_newly_active = True
+        # else:
+        #     self.is_newly_active = False
         
         self.is_active = active
+
+    def get_publisher_name(self):
+        pub_name = self.label.lower().replace(' ', '_') + '_active'
+        illegal_list = ['(',')',':','-']
+        for illegal_char in illegal_list:
+            pub_name = pub_name.replace(illegal_char,'')
+        return pub_name
+
+    def init_publisher(self):
+        #self.publisher = rospy.Publisher(self.get_publisher_name(), Bool, queue_size=1)
+        self.publisher = rospy.Publisher(self.get_publisher_name(), Active, queue_size=1)
         
     def get_subscriber_name(self):
         #sub_name = self.label.lower().replace(' ', '_') + '_success'
@@ -214,6 +245,18 @@ class Condition(ExecutionNode):
             self.set_status(ReturnStatus.SUCCESS)
         else:
             self.set_status(ReturnStatus.FAILURE)
+
+    def publish_active_msg(self, active_id): # Added for AURO
+        if self.publisher != None:
+            #active_msg = Bool()
+            #active_msg.data = self.is_active
+            active_msg = Active()
+            active_msg.active = self.is_active
+            active_msg.id = active_id
+            self.current_id = active_id
+            self.publisher.publish(active_msg)
+        else:
+            rospy.logerr('')
 
 class Action(ExecutionNode):
     def __init__(self, label):
@@ -266,11 +309,11 @@ class Action(ExecutionNode):
     def callback(self, msg):
         if self.is_active:
             if msg.id != self.current_id:
-                print(self.label + ' Incorrect ID', msg.id, self.current_id, self.is_active)
+                print((self.label + ' Incorrect ID', msg.id, self.current_id, self.is_active))
                 return
             self.set_status(ReturnStatus(msg.status))
             if msg.status != self.status.status:
-                print('Invalid return status "' + msg.status + '" for node ' + self.label)
+                print(('Invalid return status "' + msg.status + '" for node ' + self.label))
 
     def publish_active_msg(self, active_id):
         if self.publisher != None:
@@ -333,6 +376,7 @@ class BehaviorTree:
         self.nodes = []
         self.node_text = []
         self.active_ids = {}
+        self.active_condition_ids = {}
         self.traversal_count = 0
 
         #self.flag = 1
@@ -346,6 +390,27 @@ class BehaviorTree:
         Node.max_wait_time = rospy.get_param('~timeout', 1.0)
 
         self.active_actions_pub = rospy.Publisher('active_actions', String, queue_size=1)
+        self.active_conditions_pub = rospy.Publisher('active_conditions', String, queue_size=1) # Added for AURO results; BT compactness eval
+        self.defineActionNodes()
+        self.defineConditionNodes()
+
+    # def at_node_activity_equilibrium(self, bt_at_previous_tick):
+    #     '''
+    #      - Returns Bool denoting whether or not there has been a change in any node's status or activity
+    #      between current and previous tick
+    #     '''
+    #     print('================== CHECKING IF AT EQUIL ===================')
+    #     at_equil = True
+    #     for n1 in bt_at_previous_tick.nodes:
+    #         for n2 in self.nodes:
+    #             if n1.status != n2.status:
+    #                 print(n1.status.__str__() + n2.status.__str__() + "not same")
+    #                 return False
+    #             else:
+    #                 print(n1.status.__str__() + n2.status.__str__() + "same")
+
+    #     print('================== AT EQUIL ===================')
+    #     return False
 
     def generate_nodes_list(self):
         # This function fills in self.nodes
@@ -367,7 +432,7 @@ class BehaviorTree:
         while len(nodes_stack) != 0:
             current_node = nodes_stack.pop()
             self.nodes.append(current_node)
-            for child_idx in reversed(range(len(current_node.children))):
+            for child_idx in reversed(list(range(len(current_node.children)))):
                 nodes_stack.append(current_node.children[child_idx]) #push
 
 
@@ -404,7 +469,7 @@ class BehaviorTree:
                         filename = filename[0:start] + rospack.get_path(package_name) + filename[end+1:]
                         subtree_lines = open(filename).read().split('\n')
                         add_tabs = tabs*'\t'
-                        subtree_lines = map(lambda x:add_tabs+x, subtree_lines)
+                        subtree_lines = [add_tabs+x for x in subtree_lines]
                         del lines[i]
                         lines = lines[:i] + subtree_lines + lines[i:]
         
@@ -421,13 +486,14 @@ class BehaviorTree:
             elif label[0] == '?':
                 node = Fallback()   
             elif label[0] == '|':
-                arguments = map(lambda x:x.strip(), label[3:].split(','))
+                arguments = [x.strip() for x in label[3:].split(',')]
                 node = Parallel(int(arguments[0]))
                 self.num_child = int(arguments[0])
             elif label[0] == '(':
                 node_label = label.replace('(', '').replace(')', '')
                 node = Condition(node_label)
                 self.node_text = node_label
+                self.active_condition_ids[node_label] = 0 # Added for AURO
             elif label[0] == '[':
                 node_label = label.replace('[', '').replace(']', '')
                 node = Action(node_label)
@@ -501,7 +567,7 @@ class BehaviorTree:
         f = open(output_filename,"w")
         print(output_filename)
         import os
-        print(os.path.abspath(os.getcwd()))
+        #print(os.path.abspath(os.getcwd()))
         # Setup a stack data structure (similar to nodes_worklist)
         # Do this for both keeping track of nodes and for number of tabs
         nodes_stack = []
@@ -526,7 +592,7 @@ class BehaviorTree:
             f.write( indent + label + '\n' )
 
             # Add all children to the stack
-            for child_idx in reversed(range(len(current_node.children))):
+            for child_idx in reversed(list(range(len(current_node.children)))):
                 nodes_stack.append(current_node.children[child_idx]) #push
                 tabs_stack.append(tabs + 1) #push
 
@@ -581,12 +647,14 @@ class BehaviorTree:
             self.traversal_count += 1
             active_actions = String()
             active_actions.data = ''
+            active_conditions = String() # AURO
+            active_conditions.data = '' # AURO
 
             # Make sure that if there are more than one of the same action, if any are active, then active should be published
             unique_action_nodes = {}
             for node in self.nodes:
                 if isinstance(node, Action):
-                    if node.label not in unique_action_nodes.keys() or node.is_active:
+                    if node.label not in list(unique_action_nodes.keys()) or node.is_active:
                         #if node.is_active:
                         unique_action_nodes[node.label] = node
                         if node.is_newly_active:
@@ -594,7 +662,7 @@ class BehaviorTree:
                     #else:
                     #    unique_action_nodes[node.label] = node
                         
-            for label, node in unique_action_nodes.iteritems():
+            for label, node in unique_action_nodes.items():
                 #active_msg = Bool()
                 #active_msg.data = node.is_active
                 #node.publisher.publish(active_msg)
@@ -602,13 +670,201 @@ class BehaviorTree:
 
                 if node.is_active:
                     active_actions.data += label + ', '
+
+
+
             active_actions.data = active_actions.data[:-2] # strip the final comma and space
             self.active_actions_pub.publish(active_actions)
+
+            # For AURO results, track active conditions as well
+            unique_condition_nodes = {}
+            for node in self.nodes:
+                if isinstance(node, Condition):
+                    if node.label not in list(unique_condition_nodes.keys()) or node.is_active:
+                        #if node.is_active:
+                        unique_condition_nodes[node.label] = node
+                        if node.is_newly_active:
+                            self.active_condition_ids[node.label] += 1
+                    #else:
+                    #    unique_action_nodes[node.label] = node
+                        
+            for label, node in unique_condition_nodes.items():
+                #active_msg = Bool()
+                #active_msg.data = node.is_active
+                #node.publisher.publish(active_msg)
+                node.publish_active_msg(self.active_condition_ids[node.label])
+
+                if node.is_active:
+                    active_conditions.data += label + ', '
+
+            active_conditions.data = active_conditions.data[:-2] # strip the final comma and space
+            self.active_conditions_pub.publish(active_conditions)
+
+    def at_node_activity_equilibrium(self, bt_at_previous_tick):
+        '''
+         - Returns Bool denoting whether or not there has been a change in any node's status or activity
+         between current and previous tick
+        '''
+        print('================== CHECKING IF AT EQUIL ===================')
+        at_equil = True
+        for n1 in bt_at_previous_tick.nodes:
+            for n2 in self.bt.nodes:
+                if n1.status != n2.status:
+                    print(n1.status.__str__() + n2.status.__str__() + "not same")
+                    return False
+                else:
+                    print(n1.status.__str__() + n2.status.__str__() + "same")
+
+        print('================== AT EQUIL ===================')
+        return False
 
     def print_BT(self):
         for node in self.nodes:
             node.print_node()
-            
+    
+    def evaluate_bt_compactness(self):
+
+        print('EVALUATING BT COMPACTNESS - Total node count (does not consider node activity)')
+
+        # Determine complexity of the sentence "reading" the bt results in
+        # Count total number of nodes
+        # Count conditions and actions
+
+        # Populate bt.nodes
+        self.generate_nodes_list()
+
+        print(('len(self.nodes) where self is BT',len(self.nodes)))
+
+        total_num_nodes = 0
+        num_action_nodes = 0
+        num_condition_nodes = 0
+        for node in self.nodes:
+            total_num_nodes+=1
+            print((node.label))
+            if isinstance(node,Action):
+                print((node.label, 'is Action'))
+                num_action_nodes+=1
+            elif isinstance(node,Condition):
+                print((node.label,'is Condition'))
+                num_condition_nodes+=1
+
+        print(("Total number of nodes: %d" %total_num_nodes))
+        print(("Total number of action nodes: %d" %num_action_nodes))
+        print(("Total number of condition nodes: %d" %num_condition_nodes))
+
+        print('DONE WITH COMPACTNESS EVAL - Total node count (does not consider node activity)')
+
+    def defineActionNodes(self):
+
+        self.action_nodes = dict()
+
+        if not self.nodes:
+            print("defineActionNodes: bt empty!")
+        else:
+            for n in self.nodes:
+                if n.__class__ == Action:
+                    if n.label not in self.action_nodes:
+
+                        # Create empty list
+                        self.action_nodes[n.label] = []
+
+                    # Add it to the dictionary
+                    self.action_nodes[n.label].append(n)
+
+
+    def defineConditionNodes(self):
+
+        self.condition_nodes = dict()
+
+        if not self.nodes:
+            print("defineConditionNodes: bt empty!")
+        else:
+            for n in self.nodes:
+                if n.__class__ == Condition:
+                    #print(n.label,"n.label")
+                    if n.label not in self.condition_nodes:
+
+                        # Create empty list
+                        self.condition_nodes[n.label] = []
+
+                    # Add it to the dictionary
+                    self.condition_nodes[n.label].append(n)
+
+
+    def getActiveActions(self):
+        # returns list of all actions that are active currently as a list of strings (i.e. names)
+        # Pulled from bt_interface in MCDAGS work
+
+        active_actions = []
+        
+        for n in list(self.action_nodes.values()):
+            is_active = False
+            for node in n:
+                if node.is_active:
+                    is_active = True
+            if is_active:
+                active_actions.append(n[0].label)
+
+        return active_actions
+
+    def getActiveConditions(self):
+        # returns list of all actions that are active currently as a list of strings (i.e. names)
+        # Pulled from bt_interface in MCDAGS work
+
+        active_conditions = []
+        
+        for n in list(self.condition_nodes.values()):
+            is_active = False
+            for node in n:
+                if node.is_active:
+                    is_active = True
+            if is_active:
+                active_conditions.append(n[0].label)
+
+        return active_conditions
+
+    def changeConditionStatus(self): 
+
+        # likely need to fix label generation (remove (x: x) stuff)
+
+        # I think this method of setting an action to false manually will not work
+        # rqt doesnt work currently, but I dont think it would help if it did
+        # because setting an action to active in the GUI doesnt make the correct conditions change their status
+        # it is all manual
+
+        # So it seems we would have to loop through or do something differently
+        # I would assume the answer lies in the tick function somewhere since that's traversal
+
+        # for a in self.action_nodes:
+        #     print(a)
+
+        # print(self.active_ids)
+        # for n in self.nodes:
+        #     if n.label == action_label:
+        #         n.is_active = True
+        #     print(n.label, n.is_active)
+
+
+        # Condtion stuff below
+
+        print(self.condition_nodes)
+        for key in self.condition_nodes:
+            print(key, " - ", self.condition_nodes[key], "\n")
+            condition_node = self.condition_nodes[key]
+        #first_condition = self.condition_nodes[0]
+        #print('first condition', first_condition.label , first_condition)
+
+    def countActiveConditions(self):
+        
+        '''
+        Count average number of active conditions per action
+        '''
+
+        # Check which actions are active
+        active_actions = self.getActiveActions()
+        print(('The active actions are: ', active_actions))
+
+
 if __name__ == '__main__':
     pass
     #BehaviorTree(sys.argv[1])

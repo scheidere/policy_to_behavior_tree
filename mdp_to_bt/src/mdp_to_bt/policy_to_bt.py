@@ -23,7 +23,7 @@ class PolicyToBT:
         # Add subtree for each action in policy
         self.behavior_tree.root = self.convert_policy_to_subtrees(self.behavior_tree.root)
 
-        self.printBT(self.behavior_tree)
+        #self.printBT(self.behavior_tree)
 
     def printBT(self, bt):
         print('++++++++++++++++++\n')
@@ -35,11 +35,13 @@ class PolicyToBT:
 
     def convert_policy_to_subtrees(self, root):
 
+        print("+++++++++++++++++++++++++++++++++++++++++++\n\n")
+
         # Add a subtree for each action
         for i in range(len(self.states)):
 
             state = self.states[i]
-            
+                        
             # Add subtree sequence root
             sequence = Sequence()
             root.children.append(sequence)
@@ -55,22 +57,48 @@ class PolicyToBT:
                     decorator = NotDecorator()
                     decorator.add_child(condition)
                     root.children[-1].children.append(decorator)
+
+
+                #print(condition_label)
             
             # Add action associated with each state
             action_num = self.policy[i]
             action_with_params_term = self.actions[action_num]
+
             action_name = action_with_params_term[0].name
+            #print("action_with_params_term name "+ str(action_name) + "\n")
             params = action_with_params_term[1] # dictionary
             #print('params ', params.keys)
-            action_label = action_name + '('
-            for key in params.keys():
-                variable = key[1:]
-                value = params[key]
-                action_label = action_label + variable + ': ' + value + ', '
-            action_label = action_label[:-2] # remove extra comma and space
-            action_label = action_label + ')'
+            action_label = None
+            params_included = False
+            if params.keys():
+                #print("hiiiii")
+                action_label = action_name
+                for key in params.keys():
+                    variable = key[1:]
+                    #print('var '+ str(variable)+"\n")
+                    value = params[key]
+                    #print('val '+ str(value)+"\n")
+                    if variable != 'x' or value !='x':
+                        action_label = action_label + variable + ': ' + value + ', '
+                        params_included = True
+                if action_label and params_included:
+                    action_label = action_label[:-2] # remove extra comma and space
+                    print('um '+action_label+"\n")
+                    action_label = '(' + action_label + ')'
+
+            if not action_label: # no params
+                action_label = action_name
+
             action = Action(action_label)
             root.children[-1].children.append(action)
+
+            print(action_label)
+
+
+        print("=============================================\n\n")
+
+
 
         return root
 
