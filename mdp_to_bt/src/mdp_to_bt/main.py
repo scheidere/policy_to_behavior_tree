@@ -34,6 +34,8 @@ def main(domain, problem, config):
 
     # f = open("/home/scheidee/Desktop/AURO_results/raw_policy.txt", "w+")
 
+    start_time = time.time()
+
     test = False
     save_raw_policy_bt = True
 
@@ -78,7 +80,7 @@ def main(domain, problem, config):
     # Solve for a policy (and also return updated action list, only including those actions that actually appear in the policy)
     policy = matrices_to_policy.solve(solver,P,R)
     solver_runtime = time.time() - start_time_solver
-    f = open("/home/scheidee/Desktop/AURO_results/bla.txt", "w+")
+    f = open("/home/scheidee/Desktop/AURO_results/bla_jan22.txt", "w+")
     f.write(str(policy)+"\n")
 
     # Uncomment line below to (re)generate readable policy to a file (see saveReadablePolicy in ppddl_to_matrices.py for file location)
@@ -121,10 +123,10 @@ def main(domain, problem, config):
     print('Saving behavior trees to files...\n')
     if save_raw_policy_bt:
         #raw_policy_bt.write_config('/home/parallels/auro_ws/src/policy_to_behavior_tree/behavior_tree/config/AURO_final_synthesized_BTs/raw_policy_bt.tree')
-        raw_policy_bt.write_config('/home/scheidee/auro_ws/src/policy_to_behavior_tree/behavior_tree/config/AURO_final_synthesized_BTs/raw_policy_bt_hi.tree')
+        raw_policy_bt.write_config('/home/scheidee/auro_ws/src/policy_to_behavior_tree/behavior_tree/config/AURO_final_synthesized_BTs/raw_policy_bt_jan22.tree')
     if do_simplification:
         #simplified_policy_bt.write_config('/home/parallels/auro_ws/src/policy_to_behavior_tree/behavior_tree/config/AURO_final_synthesized_BTs/final_synth_bt.tree')
-        simplified_policy_bt.write_config('/home/scheidee/auro_ws/src/policy_to_behavior_tree/behavior_tree/config/AURO_final_synthesized_BTs/final_synth_bt_hi.tree')
+        simplified_policy_bt.write_config('/home/scheidee/auro_ws/src/policy_to_behavior_tree/behavior_tree/config/AURO_final_synthesized_BTs/final_synth_bt_jan22.tree')
     else:
         print('SKIPPING SAVE OF SIMPLIFIED POLICY WHILE GENERATING RESULTS')
         raw_policy_bt.evaluate_bt_compactness()
@@ -157,6 +159,9 @@ def main(domain, problem, config):
     if 'deterministic' not in domain_name and mdp_problem:
         pickle.dump(mdp_problem, open( path + "mdp_problem.p", "wb" ) )
 
+    end_time = time.time() - start_time
+    print('total runtime in seconds: %s' %end_time)
+
     return mdp_problem, policy, ppddl_to_matrices_runtime, solver_runtime, simplification_runtime, policy_to_bt_runtime, test_runtime # TO BE REMOVED
 
 
@@ -174,7 +179,7 @@ def run():
 
     # Create output file
     #f = open("/home/parallels/Desktop/AURO_results/bla.txt", "w+")
-    f = open("/home/scheidee/Desktop/AURO_results/bla.txt", "w+")
+    f = open("/home/scheidee/Desktop/AURO_results/bla_feb14.txt", "w+")
 
     # Get the domain and problem
     domain_path = rospy.get_param('~domain')

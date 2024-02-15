@@ -241,12 +241,13 @@ class EvaluateBTCompactness():
             start = time.time()
 
             # Create output file
-            f = open("/home/scheidee/Desktop/AURO_results/activity_results.txt", "w+")
+            f = open("/home/scheidee/Desktop/AURO_results/activity_results_jan22.txt", "w+")
             f.write("Config: %s\n" %self.config_filename)
             f.write("Domain: %s\n" %self.domain_path)
             f.write("Problem: %s\n" %self.problem_path)
             f.write("Total number of condition nodes in tree: %d \n" %(self.count_condition_node_instances()))
             f.write("Total number of action nodes in tree: %d \n" %(self.count_action_node_instances()))
+            f.write("Total number of nodes in tree: %d \n" % (len(self.bt.nodes)))
 
             self.init_bt()
 
@@ -496,7 +497,7 @@ if __name__ == "__main__":
 
     rospy.init_node("eval_bt_compactness")
 
-    # This ros param "tree" should be one of the names below, e.g., marine_simplified_bt or infant_raw_bt
+    # This ros param "tree" should be one of the paths below, e.g., infant/final_synth_bt.tree or marine/raw_policy_bt.tree
     tree = rospy.get_param('~tree')
     print('Evaluating compactness of %s\n' %tree)
 
@@ -508,17 +509,17 @@ if __name__ == "__main__":
     compressed_pub = rospy.Publisher('behavior_tree_graphviz_compressed', String, queue_size=1)
 
     # path_to_bts = "/home/parallels/auro_ws/src/policy_to_behavior_tree/behavior_tree/config/AURO_final_synthesized_BTs"
-    path_to_bts = "/home/scheidee/auro_ws/src/policy_to_behavior_tree/behavior_tree/config/AURO_final_synthesized_BTs"
+    path_to_bts = "/home/scheidee/auro_ws/src/policy_to_behavior_tree/behavior_tree/config/AURO_final_synthesized_BTs/"
 
-    marine_simplified_bt = "/marine/final_synth_bt.tree" # NEED TO REGEN post bug fix
-    marine_raw_bt = "/marine/raw_policy_bt.tree" # NEED TO REGEN post bug fix
-    marine_simplified_reorder_bt = "/marine/final_synth_bt_reorder.tree" # random action order reordered for simplification # NEED TO REGEN post bug fix
-    marine_simplified_cares_bt = "/marine/final_synth_bt_cares.tree" # not removing dontcares # NEED TO REGEN post bug fix
-    marine_simplified_deterministic_bt = "/marine/final_synth_bt_deterministic.tree" # final method, but deterministic version of specification
-    marine_raw_deterministic_bt = "/marine/raw_policy_bt_deterministic.tree"
+    marine_simplified_bt = "marine/final_synth_bt.tree" # NEED TO REGEN post bug fix
+    marine_raw_bt = "marine/raw_policy_bt.tree" # NEED TO REGEN post bug fix
+    marine_simplified_reorder_bt = "marine/final_synth_bt_reorder.tree" # random action order reordered for simplification # NEED TO REGEN post bug fix
+    marine_simplified_cares_bt = "marine/final_synth_bt_cares.tree" # not removing dontcares # NEED TO REGEN post bug fix
+    marine_simplified_deterministic_bt = "marine/final_synth_bt_deterministic.tree" # final method, but deterministic version of specification
+    marine_raw_deterministic_bt = "marine/raw_policy_bt_deterministic.tree"
 
-    infant_simplified_bt = "/infant/final_synth_bt.tree"
-    infant_raw_bt = "/infant/raw_policy_bt.tree"
+    infant_simplified_bt = "infant/final_synth_bt.tree"
+    infant_raw_bt = "infant/raw_policy_bt.tree"
     # todo
 
     #tree = marine_simplified_bt

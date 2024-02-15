@@ -33,16 +33,17 @@ def tick_bt(bt):
 if __name__ == '__main__':
 
     # Get behavior tree we want to show from command line argument
-    print(sys.argv[0]) # file name
-    print(sys.argv[1]) # argument
+    #print(sys.argv[0]) # file name
+    #print(sys.argv[1]) # argument
 
-    bt_tree_file = sys.argv[1]
+    #bt_tree_file = sys.argv[2]
+    #print("haayyy " + bt_tree_file)
 
 	# Initialise the node
     rospy.init_node('show_tree')
     # Get the config file etc
     rospack = rospkg.RosPack()
-    filepath = rospack.get_path('behavior_tree') + "/config/" #+ rospy.get_param('~config')
+    filepath = rospack.get_path('behavior_tree') + "/config/" + rospy.get_param('~config')
 
     graphviz_pub = rospy.Publisher('behavior_tree_graphviz', String, queue_size=1)
     compressed_pub = rospy.Publisher('behavior_tree_graphviz_compressed', String, queue_size=1)
@@ -53,7 +54,9 @@ if __name__ == '__main__':
 	    #bt = BehaviorTree(filepath+ 'raw_output_bt.tree')
         #bt = BehaviorTree(filepath+ 'test_final_output_bt.tree')
         #bt = BehaviorTree(filepath+ 'human_final_bt.tree')
-        bt = BehaviorTree(filepath+bt_tree_file)
+        #print("yo "+filepath+bt_tree_file)
+        #bt = BehaviorTree(filepath+bt_tree_file)
+        bt = BehaviorTree(filepath)
 
         includes = [True, True, True, True, True, True, True, True, True, True,\
             True, True, True, True, True,True, True, True, True, True,\

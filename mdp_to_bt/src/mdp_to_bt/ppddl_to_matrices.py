@@ -1066,16 +1066,16 @@ def getPandR(domain,problem):
         # Get valid action/param combos
         actions = getActionsWithParamsList(domain,problem) # old var name: actions_with_params
         print('actions: ', actions)
-        input('yo1')
+        #input('yo1')
         print('actions: ')
         for action in actions:
             print(action[0]._name, action[1])
-        input('yo2')
+        #input('yo2')
 
         for a in actions:
             print(a)
 
-        input("YOU ARE HERE")
+        #input("YOU ARE HERE")
 
     else:
         #print('Problem is None')
@@ -1203,7 +1203,7 @@ def getPandR(domain,problem):
     # for action in domain.operators:
     #     actions.append(action.name)
 
-    input("YOU ARE HERE NOW")
+    #input("YOU ARE HERE NOW")
 
 
     return P, R, states, actions

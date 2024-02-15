@@ -87,7 +87,7 @@ class Fallback(ControlFlowNode):
         self.is_active = active
 
 class Sequence(ControlFlowNode):
-    label = '\u2192' # arrow
+    label = u'\u2192' # arrow
     
     def __init__(self):
         ControlFlowNode.__init__(self)

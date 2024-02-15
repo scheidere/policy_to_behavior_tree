@@ -1,0 +1,16 @@
+(define (problem marine-problem)
+	
+	(:domain marine-domain)
+	
+	(:objects X - None )
+
+	(:init (has-object X)
+		(found-object X)
+		(found-mine X)
+		(found-target-to-report X)
+		(at-drop-off X)
+		(in-comms-range X))
+
+	(:goal  )
+
+)
