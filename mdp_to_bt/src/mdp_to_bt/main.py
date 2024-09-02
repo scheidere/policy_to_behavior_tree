@@ -6,6 +6,7 @@ import matrices_to_policy
 from policy_to_bt import *
 from simplify import * # NEW WAY
 from evaluate_mdp_policy import *
+from evaluate_simplified_bt import *
 
 import mdptoolbox
 import numpy as np
@@ -32,8 +33,6 @@ import pickle
 
 def main(domain, problem, config):
 
-    # f = open("/home/scheidee/Desktop/AURO_results/raw_policy.txt", "w+")
-
     start_time = time.time()
 
     test = False
@@ -49,6 +48,8 @@ def main(domain, problem, config):
     start_time_ppddl_to_matrices = time.time()
     # Convert to MDP, i.e. generate transition probability matrix P and reward matrix R
     P, R, states, actions_with_params = getPandR(domain,problem)
+    with open('/home/emily/Desktop/more_AURO_results/getPandR_outputs.p', 'wb') as f:
+        pickle.dump((P, R, states, actions_with_params), f)
     ppddl_to_matrices_runtime = time.time() - start_time_ppddl_to_matrices
 
     if test:
@@ -80,7 +81,7 @@ def main(domain, problem, config):
     # Solve for a policy (and also return updated action list, only including those actions that actually appear in the policy)
     policy = matrices_to_policy.solve(solver,P,R)
     solver_runtime = time.time() - start_time_solver
-    f = open("/home/scheidee/Desktop/AURO_results/bla_jan22.txt", "w+")
+    f = open("/home/emily/Desktop/more_AURO_results/test.txt", "w+")
     f.write(str(policy)+"\n")
 
     # Uncomment line below to (re)generate readable policy to a file (see saveReadablePolicy in ppddl_to_matrices.py for file location)
@@ -122,17 +123,17 @@ def main(domain, problem, config):
     # Save the behavior trees in .tree files in behavior_tree/config
     print('Saving behavior trees to files...\n')
     if save_raw_policy_bt:
-        #raw_policy_bt.write_config('/home/parallels/auro_ws/src/policy_to_behavior_tree/behavior_tree/config/AURO_final_synthesized_BTs/raw_policy_bt.tree')
-        raw_policy_bt.write_config('/home/scheidee/auro_ws/src/policy_to_behavior_tree/behavior_tree/config/AURO_final_synthesized_BTs/raw_policy_bt_jan22.tree')
+        raw_policy_bt.write_config('/home/emily/auro_ws/src/policy_to_behavior_tree/behavior_tree/config/AURO_final_synthesized_BTs/raw_policy_bt_aug12.tree')
+        raw_policy_bt.write_config('/home/emily/Desktop/more_AURO_results/raw_policy_bt.tree')
     if do_simplification:
-        #simplified_policy_bt.write_config('/home/parallels/auro_ws/src/policy_to_behavior_tree/behavior_tree/config/AURO_final_synthesized_BTs/final_synth_bt.tree')
-        simplified_policy_bt.write_config('/home/scheidee/auro_ws/src/policy_to_behavior_tree/behavior_tree/config/AURO_final_synthesized_BTs/final_synth_bt_jan22.tree')
+        simplified_policy_bt.write_config('/home/emily/auro_ws/src/policy_to_behavior_tree/behavior_tree/config/AURO_final_synthesized_BTs/final_synth_bt_aug12.tree')
+        simplified_policy_bt.write_config('/home/emily/Desktop/more_AURO_results/final_synth_bt.tree')
     else:
         print('SKIPPING SAVE OF SIMPLIFIED POLICY WHILE GENERATING RESULTS')
         raw_policy_bt.evaluate_bt_compactness()
         #input('hi')
 
-    evaluate_for_reward = False
+    evaluate_for_reward = True
 
     mdp_problem = None
     if evaluate_for_reward:
@@ -140,8 +141,13 @@ def main(domain, problem, config):
         mdp_problem = MDP_Problem(P, R, states, actions_with_params)
         # if domain == prob_domain:
         #     prob_mdp_problem = mdp_problem # to use in fairly evaluating policies
-        reward = evaluate_mdp_policy(mdp_problem, policy)
-        print(("\nReward: %f\n" % reward))
+        reward_from_policy = evaluate_mdp_policy(mdp_problem, policy)
+        print(("\nReward from policy: %f\n" % reward_from_policy))
+
+        # # Get reward from bt to confirm it is same
+        # evalBT = EvaluateBT(simplified_policy_bt)
+        # reward_from_bt = evalBT.evaluate_simplified_bt(mdp_problem) #,simplified_policy_bt)
+        # print(("\nReward from simplified BT: %f\n" % reward_from_bt))
 
     pickle_start = time.time()
     # Desktop
@@ -149,7 +155,8 @@ def main(domain, problem, config):
     # Laptop (Mac OS)
     #path = "/home/scheidee/bt_synthesis_ws/src/policy_to_behavior_tree/mdp_to_bt/src/mdp_to_bt/policy_eval_output/"
     #path = "/home/parallels/auro_ws/src/policy_to_behavior_tree/mdp_to_bt/src/mdp_to_bt/policy_eval_output/"
-    path = "/home/scheidee/auro_ws/src/policy_to_behavior_tree/mdp_to_bt/src/mdp_to_bt/policy_eval_output/"
+    #path = "/home/scheidee/auro_ws/src/policy_to_behavior_tree/mdp_to_bt/src/mdp_to_bt/policy_eval_output/"
+    path = "/home/emily/auro_ws/src/policy_to_behavior_tree/mdp_to_bt/src/mdp_to_bt/policy_eval_output/"
     pickle.dump(policy, open( path + "policy.p", "wb" ) )
     pickle_runtime = time.time() - pickle_start
     print(('pickle runtime: ', pickle_runtime))
@@ -161,31 +168,78 @@ def main(domain, problem, config):
 
     end_time = time.time() - start_time
     print('total runtime in seconds: %s' %end_time)
-
+    f_info = open("/home/emily/Desktop/more_AURO_results/info.txt", "a+")
+    f_info.write('Total runtime in seconds:\n')
+    f_info.write(str(end_time))
+    f_info.close()
     return mdp_problem, policy, ppddl_to_matrices_runtime, solver_runtime, simplification_runtime, policy_to_bt_runtime, test_runtime # TO BE REMOVED
 
+def set_config_param():
+
+    # This is for running the file with roscore and "python3 main.py <domain> <instance>" where instance is the problem
+    # These parameters get set explicitly on the command line when we roslaunch
+    # NOTE: roslaunch is the preferred method 
+
+    if not rospy.has_param('~config'):
+        rospy.set_param('~config', 'final_parameters.yaml')
+        print("Parameter '~config' set.")
+    else:
+        print("Parameter '~config' is already set.")
+
+def get_domain():
+
+    if not rospy.has_param('~domain'):
+        args = parse()
+        domain_path = args.domain
+        print("Parameter '~domain' set.")
+    else:
+        domain_path = rospy.get_param('~domain')
+        print("Parameter '~domain' is already set.")
+
+    return domain_path
+
+def get_problem():
+
+    if not rospy.has_param('~problem'):
+        args = parse()
+        problem_path = args.problem
+        print("Parameter '~problem' set.")
+    else:
+        problem_path = rospy.get_param('~problem')
+        print("Parameter '~problem' is already set.")
+
+    return problem_path
 
 def run():
 
     rospy.init_node('mdp_to_bt')
+    set_config_param()
     config_filename = rospy.get_param('~config')
     print('config_filename', config_filename)
     garbage_string = "_parameters.yaml"
     if garbage_string in config_filename:
         current_method = config_filename.replace(garbage_string, '')
 
+    f_info = open("/home/emily/Desktop/more_AURO_results/info.txt", "w+")
+    f_info.write(config_filename+"\n")
+    f_info.close()
+
     now = datetime.datetime.now()
     start_time_milli = int(time.time()*1000) #milliseconds
 
     # Create output file
-    #f = open("/home/parallels/Desktop/AURO_results/bla.txt", "w+")
-    f = open("/home/scheidee/Desktop/AURO_results/bla_feb14.txt", "w+")
+    f = open("/home/emily/Desktop/more_AURO_results/domain_and_problem.txt", "w+")
 
     # Get the domain and problem
-    domain_path = rospy.get_param('~domain')
-    problem_path = rospy.get_param('~problem')
+    domain_path = get_domain()
+    problem_path = get_problem()
+    # domain_path = rospy.get_param('~domain')
+    # problem_path = rospy.get_param('~problem')
     domain  = PDDLParser.parse(domain_path)
     problem = PDDLParser.parse(problem_path)
+
+    f.write(domain_path+ "\n")
+    f.write(problem_path)
 
     # Get config file
     rospack = rospkg.RosPack()
@@ -200,39 +254,8 @@ if __name__ == '__main__':
 
     run()
 
-    # rospy.init_node('mdp_to_bt')
-    # config_filename = rospy.get_param('~config')
-    # print('config_filename', config_filename)
-    # garbage_string = "_parameters.yaml"
-    # if garbage_string in config_filename:
-    #     current_method = config_filename.replace(garbage_string, '')
-
-    # start_time = time.time()
-
-    # # This method can (in theory) be run with or without ros
-    # # The non-ros version is deprecated
-    # # The most updated version is setup to run with "roslaunch main.launch config:=final"
-    # # You must change the variable below, depending on which method you would like to use
-    # use_ros = True 
-
-    # # Define domain and problem to consider (they represent an MDP)
-    # #print('\nFor the following domain and problem: \n\n')
-    # if use_ros:
-    #     domain_path = rospy.get_param('~domain')
-    #     problem_path = rospy.get_param('~problem')
-
-    # else:
-    #     ## If running with 'python3 main.py <DOMAIN> <INSTANCE>'
-    #     ## Domain refers to domain path, instance refers to problem path
-    #     # This is deprecated, do not use
-    #     print('i am here')
-    #     args = parse()
-    #     domain_path = args.domain
-    #     problem_path = args.problem
-
-    # domain  = PDDLParser.parse(domain_path)
-    # problem = PDDLParser.parse(problem_path)
-
-    # print(('Solving ', domain.name, '...'))
-
-    # mdp_problem, policy, ppddl_to_matrices_runtime, solver_runtime, simplification_runtime, policy_to_bt_runtime, test_runtime = main(domain, problem)
+    '''
+    Run with "roslaunch mdp_to_bt main.launch config:=final domain:=path_to_domain problem:=path_to_problem"
+    DO NOT run with "python3 main.py <DOMAIN> <INSTANCE>"; this is only for plotting at this point,
+    e.g., see box_whisker_probability.py
+    '''

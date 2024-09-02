@@ -1,13 +1,15 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 #import graphviz
 import cv2
 import sys
 import behavior_tree as bt
 import os
 
+from importlib import reload #python3
+
 import sys
 reload(sys)  
-sys.setdefaultencoding('utf8')
+#sys.setdefaultencoding('utf8')
 
 
 def get_graphviz(tree):

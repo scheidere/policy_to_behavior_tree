@@ -133,7 +133,8 @@ class Simplify:
                 #actions_with_params.append([action.name,combo_dict])
                 conditions_with_params.append([condition_predicate.name,combo_dict])
 
-        #print(actions_with_params)
+        print(conditions_with_params)
+        input("1")
         return conditions_with_params
 
 

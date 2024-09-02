@@ -186,13 +186,13 @@ def p_domain(p):
     if debug:
         print('p_domain')
     if len(p) == 10:
-        print('hello 10')
+        #print('hello 10')
         p[0] = Domain(p[3], p[4], p[5], p[6], p[8],constraints=p[7])
     elif len(p) == 9:
-        print('hello 9')
+        #print('hello 9')
         p[0] = Domain(p[3], p[4], p[5], p[6], p[7])
     elif len(p) == 11:
-        print(('hello 11', p[6]))
+        #print(('hello 11', p[6]))
         p[0] = Domain(p[3], p[4], p[5], p[6], p[9],constraints=p[8],constants=p[7])
 
 
