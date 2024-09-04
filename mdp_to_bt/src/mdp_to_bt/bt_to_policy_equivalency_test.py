@@ -12,7 +12,6 @@ from statistics import mean
 from pypddl_parser.pddlparser import PDDLParser
 from bt_interface import *
 
-
 import time
 
 class CompareBTPolicy():
@@ -34,6 +33,7 @@ class CompareBTPolicy():
         try:
             f = open("/home/emily/Desktop/more_AURO_results/policy_from_btTESTING.txt", "w+")
             fa = open("/home/emily/Desktop/more_AURO_results/policy_actions_from_btTESTING.txt", "w+")
+            fb = open("/home/emily/Desktop/more_AURO_results/running_active_actionsTEST.txt", "w+")
             print('In bt_to_policy +++++++++++++++++++===')
             
             self.init_bt()
@@ -62,15 +62,23 @@ class CompareBTPolicy():
                 print("State: ", state)
                 print("state index: ", state_count)
                 print("active_actions: ", active_actions)
-                input("hmm ")
+                #input("hmm ")
                 running_active_actions = self.get_running_actions_from_active_actions(active_actions)
+                print("Running active actions: ", running_active_actions)
+                active_conditions = self.bt.getActiveConditions()
 
                 if running_active_actions:
                     first_active_running_action = running_active_actions[0].split("(", 1)[0]
                     print("first active running action: ", first_active_running_action)
-                    input("hmm 2")
+                    #input("hmm 2")
                     f.write(f"Action: {first_active_running_action}\n")
                     fa.write(f"{first_active_running_action}\n")
+                    fb.write(f"State count: {state_count}\n")
+                    fb.write(f"State: {state}\n")
+                    fb.write(f"BT conditions: {active_conditions}\n")
+                    fb.write(f"Active actions: {active_actions}\n")
+                    fb.write(f"Running active actions: {running_active_actions}\n")
+                    fb.write(f"Action: {first_active_running_action}\n")
                     update_state = True
 
                 # If have checked all states, stop
@@ -212,7 +220,13 @@ class CompareBTPolicy():
                 boolean = False
             self.bt_interface.setConditionStatus(c_label,boolean)
 
-        input("waiting")
+
+        # Check bt state
+        #active_conditions = self.bt.getActiveConditions()
+        #print("Active conditions: ", active_conditions)
+        #input("u")
+
+        #input("waiting")
 
 
 if __name__ == "__main__":

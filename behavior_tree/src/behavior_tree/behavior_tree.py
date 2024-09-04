@@ -655,9 +655,9 @@ class BehaviorTree:
             for node in self.nodes:
                 #print("node: ", node, node.label)
                 if isinstance(node, Action):
-                    print("unique_action_nodes ", unique_action_nodes.keys(), "\n")
-                    print("action node: ", node.label, ", ", node.is_active, ", ", node.is_newly_active, "\n")
-                    print("active ids ", self.active_ids)
+                    #print("unique_action_nodes ", unique_action_nodes.keys(), "\n")
+                    #print("action node: ", node.label, ", ", node.is_active, ", ", node.is_newly_active, "\n")
+                    #print("active ids ", self.active_ids)
                     if node.label not in list(unique_action_nodes.keys()) or node.is_active:
                         #if node.is_active:
                         unique_action_nodes[node.label] = node
@@ -669,7 +669,7 @@ class BehaviorTree:
                     #else:
                     #    unique_action_nodes[node.label] = node
             
-            print("active ids 2 ", self.active_ids)         
+            #print("active ids 2 ", self.active_ids)         
             for label, node in unique_action_nodes.items():
                 #active_msg = Bool()
                 #active_msg.data = node.is_active
@@ -875,16 +875,6 @@ class BehaviorTree:
             condition_node = self.condition_nodes[key]
         #first_condition = self.condition_nodes[0]
         #print('first condition', first_condition.label , first_condition)
-
-    def countActiveConditions(self):
-        
-        '''
-        Count average number of active conditions per action
-        '''
-
-        # Check which actions are active
-        active_actions = self.getActiveActions()
-        print(('The active actions are: ', active_actions))
 
 
 if __name__ == '__main__':

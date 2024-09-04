@@ -2,7 +2,7 @@
 #import graphviz
 import cv2
 import sys
-import behavior_tree as bt
+import behavior_tree.behavior_tree as bt
 import os
 
 from importlib import reload #python3
@@ -14,6 +14,9 @@ reload(sys)
 
 def get_graphviz(tree):
     nodes_worklist = [tree.root]
+
+    #print(dir(bt))
+    #input("hi")
 
     gv = 'digraph G {\n'
 
