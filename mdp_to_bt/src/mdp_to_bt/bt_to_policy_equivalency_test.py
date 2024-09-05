@@ -47,6 +47,7 @@ class CompareBTPolicy():
 
             while not rospy.is_shutdown() and not done:
 
+
                 if len(states) > 0 and update_state:
                     state = states.pop()
                     self.update_bt(state)
@@ -68,6 +69,7 @@ class CompareBTPolicy():
                 active_conditions = self.bt.getActiveConditions()
 
                 if running_active_actions:
+
                     first_active_running_action = running_active_actions[0].split("(", 1)[0]
                     print("first active running action: ", first_active_running_action)
                     #input("hmm 2")

@@ -1384,8 +1384,24 @@ class DotWidget(QWidget):
         self.filter = filter
 
     def set_dotcode(self, dotcode, filename='<stdin>',center=True):
-        if isinstance(dotcode, unicode):
-            dotcode = dotcode.encode('utf8')
+        # try:
+        #     basestring = unicode  # python2
+        # except NameError:
+        #     unicode = str  # python3
+        # if isinstance(dotcode, unicode):
+        #     dotcode = dotcode.encode('utf8')
+
+        
+        try:
+            basestring = unicode  # python2
+        except NameError:
+            unicode = str  # python3
+
+        # Ensure dotcode is in string format for Popen since universal_newlines=True
+        if isinstance(dotcode, bytes):  # Check if dotcode is bytes
+            dotcode = dotcode.decode('utf8')  # Decode it to string
+
+
         p = subprocess.Popen(
             [self.filter, '-Txdot'],
             stdin=subprocess.PIPE,
@@ -1416,7 +1432,7 @@ class DotWidget(QWidget):
             # Store references to subgraph states
             self.subgraph_shapes = self.graph.subgraph_shapes
 
-        except (ParseError, ex):
+        except ParseError as ex:
 #            dialog = gtk.MessageDialog(type=gtk.MESSAGE_ERROR,
 #                                       message_format=str(ex),
 #                                       buttons=gtk.BUTTONS_OK)

@@ -134,7 +134,8 @@ class BT_Interface():
             nodes = self.condition_nodes[condition]
         except KeyError:
             #input("ISSUE HERE - Maybe no match?")
-            pass
+            pass # Ignoring this check because not all conditions will appear in the BT if 
+                 # they are not needed to differentiate between each actions state group
             #print("setConditionStatus condition " + condition + " does not exist in BT")
         else:
 

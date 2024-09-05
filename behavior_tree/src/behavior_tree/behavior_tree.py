@@ -641,7 +641,7 @@ class BehaviorTree:
 
     def tick(self):
         if self.root != None:
-            print('begin tick')
+            #print('begin tick')
             self.root.tick(True, self.traversal_count)
             #print()
             self.traversal_count += 1
