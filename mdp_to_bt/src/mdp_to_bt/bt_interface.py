@@ -149,6 +149,12 @@ class BT_Interface():
             else:
                 print("setConditionStatus: incorrect argument")
 
+    def setAllActionsRunning(self):
+
+        for action in self.action_nodes.values():
+            print(action)
+            action[0].set_status(ReturnStatus(Status.RUNNING))
+
     def setActionStatusFailure(self, action):
         try:
             nodes = self.action_nodes[action]

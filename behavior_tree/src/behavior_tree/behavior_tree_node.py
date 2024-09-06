@@ -33,8 +33,9 @@ def timer_callback(event):
     # print('CHANGED: ', changed, only_publish_on_change)
 
 
-    if changed:
+    if True: # if changed
         source = gv.get_graphviz(node.tree)
+        print("source ", source)
         graphviz_msg.data = source
         compressed_msg.data = zlib.compress(source.encode("utf-8"))
 

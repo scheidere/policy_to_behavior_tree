@@ -87,7 +87,7 @@ class Fallback(ControlFlowNode):
         self.is_active = active
 
 class Sequence(ControlFlowNode):
-    label = u'\u2192' # arrow
+    label = '->' #u'\u2192' # arrow
     
     def __init__(self):
         ControlFlowNode.__init__(self)
@@ -206,8 +206,8 @@ class Condition(ExecutionNode):
         else:
             self.is_newly_active = False
 
-        if self.get_status_age() > self.max_wait_time:
-            self.set_status(ReturnStatus.FAILURE)
+        # if self.get_status_age() > self.max_wait_time:
+        #     self.set_status(ReturnStatus.FAILURE)
 
         # ACTION ACTIVITY/STATUS COPY - TO BE DELETED
         # if self.is_active == False and active == True:# and self.status == ReturnStatus.FAILURE:
@@ -280,8 +280,8 @@ class Action(ExecutionNode):
         else:
             self.is_newly_active = False
         # if we haven't received a message within the timeout period, set the status to failed
-        if self.get_status_age() > self.max_wait_time:
-            self.set_status(ReturnStatus.FAILURE)
+        # if self.get_status_age() > self.max_wait_time:
+        #     self.set_status(ReturnStatus.FAILURE)
         
         self.is_active = active
 

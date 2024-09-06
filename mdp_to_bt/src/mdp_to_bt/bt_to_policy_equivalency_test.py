@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 from ppddl_to_matrices import getStateList
 import behavior_tree.behavior_tree_graphviz as gv
@@ -14,6 +14,7 @@ from bt_interface import *
 
 import time
 
+
 class CompareBTPolicy():
     def __init__(self, bt_path, domain, problem):
         self.bt = BehaviorTree(bt_path)
@@ -27,13 +28,26 @@ class CompareBTPolicy():
             # print(node.label)
         # print("BT finished init")
 
+    # def show_tree(self):
+    #     graphviz_msg = String()
+    #     compressed_msg = String()
+
+    #     source = gv.get_graphviz(self.bt)
+    #     print("source ", source)
+    #     graphviz_msg.data = source
+    #     compressed_msg.data = zlib.compress(source.encode("utf-8"))
+
+    #     graphviz_pub.publish(graphviz_msg)
+    #     compressed_pub.publish(compressed_msg)
+
+
 
     def bt_to_policy(self, bt, domain, problem):
 
         try:
-            f = open("/home/emily/Desktop/more_AURO_results/policy_from_btTESTING.txt", "w+")
-            fa = open("/home/emily/Desktop/more_AURO_results/policy_actions_from_btTESTING.txt", "w+")
-            fb = open("/home/emily/Desktop/more_AURO_results/running_active_actionsTEST.txt", "w+")
+            f = open("/home/emily/Desktop/more_AURO_results/policy_from_btGRAEME.txt", "w+")
+            fa = open("/home/emily/Desktop/more_AURO_results/policy_actions_from_btGRAEME.txt", "w+")
+            fb = open("/home/emily/Desktop/more_AURO_results/running_active_actionsGRAEME.txt", "w+")
             print('In bt_to_policy +++++++++++++++++++===')
             
             self.init_bt()
@@ -48,16 +62,29 @@ class CompareBTPolicy():
             while not rospy.is_shutdown() and not done:
 
 
-                if len(states) > 0 and update_state:
-                    state = states.pop()
-                    self.update_bt(state)
-                    state_count += 1
-                    f.write(f"State count: {state_count}\n")
-                    f.write(f"State: {state}\n")
-                    update_state = False
 
+                if len(states) == 0:
+                    self.bt.tick()
+                    break
+
+                state = states.pop()
+                state_count += 1
+                #if state_count == 4:
+                self.update_bt(state)
+                # else:
+                #     continue
+                f.write(f"State count: {state_count}\n")
+                f.write(f"State: {state}\n")
+                #update_state = False
+
+
+                self.bt_interface.setAllActionsRunning()
 
                 self.bt.tick()
+                # self.show_tree()
+
+                self.bt_interface.setAllActionsRunning()
+                #self.show_tree()
 
                 active_actions = self.bt.getActiveActions()
                 print("State: ", state)
@@ -81,12 +108,16 @@ class CompareBTPolicy():
                     fb.write(f"Active actions: {active_actions}\n")
                     fb.write(f"Running active actions: {running_active_actions}\n")
                     fb.write(f"Action: {first_active_running_action}\n")
-                    update_state = True
+                    #update_state = True
 
                 # If have checked all states, stop
                 if state_count == num_states and not done:
                     print("All states processed. Exiting...")
                     done = True
+
+
+                # if state_count == 4:
+                #     input("yo")
 
 
             f.close()
@@ -162,21 +193,29 @@ class CompareBTPolicy():
                 return label
         return None # ERROR
 
-    def get_condition_label(self, condition_term):
+    def get_condition_label(self, term):
 
-        num_c_terms = len(condition_term)-1 # Last term of state is 0/1 representing False/True
+        # num_c_terms = len(condition_term)-1 # Last term of state is 0/1 representing False/True
+        # print("num_c_terms ", num_c_terms)
 
-        for label in self.bt.condition_nodes.keys():
-            found = True
-            for j in range(num_c_terms): 
+        condition_label = term[0] + '{' + term[1] + '}'
 
-                if condition_term[j] not in label:
-                    found = False
-                    break
+        # for label in self.bt.condition_nodes.keys():
+        #     found = True
+        #     print("label: ", label)
+        #     for j in range(num_c_terms): 
 
-            # If here without break, all terms e.g. 'infant-orientation' and 'toward' in label so condition label found
-            if found:
-                return label
+        #         print("condition_term[j] ", condition_term[j])
+
+        #         if condition_term[j] not in label:
+        #             found = False
+        #             break
+
+        #     # If here without break, all terms e.g. 'infant-orientation' and 'toward' in label so condition label found
+        #     if found:
+        #         return label
+
+        return condition_label
 
     def update_bt(self, state):
 
@@ -222,6 +261,8 @@ class CompareBTPolicy():
                 boolean = False
             self.bt_interface.setConditionStatus(c_label,boolean)
 
+        # Need to set all actions to running
+
 
         # Check bt state
         #active_conditions = self.bt.getActiveConditions()
@@ -230,12 +271,44 @@ class CompareBTPolicy():
 
         #input("waiting")
 
+graphviz_msg = String()
+compressed_msg = String()
+
+def timer_callback(event):
+    #print("in timer_callback")
+    global graphviz_msg
+    global compressed_msg
+    changed = cbtp.bt.tick()  # root.tick(True)
+    # print('CHANGED: ', changed, only_publish_on_change)
+
+
+    if True: # if changed
+        source = gv.get_graphviz(cbtp.bt)
+        #print("source ", source)
+        graphviz_msg.data = source
+        compressed_msg.data = zlib.compress(source.encode("utf-8"))
+
+
+        if only_publish_on_change:
+            graphviz_pub.publish(graphviz_msg)
+            compressed_pub.publish(compressed_msg)
+
+
+    if not only_publish_on_change:
+        graphviz_pub.publish(graphviz_msg)
+        compressed_pub.publish(compressed_msg)
+    """
+    img = gv.get_graphviz_image(source)
+    cv2.imshow('img', img)
+    cv2.waitKey(1)
+        """
+
+
 
 if __name__ == "__main__":
 
     rospy.init_node("compare_bt_to_policy")
-    graphviz_pub = rospy.Publisher('behavior_tree_graphviz', String, queue_size=1)
-    compressed_pub = rospy.Publisher('behavior_tree_graphviz_compressed', String, queue_size=1)
+
 
     # infant
     # bt_final_path = "/home/emily/auro_ws/src/policy_to_behavior_tree/behavior_tree/config/AURO_final_synthesized_BTs/infant/final_synth_bt.tree"
@@ -262,3 +335,12 @@ if __name__ == "__main__":
 
     cbtp = CompareBTPolicy(bt_path,domain,problem)
     #cbtp = CompareBTPolicy(bt_deterministic_path,domain,problem)
+
+    only_publish_on_change = False
+
+    graphviz_pub = rospy.Publisher('behavior_tree_graphviz', String, queue_size=1)
+    compressed_pub = rospy.Publisher('behavior_tree_graphviz_compressed', String, queue_size=1)
+
+    timer = rospy.Timer(rospy.Duration(0.05), timer_callback)
+
+    rospy.spin()

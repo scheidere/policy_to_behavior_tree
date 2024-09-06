@@ -201,7 +201,7 @@ class BezierShape(Shape):
     def draw(self, painter, highlight=False):
         painter_path = QPainterPath()
         painter_path.moveTo(QPointF(*self.points[0]))
-        for i in xrange(1, len(self.points), 3):
+        for i in range(1, len(self.points), 3):
             painter_path.cubicTo(
                 QPointF(*self.points[i]),
                 QPointF(*self.points[i + 1]),
@@ -555,7 +555,7 @@ class XDotAttrParser:
                 points = self.read_polygon()
                 self.handle_polygon(points, filled=False)
             else:
-                sys.stderr.write("unknown xdot opcode '%s'\n" % op)
+                #sys.stderr.write("unknown xdot opcode '%s'\n" % op)
                 break
 
         return self.shapes
