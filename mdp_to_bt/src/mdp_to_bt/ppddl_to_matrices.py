@@ -108,13 +108,19 @@ def getStateList(domain,problem):
 
         states.append(full_state)
 
-    # print('states ', states)
-    # print(len(states))
-    # input('its')
+    print("single_state: ", single_state, len(single_state))
+    #print('states ', states)
+    print(len(states))
+    input('its')
+
+
 
     # Remove invalid states per constraints in domain
     if domain.constraints:
         states = removeInvalidStates(states,domain)
+
+    print(len(states))
+    input('after')
 
 
     # for i in range(len(states)):
@@ -1333,6 +1339,8 @@ def checkPolicyPreconditions(policy, states, actions_with_params):
 
 def saveReadablePolicy(policy, states, actions_with_params):
 
+    print("in saveReadablePolicy")
+
     # Save readable and basic "state: action" policy form to file f
     f = open("//home/emily/Desktop/more_AURO_results/raw_policy.txt", "w+")
     fa = open("/home/emily/Desktop/more_AURO_results/raw_policy_actions.txt", "w+")
@@ -1342,8 +1350,12 @@ def saveReadablePolicy(policy, states, actions_with_params):
         f.write("State count: %d\n"%(i+1))
         f.write("State: %s\n" %str(states[i]))
         action = actions_with_params[policy[i]][0]
+        input(action.name)
         f.write("Action: %s\n" %str(action.name))
         fa.write("%s\n" %str(action.name))
+
+    f.close()
+    fa.close()
 
 
 

@@ -33,9 +33,11 @@ class Simplify:
         self.f.write("action nums in policy: " + str(self.action_nums_in_policy)+"\n")
         self.f.write("actions: \n")
         for i in range(len(self.actions)):
+            #print(action)
             action = self.actions[i][0]
             self.f.write(str(i) + ": " + str(action)+"\n")
         #f.write("actions: " + str(self.actions)+"\n")
+        #input("actions above")
 
         self.reorder_actions()
         f.write("action nums in policy 2: " + str(self.action_nums_in_policy)+"\n")
@@ -133,8 +135,7 @@ class Simplify:
                 #actions_with_params.append([action.name,combo_dict])
                 conditions_with_params.append([condition_predicate.name,combo_dict])
 
-        print(conditions_with_params)
-        input("1")
+        #print(conditions_with_params)
         return conditions_with_params
 
 

@@ -155,6 +155,8 @@ def evaluate_once(bt_actions, raw_actions, P, R, states, actions_with_params, nu
 
 def compare_raw_policy_and_bt_policy(bt_actions, raw_actions, P, R, states, actions_with_params):
 
+    print("In comparison of raw and bt actions that represent policy")
+
     num_trials = 100
     num_steps_per_trial = 100
 
@@ -190,13 +192,23 @@ def examine_domain_group(domain_option, group_option):
 
         if file != 'domain_deterministic.ppddl':
 
+
             domain_path = path_to_domains + file
             domain  = PDDLParser.parse(domain_path)
             problem = PDDLParser.parse(problem_path)
             P, R, states, actions_with_params = getPandR(domain,problem)
+            print(len(states))
+            input("first")
+
+            print("actions_with_params: \n")
+            for a in actions_with_params:
+                print(a)
+            input("stop")
 
             # Run main to get raw policy (just list of actions, where index in list denotes state)
             # Output in "/home/emily/Desktop/more_AURO_results/"
+            print("python3 main.py " + domain_path + " " + problem_path)
+            input("hm")
             os.system("python3 main.py " + domain_path + " " + problem_path)
 
             with open('/home/emily/Desktop/more_AURO_results/getPandR_outputs.p', 'rb') as f:
@@ -217,9 +229,10 @@ def examine_domain_group(domain_option, group_option):
 
             # Run bt_to_policy_equivalency_test.py to translate the simplified bt from main back into policy (action list) form
             # Output in "/home/emily/Desktop/more_AURO_results/"
-            os.system("python3 bt_to_policy_equivalency_test.py") # Assesses final_synth_bt.tree in "/home/emily/Desktop/more_AURO_results/"
+            os.system("python3 bt_to_policy_equivalency_test.py") # Acc  esses final_synth_bt.tree in "/home/emily/Desktop/more_AURO_results/"
             f_bt = open("/home/emily/Desktop/more_AURO_results/policy_actions_from_bt.txt", "r")
             bt_actions = f_bt.readlines()
+
 
             # Remove any new line characters at end of each action label in above lists
             for i in range(len(states)):

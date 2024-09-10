@@ -45,9 +45,9 @@ class CompareBTPolicy():
     def bt_to_policy(self, bt, domain, problem):
 
         try:
-            f = open("/home/emily/Desktop/more_AURO_results/policy_from_btGRAEME.txt", "w+")
-            fa = open("/home/emily/Desktop/more_AURO_results/policy_actions_from_btGRAEME.txt", "w+")
-            fb = open("/home/emily/Desktop/more_AURO_results/running_active_actionsGRAEME.txt", "w+")
+            f = open("/home/emily/Desktop/more_AURO_results/policy_from_bt.txt", "w+")
+            fa = open("/home/emily/Desktop/more_AURO_results/policy_actions_from_bt.txt", "w+")
+            fb = open("/home/emily/Desktop/more_AURO_results/running_active_actions.txt", "w+")
             print('In bt_to_policy +++++++++++++++++++===')
             
             self.init_bt()
@@ -63,9 +63,9 @@ class CompareBTPolicy():
 
 
 
-                if len(states) == 0:
-                    self.bt.tick()
-                    break
+                # if len(states) == 0:
+                #     self.bt.tick()
+                #     break
 
                 state = states.pop()
                 state_count += 1
@@ -87,18 +87,18 @@ class CompareBTPolicy():
                 #self.show_tree()
 
                 active_actions = self.bt.getActiveActions()
-                print("State: ", state)
-                print("state index: ", state_count)
-                print("active_actions: ", active_actions)
+                # print("State: ", state)
+                # print("state index: ", state_count)
+                # print("active_actions: ", active_actions)
                 #input("hmm ")
                 running_active_actions = self.get_running_actions_from_active_actions(active_actions)
-                print("Running active actions: ", running_active_actions)
+                #print("Running active actions: ", running_active_actions)
                 active_conditions = self.bt.getActiveConditions()
 
                 if running_active_actions:
 
                     first_active_running_action = running_active_actions[0].split("(", 1)[0]
-                    print("first active running action: ", first_active_running_action)
+                    #print("first active running action: ", first_active_running_action)
                     #input("hmm 2")
                     f.write(f"Action: {first_active_running_action}\n")
                     fa.write(f"{first_active_running_action}\n")
@@ -123,7 +123,7 @@ class CompareBTPolicy():
             f.close()
             fa.close()
 
-            print('End bt_to_policy +++++++++++++++++++===')
+            #print('End bt_to_policy +++++++++++++++++++===')
             
 
         except rospy.ROSInterruptException: pass
@@ -193,29 +193,29 @@ class CompareBTPolicy():
                 return label
         return None # ERROR
 
-    def get_condition_label(self, term):
+    def get_condition_label(self, condition_term):
 
         # num_c_terms = len(condition_term)-1 # Last term of state is 0/1 representing False/True
         # print("num_c_terms ", num_c_terms)
 
-        condition_label = term[0] + '{' + term[1] + '}'
+        ###label = condition_term[0] + '{' + condition_term[1] + '}'
 
-        # for label in self.bt.condition_nodes.keys():
-        #     found = True
-        #     print("label: ", label)
-        #     for j in range(num_c_terms): 
+        for label in self.bt.condition_nodes.keys():
+            found = True
+            print("label: ", label)
+            for j in range(num_c_terms): 
 
-        #         print("condition_term[j] ", condition_term[j])
+                print("condition_term[j] ", condition_term[j])
 
-        #         if condition_term[j] not in label:
-        #             found = False
-        #             break
+                if condition_term[j] not in label:
+                    found = False
+                    break
 
-        #     # If here without break, all terms e.g. 'infant-orientation' and 'toward' in label so condition label found
-        #     if found:
-        #         return label
+            # If here without break, all terms e.g. 'infant-orientation' and 'toward' in label so condition label found
+            if found:
+                return label
 
-        return condition_label
+        ###return label
 
     def update_bt(self, state):
 
@@ -249,11 +249,11 @@ class CompareBTPolicy():
 
             c = state[i] # e.g. ['infant-orientation', 'toward', 1] but could have more than one param like 'toward'
 
-            print("c: ", c)
+            #print("c: ", c)
 
             c_label = self.get_condition_label(c)
             
-            print('c_label', c_label)
+            #print('c_label', c_label)
 
             if state[i][-1]: #1
                 boolean = True
@@ -315,11 +315,14 @@ if __name__ == "__main__":
     # domain_path = "/home/emily/auro_ws/src/policy_to_behavior_tree/pypddl_parser/src/pypddl_parser/pddl/AURO/infant/final_domain.ppddl"
     # problem_path = "/home/emily/auro_ws/src/policy_to_behavior_tree/pypddl_parser/src/pypddl_parser/pddl/AURO/infant/problem.ppddl"
 
+    # For testing only
     # marine
     #path = "/home/emily/Desktop/more_AURO_results/marine_final_1/"
-
     # infant
-    path = "/home/emily/Desktop/more_AURO_results/infant_final/"
+    #path = "/home/emily/Desktop/more_AURO_results/infant_final/"
+
+    # General path for when called from auro_additional_results.py
+    path = "/home/emily/Desktop/more_AURO_results/"
 
 
     bt_path = path + "final_synth_bt.tree"
@@ -336,11 +339,14 @@ if __name__ == "__main__":
     cbtp = CompareBTPolicy(bt_path,domain,problem)
     #cbtp = CompareBTPolicy(bt_deterministic_path,domain,problem)
 
-    only_publish_on_change = False
+    do_rqt = False
+    if do_rqt:
 
-    graphviz_pub = rospy.Publisher('behavior_tree_graphviz', String, queue_size=1)
-    compressed_pub = rospy.Publisher('behavior_tree_graphviz_compressed', String, queue_size=1)
+        only_publish_on_change = False
 
-    timer = rospy.Timer(rospy.Duration(0.05), timer_callback)
+        graphviz_pub = rospy.Publisher('behavior_tree_graphviz', String, queue_size=1)
+        compressed_pub = rospy.Publisher('behavior_tree_graphviz_compressed', String, queue_size=1)
 
-    rospy.spin()
+        timer = rospy.Timer(rospy.Duration(0.05), timer_callback)
+
+        rospy.spin()
