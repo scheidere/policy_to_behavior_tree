@@ -108,10 +108,10 @@ def getStateList(domain,problem):
 
         states.append(full_state)
 
-    print("single_state: ", single_state, len(single_state))
+    #print("single_state: ", single_state, len(single_state))
     #print('states ', states)
-    print(len(states))
-    input('its')
+    #print(len(states))
+    #input('its')
 
 
 
@@ -119,8 +119,8 @@ def getStateList(domain,problem):
     if domain.constraints:
         states = removeInvalidStates(states,domain)
 
-    print(len(states))
-    input('after')
+    #print(len(states))
+    #input('after')
 
 
     # for i in range(len(states)):
@@ -1345,17 +1345,29 @@ def saveReadablePolicy(policy, states, actions_with_params):
     f = open("//home/emily/Desktop/more_AURO_results/raw_policy.txt", "w+")
     fa = open("/home/emily/Desktop/more_AURO_results/raw_policy_actions.txt", "w+")
 
+    count = 0
     for i in range(len(policy)):
+
+        print("State count: %d\n"%(i+1))
+        print("State: %s\n" %str(states[i]))
+        action = actions_with_params[policy[i]][0]
+        #input(action.name)
+        print("Action: %s\n" %str(action.name))
 
         f.write("State count: %d\n"%(i+1))
         f.write("State: %s\n" %str(states[i]))
         action = actions_with_params[policy[i]][0]
-        input(action.name)
+        #input(action.name)
         f.write("Action: %s\n" %str(action.name))
         fa.write("%s\n" %str(action.name))
+        count += 1
 
-    f.close()
-    fa.close()
+    print("count")
+    input(count)
+
+    #f.close()
+    #fa.close()
+    #input("yodle")
 
 
 

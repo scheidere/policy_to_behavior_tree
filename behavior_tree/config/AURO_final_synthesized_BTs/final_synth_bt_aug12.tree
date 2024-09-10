@@ -1,33 +1,39 @@
 ?
 	->
-		?
-			->
-			->
-				(infant-activity{moving-toward})
-				<!>
-					(infant-robot-distance{direct-social-interaction})
-			->
-				<!>
-					(has-bubbles{x})
-				<!>
-					(infant-robot-distance{direct-social-interaction})
-			->
-				<!>
-					(infant-orientation{toward})
-				<!>
-					(infant-robot-distance{direct-social-interaction})
-		[move-toward]
+		(found-object{x})
+		<!>
+			(found-mine{x})
+		<!>
+			(found-target-to-report{x})
+		<!>
+			(has-object{x})
+		[pick-up]
 	->
+		(at-drop-off{x})
+		(has-object{x})
+		<!>
+			(found-mine{x})
 		?
-			(infant-orientation{toward})
-			->
-				<!>
-					(infant-activity{moving-toward})
-				<!>
-					(infant-robot-distance{social-interaction})
-		[move-away]
+			<!>
+				(found-target-to-report{x})
+			<!>
+				(in-comms-range{x})
+		[drop-off]
+	->
+		(found-mine{x})
+		[disarm]
+	->
+		(found-target-to-report{x})
+		<!>
+			(in-comms-range{x})
+		[go-to-comms]
+	->
+		(has-object{x})
+		<!>
+			(found-target-to-report{x})
+		[go-to-drop-off]
 	->
 		<!>
-			(infant-activity{moving-toward})
-		[blow-bubbles]
-	[keep-away]
+			(found-target-to-report{x})
+		[explore]
+	[report]

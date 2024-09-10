@@ -198,17 +198,17 @@ def examine_domain_group(domain_option, group_option):
             problem = PDDLParser.parse(problem_path)
             P, R, states, actions_with_params = getPandR(domain,problem)
             print(len(states))
-            input("first")
+            #input("first")
 
             print("actions_with_params: \n")
             for a in actions_with_params:
                 print(a)
-            input("stop")
+            #input("stop")
 
             # Run main to get raw policy (just list of actions, where index in list denotes state)
             # Output in "/home/emily/Desktop/more_AURO_results/"
             print("python3 main.py " + domain_path + " " + problem_path)
-            input("hm")
+            #input("hm")
             os.system("python3 main.py " + domain_path + " " + problem_path)
 
             with open('/home/emily/Desktop/more_AURO_results/getPandR_outputs.p', 'rb') as f:

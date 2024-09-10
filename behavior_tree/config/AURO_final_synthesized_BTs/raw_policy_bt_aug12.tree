@@ -1,595 +1,705 @@
 ?
 	->
 		<!>
-			(has-bubbles{x})
+			(has-object{x})
 		<!>
-			(infant-activity{moving-toward})
+			(found-object{x})
 		<!>
-			(infant-activity{moving-away})
-		(infant-activity{stationary})
+			(found-mine{x})
 		<!>
-			(infant-robot-distance{direct-social-interaction})
+			(at-drop-off{x})
 		<!>
-			(infant-robot-distance{social-interaction})
-		(infant-robot-distance{solitary-play})
+			(found-target-to-report{x})
 		<!>
-			(infant-orientation{toward})
-		(infant-orientation{away})
-		[move-toward]
+			(in-comms-range{x})
+		[explore]
 	->
 		<!>
-			(has-bubbles{x})
+			(has-object{x})
 		<!>
-			(infant-activity{moving-toward})
+			(found-object{x})
 		<!>
-			(infant-activity{moving-away})
-		(infant-activity{stationary})
+			(found-mine{x})
 		<!>
-			(infant-robot-distance{direct-social-interaction})
+			(at-drop-off{x})
 		<!>
-			(infant-robot-distance{social-interaction})
-		(infant-robot-distance{solitary-play})
-		(infant-orientation{toward})
-		<!>
-			(infant-orientation{away})
-		[move-toward]
+			(found-target-to-report{x})
+		(in-comms-range{x})
+		[explore]
 	->
 		<!>
-			(has-bubbles{x})
+			(has-object{x})
 		<!>
-			(infant-activity{moving-toward})
+			(found-object{x})
 		<!>
-			(infant-activity{moving-away})
-		(infant-activity{stationary})
+			(found-mine{x})
 		<!>
-			(infant-robot-distance{direct-social-interaction})
-		(infant-robot-distance{social-interaction})
+			(at-drop-off{x})
+		(found-target-to-report{x})
 		<!>
-			(infant-robot-distance{solitary-play})
-		<!>
-			(infant-orientation{toward})
-		(infant-orientation{away})
-		[move-toward]
+			(in-comms-range{x})
+		[go-to-comms]
 	->
 		<!>
-			(has-bubbles{x})
+			(has-object{x})
 		<!>
-			(infant-activity{moving-toward})
+			(found-object{x})
 		<!>
-			(infant-activity{moving-away})
-		(infant-activity{stationary})
+			(found-mine{x})
 		<!>
-			(infant-robot-distance{direct-social-interaction})
-		(infant-robot-distance{social-interaction})
-		<!>
-			(infant-robot-distance{solitary-play})
-		(infant-orientation{toward})
-		<!>
-			(infant-orientation{away})
-		[move-toward]
+			(at-drop-off{x})
+		(found-target-to-report{x})
+		(in-comms-range{x})
+		[report]
 	->
 		<!>
-			(has-bubbles{x})
+			(has-object{x})
 		<!>
-			(infant-activity{moving-toward})
+			(found-object{x})
 		<!>
-			(infant-activity{moving-away})
-		(infant-activity{stationary})
-		(infant-robot-distance{direct-social-interaction})
+			(found-mine{x})
+		(at-drop-off{x})
 		<!>
-			(infant-robot-distance{social-interaction})
+			(found-target-to-report{x})
 		<!>
-			(infant-robot-distance{solitary-play})
-		<!>
-			(infant-orientation{toward})
-		(infant-orientation{away})
-		[move-away]
+			(in-comms-range{x})
+		[explore]
 	->
 		<!>
-			(has-bubbles{x})
+			(has-object{x})
 		<!>
-			(infant-activity{moving-toward})
+			(found-object{x})
 		<!>
-			(infant-activity{moving-away})
-		(infant-activity{stationary})
-		(infant-robot-distance{direct-social-interaction})
+			(found-mine{x})
+		(at-drop-off{x})
 		<!>
-			(infant-robot-distance{social-interaction})
-		<!>
-			(infant-robot-distance{solitary-play})
-		(infant-orientation{toward})
-		<!>
-			(infant-orientation{away})
-		[move-away]
+			(found-target-to-report{x})
+		(in-comms-range{x})
+		[explore]
 	->
 		<!>
-			(has-bubbles{x})
+			(has-object{x})
 		<!>
-			(infant-activity{moving-toward})
-		(infant-activity{moving-away})
+			(found-object{x})
 		<!>
-			(infant-activity{stationary})
+			(found-mine{x})
+		(at-drop-off{x})
+		(found-target-to-report{x})
 		<!>
-			(infant-robot-distance{direct-social-interaction})
-		<!>
-			(infant-robot-distance{social-interaction})
-		(infant-robot-distance{solitary-play})
-		<!>
-			(infant-orientation{toward})
-		(infant-orientation{away})
-		[move-toward]
+			(in-comms-range{x})
+		[go-to-comms]
 	->
 		<!>
-			(has-bubbles{x})
+			(has-object{x})
 		<!>
-			(infant-activity{moving-toward})
-		(infant-activity{moving-away})
+			(found-object{x})
 		<!>
-			(infant-activity{stationary})
-		<!>
-			(infant-robot-distance{direct-social-interaction})
-		<!>
-			(infant-robot-distance{social-interaction})
-		(infant-robot-distance{solitary-play})
-		(infant-orientation{toward})
-		<!>
-			(infant-orientation{away})
-		[move-toward]
+			(found-mine{x})
+		(at-drop-off{x})
+		(found-target-to-report{x})
+		(in-comms-range{x})
+		[report]
 	->
 		<!>
-			(has-bubbles{x})
+			(has-object{x})
 		<!>
-			(infant-activity{moving-toward})
-		(infant-activity{moving-away})
+			(found-object{x})
+		(found-mine{x})
 		<!>
-			(infant-activity{stationary})
+			(at-drop-off{x})
 		<!>
-			(infant-robot-distance{direct-social-interaction})
-		(infant-robot-distance{social-interaction})
+			(found-target-to-report{x})
 		<!>
-			(infant-robot-distance{solitary-play})
-		<!>
-			(infant-orientation{toward})
-		(infant-orientation{away})
-		[move-toward]
+			(in-comms-range{x})
+		[disarm]
 	->
 		<!>
-			(has-bubbles{x})
+			(has-object{x})
 		<!>
-			(infant-activity{moving-toward})
-		(infant-activity{moving-away})
+			(found-object{x})
+		(found-mine{x})
 		<!>
-			(infant-activity{stationary})
+			(at-drop-off{x})
 		<!>
-			(infant-robot-distance{direct-social-interaction})
-		(infant-robot-distance{social-interaction})
-		<!>
-			(infant-robot-distance{solitary-play})
-		(infant-orientation{toward})
-		<!>
-			(infant-orientation{away})
-		[move-toward]
+			(found-target-to-report{x})
+		(in-comms-range{x})
+		[disarm]
 	->
 		<!>
-			(has-bubbles{x})
+			(has-object{x})
 		<!>
-			(infant-activity{moving-toward})
-		(infant-activity{moving-away})
+			(found-object{x})
+		(found-mine{x})
 		<!>
-			(infant-activity{stationary})
-		(infant-robot-distance{direct-social-interaction})
+			(at-drop-off{x})
+		(found-target-to-report{x})
 		<!>
-			(infant-robot-distance{social-interaction})
-		<!>
-			(infant-robot-distance{solitary-play})
-		<!>
-			(infant-orientation{toward})
-		(infant-orientation{away})
-		[move-away]
+			(in-comms-range{x})
+		[disarm]
 	->
 		<!>
-			(has-bubbles{x})
+			(has-object{x})
 		<!>
-			(infant-activity{moving-toward})
-		(infant-activity{moving-away})
+			(found-object{x})
+		(found-mine{x})
 		<!>
-			(infant-activity{stationary})
-		(infant-robot-distance{direct-social-interaction})
-		<!>
-			(infant-robot-distance{social-interaction})
-		<!>
-			(infant-robot-distance{solitary-play})
-		(infant-orientation{toward})
-		<!>
-			(infant-orientation{away})
-		[move-away]
+			(at-drop-off{x})
+		(found-target-to-report{x})
+		(in-comms-range{x})
+		[disarm]
 	->
 		<!>
-			(has-bubbles{x})
-		(infant-activity{moving-toward})
+			(has-object{x})
 		<!>
-			(infant-activity{moving-away})
+			(found-object{x})
+		(found-mine{x})
+		(at-drop-off{x})
 		<!>
-			(infant-activity{stationary})
+			(found-target-to-report{x})
 		<!>
-			(infant-robot-distance{direct-social-interaction})
-		<!>
-			(infant-robot-distance{social-interaction})
-		(infant-robot-distance{solitary-play})
-		<!>
-			(infant-orientation{toward})
-		(infant-orientation{away})
-		[move-toward]
+			(in-comms-range{x})
+		[disarm]
 	->
 		<!>
-			(has-bubbles{x})
-		(infant-activity{moving-toward})
+			(has-object{x})
 		<!>
-			(infant-activity{moving-away})
+			(found-object{x})
+		(found-mine{x})
+		(at-drop-off{x})
 		<!>
-			(infant-activity{stationary})
-		<!>
-			(infant-robot-distance{direct-social-interaction})
-		<!>
-			(infant-robot-distance{social-interaction})
-		(infant-robot-distance{solitary-play})
-		(infant-orientation{toward})
-		<!>
-			(infant-orientation{away})
-		[move-toward]
+			(found-target-to-report{x})
+		(in-comms-range{x})
+		[disarm]
 	->
 		<!>
-			(has-bubbles{x})
-		(infant-activity{moving-toward})
+			(has-object{x})
 		<!>
-			(infant-activity{moving-away})
+			(found-object{x})
+		(found-mine{x})
+		(at-drop-off{x})
+		(found-target-to-report{x})
 		<!>
-			(infant-activity{stationary})
-		<!>
-			(infant-robot-distance{direct-social-interaction})
-		(infant-robot-distance{social-interaction})
-		<!>
-			(infant-robot-distance{solitary-play})
-		<!>
-			(infant-orientation{toward})
-		(infant-orientation{away})
-		[move-toward]
+			(in-comms-range{x})
+		[disarm]
 	->
 		<!>
-			(has-bubbles{x})
-		(infant-activity{moving-toward})
+			(has-object{x})
 		<!>
-			(infant-activity{moving-away})
-		<!>
-			(infant-activity{stationary})
-		<!>
-			(infant-robot-distance{direct-social-interaction})
-		(infant-robot-distance{social-interaction})
-		<!>
-			(infant-robot-distance{solitary-play})
-		(infant-orientation{toward})
-		<!>
-			(infant-orientation{away})
-		[move-toward]
+			(found-object{x})
+		(found-mine{x})
+		(at-drop-off{x})
+		(found-target-to-report{x})
+		(in-comms-range{x})
+		[disarm]
 	->
 		<!>
-			(has-bubbles{x})
-		(infant-activity{moving-toward})
+			(has-object{x})
+		(found-object{x})
 		<!>
-			(infant-activity{moving-away})
+			(found-mine{x})
 		<!>
-			(infant-activity{stationary})
-		(infant-robot-distance{direct-social-interaction})
+			(at-drop-off{x})
 		<!>
-			(infant-robot-distance{social-interaction})
+			(found-target-to-report{x})
 		<!>
-			(infant-robot-distance{solitary-play})
-		<!>
-			(infant-orientation{toward})
-		(infant-orientation{away})
-		[move-away]
+			(in-comms-range{x})
+		[pick-up]
 	->
 		<!>
-			(has-bubbles{x})
-		(infant-activity{moving-toward})
+			(has-object{x})
+		(found-object{x})
 		<!>
-			(infant-activity{moving-away})
+			(found-mine{x})
 		<!>
-			(infant-activity{stationary})
-		(infant-robot-distance{direct-social-interaction})
+			(at-drop-off{x})
 		<!>
-			(infant-robot-distance{social-interaction})
-		<!>
-			(infant-robot-distance{solitary-play})
-		(infant-orientation{toward})
-		<!>
-			(infant-orientation{away})
-		[keep-away]
+			(found-target-to-report{x})
+		(in-comms-range{x})
+		[pick-up]
 	->
-		(has-bubbles{x})
 		<!>
-			(infant-activity{moving-toward})
+			(has-object{x})
+		(found-object{x})
 		<!>
-			(infant-activity{moving-away})
-		(infant-activity{stationary})
+			(found-mine{x})
 		<!>
-			(infant-robot-distance{direct-social-interaction})
+			(at-drop-off{x})
+		(found-target-to-report{x})
 		<!>
-			(infant-robot-distance{social-interaction})
-		(infant-robot-distance{solitary-play})
-		<!>
-			(infant-orientation{toward})
-		(infant-orientation{away})
-		[move-toward]
+			(in-comms-range{x})
+		[go-to-comms]
 	->
-		(has-bubbles{x})
 		<!>
-			(infant-activity{moving-toward})
+			(has-object{x})
+		(found-object{x})
 		<!>
-			(infant-activity{moving-away})
-		(infant-activity{stationary})
+			(found-mine{x})
 		<!>
-			(infant-robot-distance{direct-social-interaction})
-		<!>
-			(infant-robot-distance{social-interaction})
-		(infant-robot-distance{solitary-play})
-		(infant-orientation{toward})
-		<!>
-			(infant-orientation{away})
-		[move-toward]
+			(at-drop-off{x})
+		(found-target-to-report{x})
+		(in-comms-range{x})
+		[report]
 	->
-		(has-bubbles{x})
 		<!>
-			(infant-activity{moving-toward})
+			(has-object{x})
+		(found-object{x})
 		<!>
-			(infant-activity{moving-away})
-		(infant-activity{stationary})
+			(found-mine{x})
+		(at-drop-off{x})
 		<!>
-			(infant-robot-distance{direct-social-interaction})
-		(infant-robot-distance{social-interaction})
+			(found-target-to-report{x})
 		<!>
-			(infant-robot-distance{solitary-play})
-		<!>
-			(infant-orientation{toward})
-		(infant-orientation{away})
-		[move-toward]
+			(in-comms-range{x})
+		[pick-up]
 	->
-		(has-bubbles{x})
 		<!>
-			(infant-activity{moving-toward})
+			(has-object{x})
+		(found-object{x})
 		<!>
-			(infant-activity{moving-away})
-		(infant-activity{stationary})
+			(found-mine{x})
+		(at-drop-off{x})
 		<!>
-			(infant-robot-distance{direct-social-interaction})
-		(infant-robot-distance{social-interaction})
-		<!>
-			(infant-robot-distance{solitary-play})
-		(infant-orientation{toward})
-		<!>
-			(infant-orientation{away})
-		[blow-bubbles]
+			(found-target-to-report{x})
+		(in-comms-range{x})
+		[pick-up]
 	->
-		(has-bubbles{x})
 		<!>
-			(infant-activity{moving-toward})
+			(has-object{x})
+		(found-object{x})
 		<!>
-			(infant-activity{moving-away})
-		(infant-activity{stationary})
-		(infant-robot-distance{direct-social-interaction})
+			(found-mine{x})
+		(at-drop-off{x})
+		(found-target-to-report{x})
 		<!>
-			(infant-robot-distance{social-interaction})
-		<!>
-			(infant-robot-distance{solitary-play})
-		<!>
-			(infant-orientation{toward})
-		(infant-orientation{away})
-		[move-away]
+			(in-comms-range{x})
+		[go-to-comms]
 	->
-		(has-bubbles{x})
 		<!>
-			(infant-activity{moving-toward})
+			(has-object{x})
+		(found-object{x})
 		<!>
-			(infant-activity{moving-away})
-		(infant-activity{stationary})
-		(infant-robot-distance{direct-social-interaction})
-		<!>
-			(infant-robot-distance{social-interaction})
-		<!>
-			(infant-robot-distance{solitary-play})
-		(infant-orientation{toward})
-		<!>
-			(infant-orientation{away})
-		[move-away]
+			(found-mine{x})
+		(at-drop-off{x})
+		(found-target-to-report{x})
+		(in-comms-range{x})
+		[report]
 	->
-		(has-bubbles{x})
 		<!>
-			(infant-activity{moving-toward})
-		(infant-activity{moving-away})
+			(has-object{x})
+		(found-object{x})
+		(found-mine{x})
 		<!>
-			(infant-activity{stationary})
+			(at-drop-off{x})
 		<!>
-			(infant-robot-distance{direct-social-interaction})
+			(found-target-to-report{x})
 		<!>
-			(infant-robot-distance{social-interaction})
-		(infant-robot-distance{solitary-play})
-		<!>
-			(infant-orientation{toward})
-		(infant-orientation{away})
-		[move-toward]
+			(in-comms-range{x})
+		[disarm]
 	->
-		(has-bubbles{x})
 		<!>
-			(infant-activity{moving-toward})
-		(infant-activity{moving-away})
+			(has-object{x})
+		(found-object{x})
+		(found-mine{x})
 		<!>
-			(infant-activity{stationary})
+			(at-drop-off{x})
 		<!>
-			(infant-robot-distance{direct-social-interaction})
-		<!>
-			(infant-robot-distance{social-interaction})
-		(infant-robot-distance{solitary-play})
-		(infant-orientation{toward})
-		<!>
-			(infant-orientation{away})
-		[move-toward]
+			(found-target-to-report{x})
+		(in-comms-range{x})
+		[disarm]
 	->
-		(has-bubbles{x})
 		<!>
-			(infant-activity{moving-toward})
-		(infant-activity{moving-away})
+			(has-object{x})
+		(found-object{x})
+		(found-mine{x})
 		<!>
-			(infant-activity{stationary})
+			(at-drop-off{x})
+		(found-target-to-report{x})
 		<!>
-			(infant-robot-distance{direct-social-interaction})
-		(infant-robot-distance{social-interaction})
-		<!>
-			(infant-robot-distance{solitary-play})
-		<!>
-			(infant-orientation{toward})
-		(infant-orientation{away})
-		[move-toward]
+			(in-comms-range{x})
+		[disarm]
 	->
-		(has-bubbles{x})
 		<!>
-			(infant-activity{moving-toward})
-		(infant-activity{moving-away})
+			(has-object{x})
+		(found-object{x})
+		(found-mine{x})
 		<!>
-			(infant-activity{stationary})
-		<!>
-			(infant-robot-distance{direct-social-interaction})
-		(infant-robot-distance{social-interaction})
-		<!>
-			(infant-robot-distance{solitary-play})
-		(infant-orientation{toward})
-		<!>
-			(infant-orientation{away})
-		[blow-bubbles]
+			(at-drop-off{x})
+		(found-target-to-report{x})
+		(in-comms-range{x})
+		[disarm]
 	->
-		(has-bubbles{x})
 		<!>
-			(infant-activity{moving-toward})
-		(infant-activity{moving-away})
+			(has-object{x})
+		(found-object{x})
+		(found-mine{x})
+		(at-drop-off{x})
 		<!>
-			(infant-activity{stationary})
-		(infant-robot-distance{direct-social-interaction})
+			(found-target-to-report{x})
 		<!>
-			(infant-robot-distance{social-interaction})
-		<!>
-			(infant-robot-distance{solitary-play})
-		<!>
-			(infant-orientation{toward})
-		(infant-orientation{away})
-		[move-away]
+			(in-comms-range{x})
+		[disarm]
 	->
-		(has-bubbles{x})
 		<!>
-			(infant-activity{moving-toward})
-		(infant-activity{moving-away})
+			(has-object{x})
+		(found-object{x})
+		(found-mine{x})
+		(at-drop-off{x})
 		<!>
-			(infant-activity{stationary})
-		(infant-robot-distance{direct-social-interaction})
-		<!>
-			(infant-robot-distance{social-interaction})
-		<!>
-			(infant-robot-distance{solitary-play})
-		(infant-orientation{toward})
-		<!>
-			(infant-orientation{away})
-		[move-away]
+			(found-target-to-report{x})
+		(in-comms-range{x})
+		[disarm]
 	->
-		(has-bubbles{x})
-		(infant-activity{moving-toward})
 		<!>
-			(infant-activity{moving-away})
+			(has-object{x})
+		(found-object{x})
+		(found-mine{x})
+		(at-drop-off{x})
+		(found-target-to-report{x})
 		<!>
-			(infant-activity{stationary})
-		<!>
-			(infant-robot-distance{direct-social-interaction})
-		<!>
-			(infant-robot-distance{social-interaction})
-		(infant-robot-distance{solitary-play})
-		<!>
-			(infant-orientation{toward})
-		(infant-orientation{away})
-		[move-toward]
+			(in-comms-range{x})
+		[disarm]
 	->
-		(has-bubbles{x})
-		(infant-activity{moving-toward})
 		<!>
-			(infant-activity{moving-away})
-		<!>
-			(infant-activity{stationary})
-		<!>
-			(infant-robot-distance{direct-social-interaction})
-		<!>
-			(infant-robot-distance{social-interaction})
-		(infant-robot-distance{solitary-play})
-		(infant-orientation{toward})
-		<!>
-			(infant-orientation{away})
-		[move-toward]
+			(has-object{x})
+		(found-object{x})
+		(found-mine{x})
+		(at-drop-off{x})
+		(found-target-to-report{x})
+		(in-comms-range{x})
+		[disarm]
 	->
-		(has-bubbles{x})
-		(infant-activity{moving-toward})
+		(has-object{x})
 		<!>
-			(infant-activity{moving-away})
+			(found-object{x})
 		<!>
-			(infant-activity{stationary})
+			(found-mine{x})
 		<!>
-			(infant-robot-distance{direct-social-interaction})
-		(infant-robot-distance{social-interaction})
+			(at-drop-off{x})
 		<!>
-			(infant-robot-distance{solitary-play})
+			(found-target-to-report{x})
 		<!>
-			(infant-orientation{toward})
-		(infant-orientation{away})
-		[move-toward]
+			(in-comms-range{x})
+		[go-to-drop-off]
 	->
-		(has-bubbles{x})
-		(infant-activity{moving-toward})
+		(has-object{x})
 		<!>
-			(infant-activity{moving-away})
+			(found-object{x})
 		<!>
-			(infant-activity{stationary})
+			(found-mine{x})
 		<!>
-			(infant-robot-distance{direct-social-interaction})
-		(infant-robot-distance{social-interaction})
+			(at-drop-off{x})
 		<!>
-			(infant-robot-distance{solitary-play})
-		(infant-orientation{toward})
-		<!>
-			(infant-orientation{away})
-		[move-toward]
+			(found-target-to-report{x})
+		(in-comms-range{x})
+		[go-to-drop-off]
 	->
-		(has-bubbles{x})
-		(infant-activity{moving-toward})
+		(has-object{x})
 		<!>
-			(infant-activity{moving-away})
+			(found-object{x})
 		<!>
-			(infant-activity{stationary})
-		(infant-robot-distance{direct-social-interaction})
+			(found-mine{x})
 		<!>
-			(infant-robot-distance{social-interaction})
+			(at-drop-off{x})
+		(found-target-to-report{x})
 		<!>
-			(infant-robot-distance{solitary-play})
-		<!>
-			(infant-orientation{toward})
-		(infant-orientation{away})
-		[move-away]
+			(in-comms-range{x})
+		[go-to-comms]
 	->
-		(has-bubbles{x})
-		(infant-activity{moving-toward})
+		(has-object{x})
 		<!>
-			(infant-activity{moving-away})
+			(found-object{x})
 		<!>
-			(infant-activity{stationary})
-		(infant-robot-distance{direct-social-interaction})
+			(found-mine{x})
 		<!>
-			(infant-robot-distance{social-interaction})
+			(at-drop-off{x})
+		(found-target-to-report{x})
+		(in-comms-range{x})
+		[report]
+	->
+		(has-object{x})
 		<!>
-			(infant-robot-distance{solitary-play})
-		(infant-orientation{toward})
+			(found-object{x})
 		<!>
-			(infant-orientation{away})
-		[keep-away]
+			(found-mine{x})
+		(at-drop-off{x})
+		<!>
+			(found-target-to-report{x})
+		<!>
+			(in-comms-range{x})
+		[drop-off]
+	->
+		(has-object{x})
+		<!>
+			(found-object{x})
+		<!>
+			(found-mine{x})
+		(at-drop-off{x})
+		<!>
+			(found-target-to-report{x})
+		(in-comms-range{x})
+		[drop-off]
+	->
+		(has-object{x})
+		<!>
+			(found-object{x})
+		<!>
+			(found-mine{x})
+		(at-drop-off{x})
+		(found-target-to-report{x})
+		<!>
+			(in-comms-range{x})
+		[drop-off]
+	->
+		(has-object{x})
+		<!>
+			(found-object{x})
+		<!>
+			(found-mine{x})
+		(at-drop-off{x})
+		(found-target-to-report{x})
+		(in-comms-range{x})
+		[report]
+	->
+		(has-object{x})
+		<!>
+			(found-object{x})
+		(found-mine{x})
+		<!>
+			(at-drop-off{x})
+		<!>
+			(found-target-to-report{x})
+		<!>
+			(in-comms-range{x})
+		[disarm]
+	->
+		(has-object{x})
+		<!>
+			(found-object{x})
+		(found-mine{x})
+		<!>
+			(at-drop-off{x})
+		<!>
+			(found-target-to-report{x})
+		(in-comms-range{x})
+		[disarm]
+	->
+		(has-object{x})
+		<!>
+			(found-object{x})
+		(found-mine{x})
+		<!>
+			(at-drop-off{x})
+		(found-target-to-report{x})
+		<!>
+			(in-comms-range{x})
+		[disarm]
+	->
+		(has-object{x})
+		<!>
+			(found-object{x})
+		(found-mine{x})
+		<!>
+			(at-drop-off{x})
+		(found-target-to-report{x})
+		(in-comms-range{x})
+		[disarm]
+	->
+		(has-object{x})
+		<!>
+			(found-object{x})
+		(found-mine{x})
+		(at-drop-off{x})
+		<!>
+			(found-target-to-report{x})
+		<!>
+			(in-comms-range{x})
+		[disarm]
+	->
+		(has-object{x})
+		<!>
+			(found-object{x})
+		(found-mine{x})
+		(at-drop-off{x})
+		<!>
+			(found-target-to-report{x})
+		(in-comms-range{x})
+		[disarm]
+	->
+		(has-object{x})
+		<!>
+			(found-object{x})
+		(found-mine{x})
+		(at-drop-off{x})
+		(found-target-to-report{x})
+		<!>
+			(in-comms-range{x})
+		[disarm]
+	->
+		(has-object{x})
+		<!>
+			(found-object{x})
+		(found-mine{x})
+		(at-drop-off{x})
+		(found-target-to-report{x})
+		(in-comms-range{x})
+		[disarm]
+	->
+		(has-object{x})
+		(found-object{x})
+		<!>
+			(found-mine{x})
+		<!>
+			(at-drop-off{x})
+		<!>
+			(found-target-to-report{x})
+		<!>
+			(in-comms-range{x})
+		[go-to-drop-off]
+	->
+		(has-object{x})
+		(found-object{x})
+		<!>
+			(found-mine{x})
+		<!>
+			(at-drop-off{x})
+		<!>
+			(found-target-to-report{x})
+		(in-comms-range{x})
+		[go-to-drop-off]
+	->
+		(has-object{x})
+		(found-object{x})
+		<!>
+			(found-mine{x})
+		<!>
+			(at-drop-off{x})
+		(found-target-to-report{x})
+		<!>
+			(in-comms-range{x})
+		[go-to-comms]
+	->
+		(has-object{x})
+		(found-object{x})
+		<!>
+			(found-mine{x})
+		<!>
+			(at-drop-off{x})
+		(found-target-to-report{x})
+		(in-comms-range{x})
+		[report]
+	->
+		(has-object{x})
+		(found-object{x})
+		<!>
+			(found-mine{x})
+		(at-drop-off{x})
+		<!>
+			(found-target-to-report{x})
+		<!>
+			(in-comms-range{x})
+		[drop-off]
+	->
+		(has-object{x})
+		(found-object{x})
+		<!>
+			(found-mine{x})
+		(at-drop-off{x})
+		<!>
+			(found-target-to-report{x})
+		(in-comms-range{x})
+		[drop-off]
+	->
+		(has-object{x})
+		(found-object{x})
+		<!>
+			(found-mine{x})
+		(at-drop-off{x})
+		(found-target-to-report{x})
+		<!>
+			(in-comms-range{x})
+		[drop-off]
+	->
+		(has-object{x})
+		(found-object{x})
+		<!>
+			(found-mine{x})
+		(at-drop-off{x})
+		(found-target-to-report{x})
+		(in-comms-range{x})
+		[report]
+	->
+		(has-object{x})
+		(found-object{x})
+		(found-mine{x})
+		<!>
+			(at-drop-off{x})
+		<!>
+			(found-target-to-report{x})
+		<!>
+			(in-comms-range{x})
+		[disarm]
+	->
+		(has-object{x})
+		(found-object{x})
+		(found-mine{x})
+		<!>
+			(at-drop-off{x})
+		<!>
+			(found-target-to-report{x})
+		(in-comms-range{x})
+		[disarm]
+	->
+		(has-object{x})
+		(found-object{x})
+		(found-mine{x})
+		<!>
+			(at-drop-off{x})
+		(found-target-to-report{x})
+		<!>
+			(in-comms-range{x})
+		[disarm]
+	->
+		(has-object{x})
+		(found-object{x})
+		(found-mine{x})
+		<!>
+			(at-drop-off{x})
+		(found-target-to-report{x})
+		(in-comms-range{x})
+		[disarm]
+	->
+		(has-object{x})
+		(found-object{x})
+		(found-mine{x})
+		(at-drop-off{x})
+		<!>
+			(found-target-to-report{x})
+		<!>
+			(in-comms-range{x})
+		[disarm]
+	->
+		(has-object{x})
+		(found-object{x})
+		(found-mine{x})
+		(at-drop-off{x})
+		<!>
+			(found-target-to-report{x})
+		(in-comms-range{x})
+		[disarm]
+	->
+		(has-object{x})
+		(found-object{x})
+		(found-mine{x})
+		(at-drop-off{x})
+		(found-target-to-report{x})
+		<!>
+			(in-comms-range{x})
+		[disarm]
+	->
+		(has-object{x})
+		(found-object{x})
+		(found-mine{x})
+		(at-drop-off{x})
+		(found-target-to-report{x})
+		(in-comms-range{x})
+		[disarm]

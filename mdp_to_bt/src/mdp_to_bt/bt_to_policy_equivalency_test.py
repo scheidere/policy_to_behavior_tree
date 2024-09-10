@@ -195,10 +195,10 @@ class CompareBTPolicy():
 
     def get_condition_label(self, condition_term):
 
-        # num_c_terms = len(condition_term)-1 # Last term of state is 0/1 representing False/True
-        # print("num_c_terms ", num_c_terms)
+        ###label = condition_term[0] + '{' + condition_term[1] + '}' # new way
 
-        ###label = condition_term[0] + '{' + condition_term[1] + '}'
+        num_c_terms = len(condition_term)-1 # Last term of state is 0/1 representing False/True
+        # print("num_c_terms ", num_c_terms)
 
         for label in self.bt.condition_nodes.keys():
             found = True
