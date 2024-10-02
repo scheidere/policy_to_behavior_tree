@@ -54,6 +54,7 @@ def solve(solver,P,R):
 
     if solver == 'v':
         val_it = mdptoolbox.mdp.ValueIteration(P, R, 0.96)
+        #val_it = mdptoolbox.mdp.ValueIteration(P, R, 0.96,epsilon=0.001) # as opposed to default 0.01 (testing for infant domain)
         val_it.run()
         policy = val_it.policy
         print('\nPolicy: ', val_it.policy)

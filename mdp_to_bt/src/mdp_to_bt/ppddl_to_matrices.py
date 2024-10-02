@@ -301,7 +301,7 @@ def preconditionSatisfiedNoParams(start_state, action, combo_dict=None, test=Fal
 
 def getPrecondArgValues(precond, combo_dict):
 
-    #print(('In getPrecondArgValues',precond,precond._predicate.args))
+    print(('In getPrecondArgValues',precond,precond._predicate.args))
 
     vals = []
     for arg in precond._predicate.args:
@@ -1073,9 +1073,9 @@ def getPandR(domain,problem):
         actions = getActionsWithParamsList(domain,problem) # old var name: actions_with_params
         #print('actions: ', actions)
         #input('yo1')
-        # print('actions: ')
-        # for action in actions:
-        #     print(action[0]._name, action[1])
+        print('actions: ')
+        for action in actions:
+            print(action[0]._name, action[1])
         #input('yo2')
 
         # for a in actions:
@@ -1090,7 +1090,7 @@ def getPandR(domain,problem):
 
     for action_term in actions:
 
-        #print(('action_term', action_term))
+        print(('action_term', action_term))
 
         # if problem != None:
         #     action, combo_dict = action_term # action term is [action, params]
@@ -1099,6 +1099,9 @@ def getPandR(domain,problem):
 
         if problem != None and action_term[1]!={}:
             action, combo_dict = action_term # action term is [action, params]
+            print("action: ", action)
+            print("combo_dict: ", combo_dict)
+            #input(".")
         elif problem == None:
             action = action_term
         else:
@@ -1126,11 +1129,16 @@ def getPandR(domain,problem):
             # Get list of [end state, prob, reward] terms, given action and start state
             # Also return only the actions_with_params that satisfy preconds
             if combo_dict:
-                #print('combo_dict')
+                print('combo_dict')
                 outcome_list, precond_satisfied = outcome(start_state,action,param_values=combo_dict)
             else: # no parameters
-                #print('no params')
+                print('no params')
                 outcome_list, precond_satisfied = outcome(start_state,action)
+
+            # print("outcome_list: ", outcome_list)
+            # print("precond_satisfied: ", precond_satisfied)
+            print(i)
+            #input('.')
 
             # Update NxN matrices, p and r according to outcome
             # print(('outcome_list ', outcome_list))
@@ -1363,7 +1371,7 @@ def saveReadablePolicy(policy, states, actions_with_params):
         count += 1
 
     print("count")
-    input(count)
+    #input(count)
 
     #f.close()
     #fa.close()

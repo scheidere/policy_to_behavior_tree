@@ -1,0 +1,129 @@
+(define (domain infant-mobility)
+
+    ; Same as final_domain.ppddl except all action preconditions have wrong precondition added
+    ; Either (has-bubbles ?x) or (infant-activity stationary), depending on which wasn't present
+    ; Those were arbitrary choices
+    
+    (:requirements :equality :typing :probabilistic-effects)
+
+    (:types None activity distance orientation)
+
+    (:predicates
+        (has-bubbles ?x - None)
+        (infant-activity ?x - activity)
+        (infant-robot-distance ?x - distance)
+        (infant-orientation ?x - orientation)
+    )
+
+    (:constants
+        direct-social-interaction social-interaction solitary-play - distance
+        moving-toward moving-away stationary - activity
+        toward away obstructed - orientation
+    )
+    
+    (:constraints
+        (and
+            (forall (?act - activity) (at-most-once (infant-activity ?act)))
+            (forall (?dst - distance) (at-most-once (infant-robot-distance ?dst)))
+            (forall (?otn - orientation) (at-most-once (infant-orientation ?otn)))
+        )
+    )
+
+    ; EDITED (added (has-bubbles ?x)) AND added ?x - None to parameters to accommodate
+    (:action spin
+
+        :parameters (?x - None)
+        :precondition (and (infant-activity stationary) (not (infant-orientation obstructed)) (has-bubbles ?x))
+        :effect (probabilistic 0.7 (and (infant-activity moving-toward) (increase reward 2))
+                               0.15 (increase reward -2)
+                               0.15 (increase reward -2)
+                )
+    )
+
+    ; EDITED (added (has-bubbles ?x) within an (and )) AND added ?x - None to parameters to accommodate
+    (:action move-toward
+
+        :parameters (?x - None)
+        :precondition (and (not (infant-robot-distance direct-social-interaction)) (has-bubbles ?x))
+        :effect (probabilistic 0.7 (and (infant-activity moving-toward) (increase reward 2))
+                               0.15 (increase reward -2)
+                               0.15 (increase reward -2)
+                )
+    )
+
+    ; EDITED (added (has-bubbles ?x) in the or) AND added ?x - None to parameters to accommodate
+    (:action move-away
+
+        :parameters (?x - None)
+        :precondition (or (infant-robot-distance direct-social-interaction) (infant-robot-distance social-interaction) (infant-robot-distance solitary-play) (has-bubbles ?x))
+        :effect (probabilistic 0.7 (and (infant-activity moving-toward) (increase reward 2))
+                               0.15 (increase reward -2)
+                               0.15 (increase reward -2)
+                )
+    )
+
+    ; EDITED added (infant-activity stationary)
+    (:action blow-bubbles
+
+        :parameters (?x - None)
+        :precondition (and (infant-robot-distance social-interaction) (has-bubbles ?x) (infant-orientation toward) (infant-activity stationary))
+        :effect (probabilistic 0.9 (and (infant-activity moving-toward) (increase reward 3))
+                               0.05 (increase reward -3)
+                               0.05 (and (not (has-bubbles ?x)) (increase reward -3))
+                )
+    )
+
+    ; EDITED added (infant-activity stationary) in (and )
+    (:action refill-bubbles
+
+        :parameters (?x - None)
+        :precondition (and (not (has-bubbles ?x)) (infant-activity stationary))
+        :effect (and (has-bubbles ?x))
+    )
+
+    ; EDITED (added (has-bubbles ?x)) AND added ?x - None to parameters to accommodate
+    (:action play-sounds
+
+        :parameters ()
+        :precondition (and (not (infant-activity moving-toward)) (infant-orientation away) (has-bubbles ?x))
+        :effect (probabilistic 0.7 (and (infant-activity moving-toward) (increase reward 2))
+                               0.15 (increase reward -2)
+                               0.15 (increase reward -2)
+                )
+    )
+
+    ; EDITED (added (has-bubbles ?x)) AND added ?x - None to parameters to accommodate
+    (:action lights-and-sounds
+
+        :parameters (?x - None)
+        :precondition (and (infant-activity moving-away) (infant-orientation away) (has-bubbles ?x))
+        :effect (probabilistic 0.8 (and (infant-activity moving-toward) (increase reward 2))
+                               0.1 (increase reward -2)
+                               0.1 (increase reward -2)
+                )
+    )
+
+    ; EDITED (added (has-bubbles ?x)) AND added ?x - None to parameters to accommodate
+    (:action keep-away
+
+        :parameters (?x - None)
+        :precondition (and (infant-robot-distance direct-social-interaction) (infant-orientation toward) (has-bubbles ?x))
+        :effect (probabilistic 0.9 (and (infant-robot-distance social-interaction) (infant-activity moving-toward) (increase reward 2))
+                               0.05 (and (infant-robot-distance social-interaction) (infant-activity stationary) (increase reward -2)) 
+                               0.05 (and (infant-robot-distance solitary-play) (infant-activity stationary) (increase reward -2))
+                )
+    )
+
+    ; EDITED (added (has-bubbles ?x)) AND added ?x - None to parameters to accommodate
+    (:action go-to-infant
+     
+        :parameters (?x - None)
+        :precondition (and (infant-robot-distance solitary-play) (infant-orientation obstructed) (has-bubbles ?x))
+        :effect (probabilistic 0.45 (and (infant-robot-distance direct-social-interaction) (infant-activity moving-toward) (infant-orientation toward) (increase reward 2))
+                               0.45 (and (infant-robot-distance direct-social-interaction) (infant-activity moving-toward) (infant-orientation away) (increase reward 2))
+                               0.05 (and (infant-robot-distance direct-social-interaction) (infant-activity moving-away) (increase reward -2))
+                               0.05 (and (infant-robot-distance social-interaction) (infant-activity moving-away) (increase reward -2))
+                )
+    )
+
+)

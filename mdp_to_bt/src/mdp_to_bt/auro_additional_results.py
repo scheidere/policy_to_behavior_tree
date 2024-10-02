@@ -21,6 +21,7 @@ def get_file_paths(domain_option, group_option):
             path_to_domains = pddl_path + "both_false_penalty/" # Group of 16
 
     elif domain_option == "i":
+
         pddl_path = "/home/emily/auro_ws/src/policy_to_behavior_tree/pypddl_parser/src/pypddl_parser/pddl/infant_mobility/"
         problem_path = pddl_path + "problems/problem3.ppddl"
 
@@ -190,7 +191,7 @@ def examine_domain_group(domain_option, group_option):
 
     for file in domain_files:
 
-        if file != 'domain_deterministic.ppddl':
+        if file != 'domain_deterministic.ppddl' and file != 'problem.ppddl':
 
 
             domain_path = path_to_domains + file
@@ -270,6 +271,6 @@ if __name__ == "__main__":
     # Group option "pen" or "prob"
     # "pen" for const penalty, varied action effect uncertainty (total of 4 domains)
     # "prob" for const action effect uncertainty, varied false positive and false negative penalties (total of 16 domains)
-    group_option = "pen"
+    group_option = "prob"
 
     examine_domain_group(domain_option, group_option)

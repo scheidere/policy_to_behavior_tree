@@ -85,7 +85,7 @@ def main(domain, problem, config):
     f.write(str(policy)+"\n")
 
     print(len(states))
-    input(len(policy))
+    #input(len(policy))
 
     # Uncomment line below to (re)generate readable policy to a file (see saveReadablePolicy in ppddl_to_matrices.py for file location)
     saveReadablePolicy(policy,states,actions_with_params)

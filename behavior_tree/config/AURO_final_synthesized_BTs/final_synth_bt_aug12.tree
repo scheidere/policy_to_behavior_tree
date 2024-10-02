@@ -1,23 +1,11 @@
 ?
 	->
-		(found-object{x})
-		<!>
-			(found-mine{x})
-		<!>
-			(found-target-to-report{x})
-		<!>
-			(has-object{x})
-		[pick-up]
-	->
 		(at-drop-off{x})
 		(has-object{x})
 		<!>
 			(found-mine{x})
-		?
-			<!>
-				(found-target-to-report{x})
-			<!>
-				(in-comms-range{x})
+		<!>
+			(found-target-to-report{x})
 		[drop-off]
 	->
 		(found-mine{x})

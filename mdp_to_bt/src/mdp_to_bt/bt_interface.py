@@ -130,6 +130,10 @@ class BT_Interface():
         
         #print(self.condition_nodes.keys())
 
+        print("In setConditionStatus")
+        print("Condition: ", condition)
+        print("Bool: ", success)
+
         try:
             nodes = self.condition_nodes[condition]
         except KeyError:
@@ -152,7 +156,7 @@ class BT_Interface():
     def setAllActionsRunning(self):
 
         for action in self.action_nodes.values():
-            print(action)
+            #print(action)
             action[0].set_status(ReturnStatus(Status.RUNNING))
 
     def setActionStatusFailure(self, action):

@@ -203,7 +203,7 @@
 			(found-target-to-report{x})
 		<!>
 			(in-comms-range{x})
-		[pick-up]
+		[explore]
 	->
 		<!>
 			(has-object{x})
@@ -215,7 +215,7 @@
 		<!>
 			(found-target-to-report{x})
 		(in-comms-range{x})
-		[pick-up]
+		[explore]
 	->
 		<!>
 			(has-object{x})
@@ -250,7 +250,7 @@
 			(found-target-to-report{x})
 		<!>
 			(in-comms-range{x})
-		[pick-up]
+		[explore]
 	->
 		<!>
 			(has-object{x})
@@ -261,7 +261,7 @@
 		<!>
 			(found-target-to-report{x})
 		(in-comms-range{x})
-		[pick-up]
+		[explore]
 	->
 		<!>
 			(has-object{x})
@@ -448,7 +448,7 @@
 		(found-target-to-report{x})
 		<!>
 			(in-comms-range{x})
-		[drop-off]
+		[go-to-comms]
 	->
 		(has-object{x})
 		<!>
@@ -617,7 +617,7 @@
 		(found-target-to-report{x})
 		<!>
 			(in-comms-range{x})
-		[drop-off]
+		[go-to-comms]
 	->
 		(has-object{x})
 		(found-object{x})
