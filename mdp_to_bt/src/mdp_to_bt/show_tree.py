@@ -45,7 +45,10 @@ if __name__ == '__main__':
         #path = "/home/emily/Desktop/more_AURO_results/marine_final_1/"
 
         # infant
-        path = "/home/emily/Desktop/more_AURO_results/infant_final/"
+        #path = "/home/emily/Desktop/more_AURO_results/infant_final/"
+
+        # vacuum
+        path = "/home/emily/Desktop/more_AURO_results/vacuum_basic/"
 
 
         bt_path = path + "final_synth_bt.tree"

@@ -711,13 +711,15 @@ def outcome(start_state, action, param_values = None, test=False):
 
     #test (remove these lines after you can access the else below)
     action_effects = action.effects[0] # Indexed to remove duplicate outer list
-    #print('Action effect: ', action_effects)
+    print("State: ", start_state)
+    print("Action: ", action)
+    print('Action effect: ', action_effects)
     #input('Waiting')
 
 
     if not preconditionSatisfied(start_state,action, combo_dict=param_values):
 
-        #print('Precondition not satisfied...')
+        #input('Precondition not satisfied...')
 
         outcome_sublist = [unchanged_state_terms,1.0,0]
         outcome_list.append(outcome_sublist)
@@ -1135,8 +1137,8 @@ def getPandR(domain,problem):
                 print('no params')
                 outcome_list, precond_satisfied = outcome(start_state,action)
 
-            # print("outcome_list: ", outcome_list)
-            # print("precond_satisfied: ", precond_satisfied)
+            print("outcome_list: ", outcome_list)
+            print("precond_satisfied: ", precond_satisfied)
             print(i)
             #input('.')
 
@@ -1159,7 +1161,7 @@ def getPandR(domain,problem):
                 else:
                     j_duplicate_tracker[j].append(outcome_sublist)
 
-            #print('j track', j_duplicate_tracker)
+            print('j track', j_duplicate_tracker)
             p_sum_check = []
             r_sum_check = []
             # Make sure to count all outcome_sublists, which may have the same outcome state, indexed by j

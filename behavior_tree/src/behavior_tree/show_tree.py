@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import rospy
 import yaml
@@ -44,6 +44,8 @@ if __name__ == '__main__':
     # Get the config file etc
     rospack = rospkg.RosPack()
     filepath = rospack.get_path('behavior_tree') + "/config/" + rospy.get_param('~config')
+
+    input(str(filepath))
 
     graphviz_pub = rospy.Publisher('behavior_tree_graphviz', String, queue_size=1)
     compressed_pub = rospy.Publisher('behavior_tree_graphviz_compressed', String, queue_size=1)

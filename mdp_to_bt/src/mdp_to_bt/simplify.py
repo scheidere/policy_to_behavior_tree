@@ -213,6 +213,12 @@ class Simplify:
 
         # Find all state indexes in policy that have action num
         state_indices = [index for index, element in enumerate(self.policy) if element == action_num]
+
+        print("Action_num: ", action_num)
+        print("State indices: ", state_indices)
+        print("States from indices: ")
+        for idx in state_indices:
+            print(self.states[idx])
         
         for idx in state_indices:
 
@@ -834,8 +840,8 @@ class Simplify:
             #print('i ', i)
 
             #action = self.actions[i]
-            # print('action', action)
             action = self.actions[action_num]
+            print('action', action[0])
 
             self.f.write(str(action[0])+"\n")
 
@@ -863,7 +869,9 @@ class Simplify:
 
             # Get list of numeric states the policy states action a should be taken in
             minterms = self.getActionStates(action_num) # switch to take action num
-            #print('minterms', minterms)
+            print('minterms', minterms)
+            print("All states: ", self.states)
+            #input("hi")
             self.f.write(str(minterms)+"\n")
 
             prev_minterms = minterms
