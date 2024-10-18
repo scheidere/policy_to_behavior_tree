@@ -1,6 +1,6 @@
 # Behavior Tree Synthesis for MDPs through Probabilistic PDDL 
 
-This repo provides a method of translating an MDP represented by a Probabilistic PDDL (PPDDL) specification into behavior tree (BT) form, including a policy simplification step based on Boolean albebra. This method is applicable to domains with nondeterministic actions, unlike previous methods that only relate PDDL to BTs.
+This repository provides a method of behavior tree synthesis from an MDP specified in Probabilistic PDDL (PPDDL) by a user. This synthesis occurs through the translation of the PPDDL MDP specification into a solveable form, the solving of that MDP for the optimal policy, a policy simplification step using Boolean albebra, and a unique conversion method from this simplified policy to a compact, but equivalent, behavior tree. This method is applicable to domains with nondeterministic actions, unlike previous methods that only relate PDDL to BTs.
 
 In the future, we plan to extend this work to accommodate POMDPs and multi-robot sytems.
 
@@ -8,15 +8,15 @@ In the future, we plan to extend this work to accommodate POMDPs and multi-robot
 
 There are five main stages to this method:
 
-* PPDDL specification, i.e. a domain.ppddl and a problem.ppddl file that relate to each other.
+* PPDDL specification, i.e., a domain.ppddl and a problem.ppddl file that relate to each other and collectively represent an MDP.
 
-* Conversion of the PPDDL specification that represents an MDP to equivalent, but solvable matrix form: the transition probability matrix, and the reward matrix.
+* Conversion of the PPDDL MDP specification to the equivalent, but solvable matrix form: the transition probability matrix, and the reward matrix.
 
-* A Q-learning algorithm that solves the MDP for a policy.
+* A value iteration algorithm that solves the MDP for the optimal policy.
 
 * A policy simplification method using Boolean algebra rules that removes redundancies in the policy, preparing it for conversion to behavior tree form.
 
-* A method of conversion to a behavior tree to make the policy readable.
+* A method of conversion from the simplified optimal policy to a functionally equivalent and compact behavior tree, with the objective of increasing interpretability.
 
 ## Getting Started
 
@@ -27,7 +27,7 @@ There are five main stages to this method:
 ### Installation
 
 * Create a catkin workspace like [this](http://wiki.ros.org/catkin/Tutorials/create_a_workspace)
-* Navigate to the src directory in your workspace and clone this repo
+* Navigate to the src directory in your workspace and clone this repository
 
 ### Executing the program 
 
@@ -42,23 +42,6 @@ There are five main stages to this method:
 * Next, similarly update the path variable in main.py where intermediate data will be stored. Currently, the path points to the mdp_to_bt/src/mdp_to_bt/policy_eval_output/ directory.
 
 * To run the **method without policy simplification**: ```roslaunch main.launch config:=no_simp domain:=domain-path problem:=problem-path```
-
-## Executing the program (deprecated)
-
-* Navigate to the following location: 
-```~/your_workspace/src/policy_to_behavior_tree/mdp_to_bt/src/mdp_to_bt```
-* Locate your domain and problem file paths, which we will refer to as domain-path and problem-path.
-* Open another terminal window and run ```roscore```.
-* Run the main method:
-```python3 main.py domain-path problem-path```
-* The solved for policy and simplified policy will both be converted to and saved as behavior trees. You can access these .tree files in ```~/your_workspace/src/policy_to_behavior_tree/behavior_tree/config```. They are raw_policy_bt.tree and simplified_bt.tree.
-* To visualize these trees, ```rosrun behavior_tree show_tree.py file_name```, where ```file_name``` is the .tree file you want to show. Once this is running, run ```rqt``` in a new terminal window.
-* To evaluate a probabilistic domain against the deterministic version (given ```roscore``` is running) run:
-```python3 policy_comparison.py```
-
-## Help
-
-* Remember to ```source devel/setup.bash``` in the root of your workspace with every new terminal window if you haven't automated this.
 
 ## Acknowledgments
 
