@@ -653,7 +653,9 @@ class BehaviorTree:
             # Make sure that if there are more than one of the same action, if any are active, then active should be published
             unique_action_nodes = {}
             for node in self.nodes:
-                #print("node: ", node, node.label)
+                print("node: ", node, node.label)
+                print("is active?", node.is_active)
+                #input('.')
                 if isinstance(node, Action):
                     #print("unique_action_nodes ", unique_action_nodes.keys(), "\n")
                     #print("action node: ", node.label, ", ", node.is_active, ", ", node.is_newly_active, "\n")
@@ -688,6 +690,12 @@ class BehaviorTree:
             unique_condition_nodes = {}
             for node in self.nodes:
                 if isinstance(node, Condition):
+                    print("Node is condition ", node.label)
+                    if node.label not in list(unique_condition_nodes.keys()):
+                        print("Node label not in unique_condition_nodes dict")
+                    if node.is_active:
+                        print("Node is active from .is_active")
+                        #input("Found active")
                     if node.label not in list(unique_condition_nodes.keys()) or node.is_active:
                         #if node.is_active:
                         unique_condition_nodes[node.label] = node
@@ -697,8 +705,10 @@ class BehaviorTree:
                             self.active_condition_ids[node.label] += 1
                     #else:
                     #    unique_action_nodes[node.label] = node
-                        
+
+            print("unique_condition_nodes items (label, node): ")
             for label, node in unique_condition_nodes.items():
+                print(label, node)
                 #active_msg = Bool()
                 #active_msg.data = node.is_active
                 #node.publisher.publish(active_msg)
@@ -833,17 +843,33 @@ class BehaviorTree:
         # returns list of all actions that are active currently as a list of strings (i.e. names)
         # Pulled from bt_interface in MCDAGS work
 
+        print("In active conditions")
         active_conditions = []
-        
+
+        print("bt.condition_nodes.values, active?: ")
         for n in list(self.condition_nodes.values()):
+            
             is_active = False
             for node in n:
                 if node.is_active:
                     is_active = True
+            print(is_active, n[0].label)
             if is_active:
                 active_conditions.append(n[0].label)
 
+        #input("holding for getActiveConditions")
+
         return active_conditions
+
+
+    def getConditionStatuses(self):
+
+        for node_instance_list in list(self.condition_nodes.values()):
+
+            print("Node label: ", node_instance_list[0].label)
+            print(node_instance_list)
+            for node in node_instance_list:
+                print(node.status.status)
 
     def changeConditionStatus(self): 
 

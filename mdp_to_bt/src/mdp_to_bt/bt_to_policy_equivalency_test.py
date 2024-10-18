@@ -40,14 +40,76 @@ class CompareBTPolicy():
     #     graphviz_pub.publish(graphviz_msg)
     #     compressed_pub.publish(compressed_msg)
 
+    def bt_to_policyNEW(self, bt, domain, problem):
+
+        try:
+            f = open("/home/emily/Desktop/more_AURO_results/policy_from_bt.txt", "w+")
+            fa = open("/home/emily/Desktop/more_AURO_results/policy_actions_from_bt.txt", "w+")
+            fb = open("/home/emily/Desktop/more_AURO_results/running_active_actions.txt", "w+")
+            print('In bt_to_policy +++++++++++++++++++===')
+
+            self.init_bt()
+            states = getStateList(domain, problem)
+            states.reverse()  # Reverse list so pop works correctly
+            num_states = len(states)
+
+            done = False
+            state_count = 0
+            while not rospy.is_shutdown() and not done:
+
+                state = states.pop()
+                state_count += 1
+                self.update_bt(state)
+                f.write(f"State count: {state_count}\n")
+                f.write(f"State: {state}\n")
+
+
+                self.bt_interface.setAllActionsRunning()
+
+                self.bt.tick()
+                # self.show_tree()
+
+                self.bt_interface.setAllActionsRunning()
+                #self.show_tree()
+
+                active_actions = self.bt.getActiveActions()
+                running_active_actions = self.get_running_actions_from_active_actions(active_actions)
+                print("Running active actions: ", running_active_actions)
+                active_conditions = self.bt.getActiveConditions()
+
+
+                first_active_running_action = running_active_actions[0].split("(", 1)[0]
+                f.write(f"Action: {first_active_running_action}\n")
+                fa.write(f"{first_active_running_action}\n")
+                fb.write(f"State count: {state_count}\n")
+                fb.write(f"State: {state}\n")
+                fb.write(f"BT conditions: {active_conditions}\n")
+                fb.write(f"Active actions: {active_actions}\n")
+                fb.write(f"Running active actions: {running_active_actions}\n")
+                fb.write(f"Action: {first_active_running_action}\n")
+
+                # If have checked all states, stop
+                if state_count == num_states and not done:
+                    print("All states processed. Exiting...")
+                    done = True
+            f.close()
+            fa.close()
+
+
+            print('End bt_to_policy +++++++++++++++++++===')
+            input("hi at end")
+            
+
+        except rospy.ROSInterruptException: pass
+
 
 
     def bt_to_policy(self, bt, domain, problem):
 
         try:
-            f = open("/home/emily/Desktop/more_AURO_results/policy_from_btGRAEME.txt", "w+")
-            fa = open("/home/emily/Desktop/more_AURO_results/policy_actions_from_btGRAEME.txt", "w+")
-            fb = open("/home/emily/Desktop/more_AURO_results/running_active_actionsGRAEME.txt", "w+")
+            f = open("/home/emily/Desktop/more_AURO_results/policy_from_bt.txt", "w+")
+            fa = open("/home/emily/Desktop/more_AURO_results/policy_actions_from_bt.txt", "w+")
+            fb = open("/home/emily/Desktop/more_AURO_results/running_active_actions.txt", "w+")
             print('In bt_to_policy +++++++++++++++++++===')
             
             self.init_bt()
@@ -77,28 +139,36 @@ class CompareBTPolicy():
                 f.write(f"State: {state}\n")
                 #update_state = False
 
+                # self.bt.getConditionStatuses()
+                # active_conditions = self.bt.getActiveConditions()
+                # input("before actions set to running")
+
 
                 self.bt_interface.setAllActionsRunning()
 
                 self.bt.tick()
+                print("root is_active: ", self.bt.root.is_active)
+                #input(".")
                 # self.show_tree()
 
                 self.bt_interface.setAllActionsRunning()
                 #self.show_tree()
 
                 active_actions = self.bt.getActiveActions()
-                print("State: ", state)
-                print("state index: ", state_count)
-                print("active_actions: ", active_actions)
+                # print("State: ", state)
+                # print("state index: ", state_count)
+                # print("active_actions: ", active_actions)
                 #input("hmm ")
                 running_active_actions = self.get_running_actions_from_active_actions(active_actions)
                 print("Running active actions: ", running_active_actions)
+                print("Checking condition statuses right before getActiveConditions +++++++++")
+                self.bt.getConditionStatuses()
                 active_conditions = self.bt.getActiveConditions()
 
                 if running_active_actions:
 
                     first_active_running_action = running_active_actions[0].split("(", 1)[0]
-                    print("first active running action: ", first_active_running_action)
+                    #print("first active running action: ", first_active_running_action)
                     #input("hmm 2")
                     f.write(f"Action: {first_active_running_action}\n")
                     fa.write(f"{first_active_running_action}\n")
@@ -123,7 +193,7 @@ class CompareBTPolicy():
             f.close()
             fa.close()
 
-            print('End bt_to_policy +++++++++++++++++++===')
+            #print('End bt_to_policy +++++++++++++++++++===')
             
 
         except rospy.ROSInterruptException: pass
@@ -165,40 +235,44 @@ class CompareBTPolicy():
 
         return statuses
 
-    def get_condition_statuses(self):
+    # def get_condition_statuses(self):
 
-        # Self.bt.condition_nodes is a dict where keys are conditions labels and values are instances
-        # Returns statuses in a list of ALL condition node instances (not just by type)
+    #     # Self.bt.condition_nodes is a dict where keys are conditions labels and values are instances
+    #     # Returns statuses in a list of ALL condition node instances (not just by type)
 
-        statuses = []
-        for lst in list(self.bt.condition_nodes.values()):
-            #print("lst", lst)
-            for c in lst:
-                #print("c", c)
-                statuses.append(c.status.status)
+    #     statuses = []
+    #     for lst in list(self.bt.condition_nodes.values()):
+    #         #print("lst", lst)
+    #         for c in lst:
+    #             #print("c", c)
+    #             statuses.append(c.status.status)
 
-        return statuses
+    #     return statuses
 
-    def get_c_label(self, c_label_pure):
+    # def get_c_label(self, c_label_pure):
 
-        # Condition labels in the BT currently contain "x" and "_"
-        # We need to match these for update statuses 
-        # Assumes condition names don't overlap 
+    #     # Condition labels in the BT currently contain "x" and "_"
+    #     # We need to match these for update statuses 
+    #     # Assumes condition names don't overlap 
 
-        #print("YEE", self.bt.condition_nodes.keys())
+    #     #print("YEE", self.bt.condition_nodes.keys())
 
-        for label in self.bt.condition_nodes.keys():
-            if c_label_pure in label:
-                #print("YO", c_label_pure,label)
-                return label
-        return None # ERROR
+    #     for label in self.bt.condition_nodes.keys():
+    #         if c_label_pure in label:
+    #             #print("YO", c_label_pure,label)
+    #             return label
+    #     return None # ERROR
 
-    def get_condition_label(self, term):
+    def get_condition_label(self, condition_term):
+
+        label = condition_term[0] + '{' + condition_term[1] + '}' # new way
+
+        print("condition label: ", label)
+        #input('.')
+        return label
 
         # num_c_terms = len(condition_term)-1 # Last term of state is 0/1 representing False/True
-        # print("num_c_terms ", num_c_terms)
-
-        condition_label = term[0] + '{' + term[1] + '}'
+        # # print("num_c_terms ", num_c_terms)
 
         # for label in self.bt.condition_nodes.keys():
         #     found = True
@@ -215,7 +289,7 @@ class CompareBTPolicy():
         #     if found:
         #         return label
 
-        return condition_label
+        
 
     def update_bt(self, state):
 
@@ -242,14 +316,14 @@ class CompareBTPolicy():
         # Update below!
         # Takes state format generated from getStatesList that pulls from the PPDDL domain and problem directly
         # Does include constraints
-        print("In update_bt")
+        print("In update_bt+++++++")
         print("State: ", state)
 
         for i in range(len(state)):
 
             c = state[i] # e.g. ['infant-orientation', 'toward', 1] but could have more than one param like 'toward'
 
-            print("c: ", c)
+            #print("c: ", c)
 
             c_label = self.get_condition_label(c)
             
@@ -259,7 +333,19 @@ class CompareBTPolicy():
                 boolean = True
             else:
                 boolean = False
+            # if boolean:
+            #     input("FOUND TRUE")
             self.bt_interface.setConditionStatus(c_label,boolean)
+            # if boolean:
+            #     input("FOUND TRUE 2")
+
+        # For debugging, check if conditions in BT are changed appropriately here
+        print("Checking if condition statuses updated in update_bt():")
+        self.bt.getConditionStatuses() # they do get updated here
+        #self.bt.getActiveConditions()
+
+        self.bt.tick()
+
 
         # Need to set all actions to running
 
@@ -315,11 +401,17 @@ if __name__ == "__main__":
     # domain_path = "/home/emily/auro_ws/src/policy_to_behavior_tree/pypddl_parser/src/pypddl_parser/pddl/AURO/infant/final_domain.ppddl"
     # problem_path = "/home/emily/auro_ws/src/policy_to_behavior_tree/pypddl_parser/src/pypddl_parser/pddl/AURO/infant/problem.ppddl"
 
+    # For testing only
     # marine
     #path = "/home/emily/Desktop/more_AURO_results/marine_final_1/"
-
+    #path = "/home/emily/Desktop/more_AURO_results/marine_p10_prob1/"
+    
     # infant
-    path = "/home/emily/Desktop/more_AURO_results/infant_final/"
+    #path = "/home/emily/Desktop/more_AURO_results/infant_final/"
+    #path = "/home/emily/Desktop/more_AURO_results/infant_p10_prob3/"
+
+    # General path for when called from auro_additional_results.py
+    path = "/home/emily/Desktop/more_AURO_results/"
 
 
     bt_path = path + "final_synth_bt.tree"
@@ -336,11 +428,14 @@ if __name__ == "__main__":
     cbtp = CompareBTPolicy(bt_path,domain,problem)
     #cbtp = CompareBTPolicy(bt_deterministic_path,domain,problem)
 
-    only_publish_on_change = False
+    do_rqt = False
+    if do_rqt:
 
-    graphviz_pub = rospy.Publisher('behavior_tree_graphviz', String, queue_size=1)
-    compressed_pub = rospy.Publisher('behavior_tree_graphviz_compressed', String, queue_size=1)
+        only_publish_on_change = False
 
-    timer = rospy.Timer(rospy.Duration(0.05), timer_callback)
+        graphviz_pub = rospy.Publisher('behavior_tree_graphviz', String, queue_size=1)
+        compressed_pub = rospy.Publisher('behavior_tree_graphviz_compressed', String, queue_size=1)
 
-    rospy.spin()
+        timer = rospy.Timer(rospy.Duration(0.05), timer_callback)
+
+        rospy.spin()

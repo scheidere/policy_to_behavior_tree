@@ -33,9 +33,11 @@ class Simplify:
         self.f.write("action nums in policy: " + str(self.action_nums_in_policy)+"\n")
         self.f.write("actions: \n")
         for i in range(len(self.actions)):
+            #print(action)
             action = self.actions[i][0]
             self.f.write(str(i) + ": " + str(action)+"\n")
         #f.write("actions: " + str(self.actions)+"\n")
+        #input("actions above")
 
         self.reorder_actions()
         f.write("action nums in policy 2: " + str(self.action_nums_in_policy)+"\n")
@@ -133,8 +135,7 @@ class Simplify:
                 #actions_with_params.append([action.name,combo_dict])
                 conditions_with_params.append([condition_predicate.name,combo_dict])
 
-        print(conditions_with_params)
-        input("1")
+        #print(conditions_with_params)
         return conditions_with_params
 
 
@@ -212,6 +213,12 @@ class Simplify:
 
         # Find all state indexes in policy that have action num
         state_indices = [index for index, element in enumerate(self.policy) if element == action_num]
+
+        print("Action_num: ", action_num)
+        print("State indices: ", state_indices)
+        print("States from indices: ")
+        for idx in state_indices:
+            print(self.states[idx])
         
         for idx in state_indices:
 
@@ -281,25 +288,60 @@ class Simplify:
 
     def getConditionsFromOR(self, or_sop_simplify):
 
+        # There is a sympy issue where if the term only has one element, it counts as 0 args
+        # This means that single arg terms get lost
+
+        self.f.write("----In getConditionsFromOR----\n")
+
         # Given sop_simply with at least one OR | in it
         # return list of all conditions that appear at least once (not per term, just at all)
         conditions = []
         for term in or_sop_simplify.args:
-            for c in term.args:
+            self.f.write("term: %s\n" %term)
+            self.f.write("term.args: %s\n" %str(len(term.args)))
+            self.f.write("c args: \n")
+
+            if not len(term.args): # Found bug where single arg gets counted as 0
+                self.f.write("0\n")
+                c = term
                 if c not in conditions:
                     conditions.append(c)
+            elif len(term.args) == 1: # This seems to be !condition cases
+                # An issue arises where term.args returns only condition, without the "!"
+                c = term
+                if c not in conditions:
+                    conditions.append(c)
+            else:
+                self.f.write(str(len(term.args))+"\n")
+                for c in term.args:
+                    self.f.write(str(c) + "\n")
+                    if c not in conditions:
+                        conditions.append(c)
+
+        self.f.write("----Out of getConditionsFromOR\n")
 
 
         return conditions
 
     def getConditionsInAllORTerms(self, all_conds, or_terms):
 
+        self.f.write("!!!!! In get getConditionsInAllORTerms !!!!!\n")
+        self.f.write('all_conds ' + str(all_conds) + "\n")
+        self.f.write('or_terms ' + str(or_terms) + "\n")
+
         common_conditions = []
         condition_in_all_terms = True
         for c in all_conds:
             #self.f.write('idk' + str(c)+"\n")
             for term in or_terms:
-                c_in_term = c in term.args
+                if not (len(term.args)): # Checking for 0 len bug
+                    c_in_term = c == term
+
+                elif len(term.args) == 1: # This seems to be !condition cases
+                    # An issue arises where term.args returns only condition, without the "!"
+                    c_in_term = c == term
+                else:
+                    c_in_term = c in term.args
                 #self.f.write("c vs term "+str(c) + " " +str(term.args) + str(c_in_term) + "\n")
                 if not c_in_term:
                     break
@@ -310,21 +352,50 @@ class Simplify:
                 common_conditions.append(c)
 
 
+        self.f.write("!!! Out of common conditions function !!!\n")
+
+
         return common_conditions
 
     def getUniqueConditionListsInORTerms(self, common_conditions, or_terms):
 
         # Record conditions that are not common to all terms, every term
 
+        self.f.write("In unique func\n")
+
         unique_condition_lists = [] # Will be a list of lists, each list of one or more condition terms
 
         for term in or_terms:
             term_list = []
+
+            # if not len(term.args): # Found bug where single arg gets counted as 0
+            #     c = term
+            #     if c not in common_conditions:
+            #         term_list.append(c)
+            # elif len(term.args) == 1: # This seems to be !condition cases
+            #     # An issue arises where term.args returns only condition, without the "!"
+            #     c = term
+            #     if c not in common_conditions:
+            #         term_list.append(c)
+            self.f.write("term: %s\n" %term)
+            self.f.write("len(term.args): %s\n" %len(term.args))
             for c in term.args:
+                self.f.write("c: %s\n" %c)
+            if not len(term.args) or len(term.args)==1: # Found bug where single arg gets counted as 0
+                self.f.write("0 or 1 " + str(term) +"\n")
+                c = term
                 if c not in common_conditions:
                     term_list.append(c)
+            else:
+                self.f.write(str(len(term.args))+"\n")
+                for c in term.args:
+                    self.f.write("0 hi\n")
+                    if c not in common_conditions:
+                        term_list.append(c)
 
             unique_condition_lists.append(term_list)
+
+        self.f.write("End unique func\n")
 
         return unique_condition_lists
 
@@ -358,6 +429,7 @@ class Simplify:
             self.f.write("unique_condition_lists: " + str(unique_condition_lists) + "\n")
 
             sequence_node = Sequence()
+            self.f.write("Created sequence node: " + str(sequence_node) + "\n")
 
             # Add common condition nodes beneath the sequence node
             for condition in common_conditions:
@@ -365,6 +437,12 @@ class Simplify:
                 self.f.write("condition: %s\n" %str(condition))
 
                 sequence_node = self.createConditionNode(condition, sequence_node)
+
+            self.f.write("Checking sequence node children (common conditions)...\n")
+            self.f.write("++++Sequence node has the following children:\n")
+            for child in sequence_node.children:
+                self.f.write(child.label + "\n")
+            self.f.write("Done listing child nodes for sequence++++\n")
 
             # Add unique conditions lists to fallback
             fallback_node = Fallback()
@@ -387,8 +465,10 @@ class Simplify:
             new_subtrees.append(sequence_node) # Add subtree to list
             
             #conditions = sop_simplify.args # This is wrong. Fix in progress above, currently commented out.
+            self.f.write("+++++==== END ++++====")
             return new_subtrees
             #print('OR')
+
 
         elif type(sop_simplify) == And:
 
@@ -760,8 +840,8 @@ class Simplify:
             #print('i ', i)
 
             #action = self.actions[i]
-            # print('action', action)
             action = self.actions[action_num]
+            print('action', action[0])
 
             self.f.write(str(action[0])+"\n")
 
@@ -789,7 +869,9 @@ class Simplify:
 
             # Get list of numeric states the policy states action a should be taken in
             minterms = self.getActionStates(action_num) # switch to take action num
-            #print('minterms', minterms)
+            print('minterms', minterms)
+            print("All states: ", self.states)
+            #input("hi")
             self.f.write(str(minterms)+"\n")
 
             prev_minterms = minterms

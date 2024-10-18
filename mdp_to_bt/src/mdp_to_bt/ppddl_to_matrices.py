@@ -108,13 +108,19 @@ def getStateList(domain,problem):
 
         states.append(full_state)
 
-    # print('states ', states)
-    # print(len(states))
-    # input('its')
+    #print("single_state: ", single_state, len(single_state))
+    #print('states ', states)
+    #print(len(states))
+    #input('its')
+
+
 
     # Remove invalid states per constraints in domain
     if domain.constraints:
         states = removeInvalidStates(states,domain)
+
+    #print(len(states))
+    #input('after')
 
 
     # for i in range(len(states)):
@@ -295,7 +301,7 @@ def preconditionSatisfiedNoParams(start_state, action, combo_dict=None, test=Fal
 
 def getPrecondArgValues(precond, combo_dict):
 
-    #print(('In getPrecondArgValues',precond,precond._predicate.args))
+    print(('In getPrecondArgValues',precond,precond._predicate.args))
 
     vals = []
     for arg in precond._predicate.args:
@@ -705,13 +711,15 @@ def outcome(start_state, action, param_values = None, test=False):
 
     #test (remove these lines after you can access the else below)
     action_effects = action.effects[0] # Indexed to remove duplicate outer list
-    #print('Action effect: ', action_effects)
+    print("State: ", start_state)
+    print("Action: ", action)
+    print('Action effect: ', action_effects)
     #input('Waiting')
 
 
     if not preconditionSatisfied(start_state,action, combo_dict=param_values):
 
-        #print('Precondition not satisfied...')
+        #input('Precondition not satisfied...')
 
         outcome_sublist = [unchanged_state_terms,1.0,0]
         outcome_list.append(outcome_sublist)
@@ -1067,9 +1075,9 @@ def getPandR(domain,problem):
         actions = getActionsWithParamsList(domain,problem) # old var name: actions_with_params
         #print('actions: ', actions)
         #input('yo1')
-        # print('actions: ')
-        # for action in actions:
-        #     print(action[0]._name, action[1])
+        print('actions: ')
+        for action in actions:
+            print(action[0]._name, action[1])
         #input('yo2')
 
         # for a in actions:
@@ -1084,7 +1092,7 @@ def getPandR(domain,problem):
 
     for action_term in actions:
 
-        #print(('action_term', action_term))
+        print(('action_term', action_term))
 
         # if problem != None:
         #     action, combo_dict = action_term # action term is [action, params]
@@ -1093,6 +1101,9 @@ def getPandR(domain,problem):
 
         if problem != None and action_term[1]!={}:
             action, combo_dict = action_term # action term is [action, params]
+            print("action: ", action)
+            print("combo_dict: ", combo_dict)
+            #input(".")
         elif problem == None:
             action = action_term
         else:
@@ -1120,11 +1131,16 @@ def getPandR(domain,problem):
             # Get list of [end state, prob, reward] terms, given action and start state
             # Also return only the actions_with_params that satisfy preconds
             if combo_dict:
-                #print('combo_dict')
+                print('combo_dict')
                 outcome_list, precond_satisfied = outcome(start_state,action,param_values=combo_dict)
             else: # no parameters
-                #print('no params')
+                print('no params')
                 outcome_list, precond_satisfied = outcome(start_state,action)
+
+            print("outcome_list: ", outcome_list)
+            print("precond_satisfied: ", precond_satisfied)
+            print(i)
+            #input('.')
 
             # Update NxN matrices, p and r according to outcome
             # print(('outcome_list ', outcome_list))
@@ -1145,7 +1161,7 @@ def getPandR(domain,problem):
                 else:
                     j_duplicate_tracker[j].append(outcome_sublist)
 
-            #print('j track', j_duplicate_tracker)
+            print('j track', j_duplicate_tracker)
             p_sum_check = []
             r_sum_check = []
             # Make sure to count all outcome_sublists, which may have the same outcome state, indexed by j
@@ -1333,17 +1349,35 @@ def checkPolicyPreconditions(policy, states, actions_with_params):
 
 def saveReadablePolicy(policy, states, actions_with_params):
 
+    print("in saveReadablePolicy")
+
     # Save readable and basic "state: action" policy form to file f
     f = open("//home/emily/Desktop/more_AURO_results/raw_policy.txt", "w+")
     fa = open("/home/emily/Desktop/more_AURO_results/raw_policy_actions.txt", "w+")
 
+    count = 0
     for i in range(len(policy)):
+
+        print("State count: %d\n"%(i+1))
+        print("State: %s\n" %str(states[i]))
+        action = actions_with_params[policy[i]][0]
+        #input(action.name)
+        print("Action: %s\n" %str(action.name))
 
         f.write("State count: %d\n"%(i+1))
         f.write("State: %s\n" %str(states[i]))
         action = actions_with_params[policy[i]][0]
+        #input(action.name)
         f.write("Action: %s\n" %str(action.name))
         fa.write("%s\n" %str(action.name))
+        count += 1
+
+    print("count")
+    #input(count)
+
+    #f.close()
+    #fa.close()
+    #input("yodle")
 
 
 
