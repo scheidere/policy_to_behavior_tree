@@ -1,0 +1,56 @@
+(define (domain vacuum)
+
+    (:requirements :equality :typing :probabilistic-effects)
+
+    (:types location)
+
+    (:predicates
+        (at ?x - location)
+        (is-dirty ?x - location)
+    )
+    
+    (:constants
+        left right - location
+    )
+
+    (:constraints
+        (forall (?loc - location) (at-most-once (at ?loc)))
+    )
+
+    (:action move-left
+
+        :parameters ()
+        :precondition (and (at right) (not (at left)))
+        :effect (and (at left) (increase reward -10))
+    )
+
+    (:action move-right
+
+        :parameters ()
+        :precondition (and (at left) (not (at right)))
+        :effect (and (at right) (increase reward -10))
+    )
+
+    (:action clean-left
+
+        :parameters ()
+        :precondition (and (at left) (is-dirty left))
+        :effect (and (not (is-dirty left)) (increase reward 20))
+    )
+
+    (:action clean-right
+
+        :parameters ()
+        :precondition (and (at right) (is-dirty right))
+        :effect (and (not (is-dirty right)) (increase reward 20))
+    )
+
+    (:action stay-still
+
+        :parameters ()
+        :precondition (and (not (is-dirty left)) (not (is-dirty right)))
+        :effect (increase reward 10)
+
+    )
+
+)

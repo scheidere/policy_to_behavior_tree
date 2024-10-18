@@ -102,7 +102,7 @@ def get_policies_rewards(det_policy, prob_policy, mdp_problem):
 
 def get_deterministic_policy(domain_path, problem_path, output_path):
 
-    output_path = "/home/scheidee/new_bt_generation_ws/src/bt_generation/policy_to_behavior_tree/mdp_to_bt/src/mdp_to_bt/policy_eval_output/"
+    output_path = "/home/emily/auro_ws/src/policy_to_behavior_tree/mdp_to_bt/src/mdp_to_bt/policy_eval_output/"
 
     # Run main with deterministic domain; Save policy
     os.system("python3 main.py " + domain_path + " " + problem_path)
@@ -117,7 +117,7 @@ def get_deterministic_policy(domain_path, problem_path, output_path):
 
 def get_probabilistic_policy(domain_path, problem_path, output_path):
 
-    output_path = "/home/scheidee/new_bt_generation_ws/src/bt_generation/policy_to_behavior_tree/mdp_to_bt/src/mdp_to_bt/policy_eval_output/"
+    output_path = "/home/emily/auro_ws/src/policy_to_behavior_tree/mdp_to_bt/src/mdp_to_bt/policy_eval_output/"
 
     # Also returns mdp problem both the probabilistic and deterministic policy
 
@@ -166,13 +166,11 @@ def get_penalty_results(domain):
     start_time = round(time.time())
 
     # Path to policy and mdp_problem pickle files
-    # output_path = "/home/scheidee/new_bt_generation_ws/src/bt_generation/policy_to_behavior_tree/mdp_to_bt/src/mdp_to_bt/policy_eval_output/" # Desktop
-    output_path = "/home/scheidee/bt_synthesis_ws/src/policy_to_behavior_tree/mdp_to_bt/src/mdp_to_bt/policy_eval_output/" # Laptop
+    output_path = "/home/emily/auro_ws/src/policy_to_behavior_tree/mdp_to_bt/src/mdp_to_bt/policy_eval_output/" # Laptop
 
     if domain == 'm':
         # Marine
-        #pddl_path = "/home/scheidee/new_bt_generation_ws/src/bt_generation/policy_to_behavior_tree/pypddl-parser/pypddl-parser/pddl/marine/"
-        pddl_path = "/home/scheidee/bt_synthesis_ws/src/policy_to_behavior_tree/pypddl-parser/pypddl-parser/pddl/marine/"
+        pddl_path = "/home/emily/auro_ws/src/policy_to_behavior_tree/pypddl_parser/src/pypddl_parser/pddl/marine/"
         
         test_fp_penalty = "false_positive_penalty/" # constant probability
         test_np_penalty = "false_negative_penalty/" # constant probability
@@ -188,8 +186,7 @@ def get_penalty_results(domain):
 
     if domain == 'i':
         # Infant
-        #pddl_path = "/home/scheidee/new_bt_generation_ws/src/bt_generation/policy_to_behavior_tree/pypddl-parser/pypddl-parser/pddl/infant_mobility/" # Desktop
-        pddl_path = "/home/scheidee/bt_synthesis_ws/src/policy_to_behavior_tree/pypddl-parser/pypddl-parser/pddl/infant_mobility/" # Laptop
+        pddl_path = "/home/emily/auro_ws/src/policy_to_behavior_tree/pypddl_parser/src/pypddl_parser/pddl/infant_mobility/" # Laptop
         path_to_prob_domains = pddl_path + "penalty_p30const/" #+ "penalty_p20const/"
         problem_path = pddl_path + "problems/problem3.ppddl"
         det_domain_path = path_to_prob_domains + "domain_deterministic.ppddl"
@@ -275,14 +272,13 @@ def get_probability_results(domain):
 
     if domain == 'm':
         # Marine
-        pddl_path = "/home/scheidee/bt_synthesis_ws/src/policy_to_behavior_tree/pypddl-parser/pypddl-parser/pddl/marine/" # Laptop
+        pddl_path = "/home/emily/auro_ws/src/policy_to_behavior_tree/pypddl_parser/src/pypddl_parser/pddl/marine/" # Laptop
         path_to_prob_domains = pddl_path + 'probability_fn2fp2/'
         problem_path = pddl_path + "problems/problem1.ppddl"
 
     if domain == 'i':
         # Infant
-        pddl_path = "/home/scheidee/bt_synthesis_ws/src/policy_to_behavior_tree/pypddl-parser/pypddl-parser/pddl/infant_mobility/" # Laptop
-        #pddl_path = "/home/scheidee/new_bt_generation_ws/src/bt_generation/policy_to_behavior_tree/pypddl-parser/pypddl-parser/pddl/infant_mobility/" # Desktop
+        pddl_path = "/home/emily/auro_ws/src/policy_to_behavior_tree/pypddl_parser/src/pypddl_parser/pddl/infant_mobility/" # Laptop
 
         #path_to_prob_domains = pddl_path + "probability2/" #old
         #problem_path = pddl_path + "problems/problem2.ppddl" #infant (old)
@@ -298,8 +294,7 @@ def get_probability_results(domain):
 
     # Both
     det_domain_path = path_to_prob_domains + "domain_deterministic.ppddl" # Use with marine domain
-    output_path = "/home/scheidee/bt_synthesis_ws/src/policy_to_behavior_tree/mdp_to_bt/src/mdp_to_bt/policy_eval_output/" # Laptop
-    #output_path = "/home/scheidee/new_bt_generation_ws/src/bt_generation/policy_to_behavior_tree/mdp_to_bt/src/mdp_to_bt/policy_eval_output/" # Desktop
+    output_path = "/home/emily/auro_ws/src/policy_to_behavior_tree/mdp_to_bt/src/mdp_to_bt/policy_eval_output/" # Laptop
 
     #test_file = 'p30.ppddl' #p30_or_test.ppddl' #p30.ppddl' #'p30_constraints_consts.ppddl' #'p30_constraints.ppddl'
     #test_file = 'p30.ppddl' #marine

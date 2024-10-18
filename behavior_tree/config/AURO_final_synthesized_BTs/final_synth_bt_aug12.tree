@@ -1,0 +1,24 @@
+?
+	->
+		(is-dirty{left})
+		<!>
+			(at{left})
+		<!>
+			(is-dirty{right})
+		[move-left]
+	->
+		(is-dirty{right})
+		<!>
+			(at{right})
+		<!>
+			(is-dirty{left})
+		[move-right]
+	->
+		(is-dirty{left})
+		<!>
+			(at{right})
+		[clean-left]
+	->
+		(is-dirty{right})
+		[clean-right]
+	[stay-still]

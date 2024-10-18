@@ -130,11 +130,16 @@ class BT_Interface():
         
         #print(self.condition_nodes.keys())
 
+        print("In setConditionStatus")
+        print("Condition: ", condition)
+        print("Bool: ", success)
+
         try:
             nodes = self.condition_nodes[condition]
         except KeyError:
             #input("ISSUE HERE - Maybe no match?")
-            pass
+            pass # Ignoring this check because not all conditions will appear in the BT if 
+                 # they are not needed to differentiate between each actions state group
             #print("setConditionStatus condition " + condition + " does not exist in BT")
         else:
 
@@ -147,6 +152,12 @@ class BT_Interface():
                     node.set_status(ReturnStatus(Status.FAILURE))
             else:
                 print("setConditionStatus: incorrect argument")
+
+    def setAllActionsRunning(self):
+
+        for action in self.action_nodes.values():
+            #print(action)
+            action[0].set_status(ReturnStatus(Status.RUNNING))
 
     def setActionStatusFailure(self, action):
         try:

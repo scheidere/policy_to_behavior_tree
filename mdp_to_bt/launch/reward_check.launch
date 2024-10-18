@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+
+<launch>
+
+	<node pkg="mdp_to_bt" type="evaluate_simplified_bt.py" name="reward_equality_demonstration" output="screen">
+	</node>
+
+</launch>

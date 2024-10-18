@@ -20,15 +20,16 @@ def get_probability_results(domain):
 
     if domain == 'm':
         # Marine
-        pddl_path = "/home/scheidee/bt_synthesis_ws/src/policy_to_behavior_tree/pypddl-parser/pypddl-parser/pddl/marine/" # Laptop
+        #pddl_path = "/home/scheidee/bt_synthesis_ws/src/policy_to_behavior_tree/pypddl-parser/pypddl-parser/pddl/marine/" # Laptop
+        pddl_path = "/home/emily/auro_ws/src/policy_to_behavior_tree/pypddl_parser/src/pypddl_parser/pddl/marine/"
         path_to_prob_domains = pddl_path + 'probability_fn2fp2/'
         problem_path = pddl_path + "problems/problem1.ppddl"
 
     if domain == 'i':
         # Infant
-        pddl_path = "/home/scheidee/bt_synthesis_ws/src/policy_to_behavior_tree/pypddl-parser/pypddl-parser/pddl/infant_mobility/" # Laptop
+        #pddl_path = "/home/scheidee/bt_synthesis_ws/src/policy_to_behavior_tree/pypddl-parser/pypddl-parser/pddl/infant_mobility/" # Laptop
         #pddl_path = "/home/scheidee/new_bt_generation_ws/src/bt_generation/policy_to_behavior_tree/pypddl-parser/pypddl-parser/pddl/infant_mobility/" # Desktop
-
+        pddl_path = "/home/emily/auro_ws/src/policy_to_behavior_tree/pypddl_parser/src/pypddl_parser/pddl/infant_mobility/"
         #path_to_prob_domains = pddl_path + "probability2/" #old
         #problem_path = pddl_path + "problems/problem2.ppddl" #infant (old)
 
@@ -43,9 +44,9 @@ def get_probability_results(domain):
 
     # Both
     det_domain_path = path_to_prob_domains + "domain_deterministic.ppddl" # Use with marine domain
-    output_path = "/home/scheidee/bt_synthesis_ws/src/policy_to_behavior_tree/mdp_to_bt/src/mdp_to_bt/policy_eval_output/" # Laptop
+    #output_path = "/home/scheidee/bt_synthesis_ws/src/policy_to_behavior_tree/mdp_to_bt/src/mdp_to_bt/policy_eval_output/" # Laptop
     #output_path = "/home/scheidee/new_bt_generation_ws/src/bt_generation/policy_to_behavior_tree/mdp_to_bt/src/mdp_to_bt/policy_eval_output/" # Desktop
-
+    output_path = "/home/emily/auro_ws/src/policy_to_behavior_tree/mdp_to_bt/src/mdp_to_bt/policy_eval_output/"
     #test_file = 'p30.ppddl' #p30_or_test.ppddl' #p30.ppddl' #'p30_constraints_consts.ppddl' #'p30_constraints.ppddl'
     #test_file = 'p30.ppddl' #marine
 
@@ -56,19 +57,19 @@ def get_probability_results(domain):
     f = open("box_whisker_data.txt", "a")
     for d in domain_files:
 
-    	if d != "domain_deterministic.ppddl":
+        if d != "domain_deterministic.ppddl":
 
-    		filename = "box_and_whisker_" + domain + "_data/box_whisker_" + domain + "_data_" + d[:-6] + ".txt"
-    		f = open(filename, "a")
+            filename = "box_and_whisker_" + domain + "_data/box_whisker_" + domain + "_data_" + d[:-6] + ".txt"
+            f = open(filename, "a")
 
-    		prob_domain_path = path_to_prob_domains + d
+            prob_domain_path = path_to_prob_domains + d
 
-    		avg_reward_prob, prob_rewards, avg_reward_det, det_rewards = compare_policies(prob_domain_path, det_domain_path, problem_path, output_path)
+            avg_reward_prob, prob_rewards, avg_reward_det, det_rewards = compare_policies(prob_domain_path, det_domain_path, problem_path, output_path)
 
-    		per_diffs = getData(prob_rewards, det_rewards)
+            per_diffs = getData(prob_rewards, det_rewards)
 
-    		print(per_diffs,len(per_diffs))
-    		f.write(str(per_diffs))
+            print(per_diffs,len(per_diffs))
+            f.write(str(per_diffs))
 
     # Init list to be plotted in histogram (y axis)
     # percent_increase_list = []
@@ -138,7 +139,10 @@ def compare_policies(prob_domain_path, det_domain_path, problem_path, output_pat
     # problem_path = partial_path + "/marine/problems/problem1.ppddl"
 
     # Run main with deterministic domain; Save policy
-    os.system("python3 main.py " + det_domain_path + " " + problem_path)
+    #os.system("python3 main.py " + det_domain_path + " " + problem_path)
+    result = os.system("python3 main.py " + det_domain_path + " " + problem_path)
+    if result != 0:
+        raise RuntimeError("Failed to run main.py for the deterministic domain.")
 
     # Extract deterministic policy
     file = open(output_path+'policy.p','rb')
@@ -204,156 +208,159 @@ def percentDifference(prob_rew, det_rew):
 def getData(p_rewards, d_rewards):
 
 
-	per_diffs = []
-	for i in range(len(p_rewards)):
+    per_diffs = []
+    for i in range(len(p_rewards)):
 
-		# Get % increase values (p - d); if negative, means method did better with d that time
-		per_diff, diff = percentDifference(p_rewards[i], d_rewards[i])
-		per_diffs.append(per_diff)
+        # Get % increase values (p - d); if negative, means method did better with d that time
+        per_diff, diff = percentDifference(p_rewards[i], d_rewards[i])
+        per_diffs.append(per_diff)
 
 
-	return per_diffs # should have 100 elements
+    return per_diffs # should have 100 elements
 
 
 def plot(per_increase_data, p_avg, d_avg):
 
-	ax1.boxplot(per_increase_data)
+    ax1.boxplot(per_increase_data)
 
-	# plt.show()
+    # plt.show()
 
 def test1():
 
-	data = [1,2,3,4,5,6,7,8,9,10]
-	p_avg = 8
-	d_avg = 6
+    data = [1,2,3,4,5,6,7,8,9,10]
+    p_avg = 8
+    d_avg = 6
 
-	plot(data,p_avg,d_avg)
+    plot(data,p_avg,d_avg)
 
 def read_data(filename):
 
-	f = open(filename,'r')
-	contents = f.readlines()
-	data = json.loads(contents[0].strip('\n'))
-	#print(data)
+    f = open(filename,'r')
+    contents = f.readlines()
+    data = json.loads(contents[0].strip('\n'))
+    #print(data)
 
-	return data
+    return data
 
 def plot_all(domain):
 
-	directory = "box_and_whisker_" + domain + "_data"
+    directory = "box_and_whisker_" + domain + "_data"
 
-	# fig1, ax1 = plt.subplots()
-	# ax1.set_title('Basic Plot')
+    # fig1, ax1 = plt.subplots()
+    # ax1.set_title('Basic Plot')
 
-	labels = []
-	all_data = []
-	files = os.listdir(directory)
-	files.sort()
-	for f in files:
+    labels = []
+    all_data = []
+    files = os.listdir(directory)
+    files.sort()
+    for f in files:
 
-		print(f)
-		labels.append(f[-6:-4])
-		data = read_data(directory+"/"+f)
-		print(data[-1])
-		print(sum(data)/len(data))
-		all_data.append(data)
-		# plt.boxplot(data)
-		# plt.show()
+        print(f)
+        labels.append(f[-6:-4])
+        data = read_data(directory+"/"+f)
+        print(data[-1])
+        print(sum(data)/len(data))
+        all_data.append(data)
+        # plt.boxplot(data)
+        # plt.show()
 
-	print(labels)
-	print(len(all_data))
-	#print(all_data)
-	plt.boxplot(all_data)
-	plt.show()
+    print(labels)
+    print(len(all_data))
+    #print(all_data)
+    plt.boxplot(all_data)
+    plt.show()
 
 def plot_all2(domain):
 
-	directory = "box_and_whisker_" + domain + "_data"
+    #directory = "box_and_whisker_" + domain + "_data"
+    directory = "box_and_whisker_" + domain + "_data"
 
-	# fig1, ax1 = plt.subplots()
-	# ax1.set_title('Basic Plot')
 
-	labels = []
-	all_data = []
-	files = os.listdir(directory)
-	files.sort()
-	for f in files:
+    # fig1, ax1 = plt.subplots()
+    # ax1.set_title('Basic Plot')
 
-		print(f)
-		labels.append(f[-6:-4])
-		data = read_data(directory+"/"+f)
-		print(data[-1])
-		print(sum(data)/len(data))
-		all_data.append(data)
-		# plt.boxplot(data)
-		# plt.show()
+    labels = []
+    all_data = []
+    files = os.listdir(directory)
+    files.sort()
+    for f in files:
 
-	print(labels)
-	print(len(all_data))
-	#print(all_data)
-	# fig = plt.figure(figsize =(10, 7))
-	# ax = fig.add_subplot(111)
-	fig, ax = plt.subplots(1,1)
-	bp = ax.boxplot(all_data, patch_artist = True,
+        print(f)
+        labels.append(f[-6:-4])
+        data = read_data(directory+"/"+f)
+        print(data[-1])
+        print(sum(data)/len(data))
+        all_data.append(data)
+        # plt.boxplot(data)
+        # plt.show()
+
+    print(labels)
+    print(len(all_data))
+    #print(all_data)
+    # fig = plt.figure(figsize =(10, 7))
+    # ax = fig.add_subplot(111)
+    fig, ax = plt.subplots(1,1)
+    bp = ax.boxplot(all_data, patch_artist = True,
                 notch ='True', vert = 1)
 
-	colors = ['#0C7BDC', '#0C7BDC',
+    colors = ['#0C7BDC', '#0C7BDC',
           '#0C7BDC', '#0C7BDC']
  
-	for patch, color in zip(bp['boxes'], colors):
-		patch.set_facecolor(color)
+    for patch, color in zip(bp['boxes'], colors):
+        patch.set_facecolor(color)
 
-	if domain == 'm':
-		plt.title("Marine Domain - Constant Penalty")
-	else:
-		plt.title("Infant Domain - Constant Penalty")
-	plt.xlabel("Transition Probability")
-	plt.ylabel("Percent Increase in Reward")
-	ax.set_xticklabels(labels)
+    if domain == 'm':
+        plt.title("Marine Domain - Constant Penalty")
+    else:
+        plt.title("Infant Domain - Constant Penalty")
+    plt.xlabel("Transition Probability")
+    plt.ylabel("Percent Increase in Reward")
+    ax.set_xticklabels(labels)
 
-	# changing color and linewidth of
-	# whiskers
-	for whisker in bp['whiskers']:
-	    whisker.set(color ='black',
-	                linewidth = 1.5,
-	                linestyle =":")
-	 
-	# changing color and linewidth of
-	# caps
-	for cap in bp['caps']:
-	    cap.set(color ='black',
-	            linewidth = 2)
-	 
-	# changing color and linewidth of
-	# medians
-	for median in bp['medians']:
-	    median.set(color ='#FFC20A',
-	               linewidth = 3)
+    # changing color and linewidth of
+    # whiskers
+    for whisker in bp['whiskers']:
+        whisker.set(color ='black',
+                    linewidth = 1.5,
+                    linestyle =":")
+     
+    # changing color and linewidth of
+    # caps
+    for cap in bp['caps']:
+        cap.set(color ='black',
+                linewidth = 2)
+     
+    # changing color and linewidth of
+    # medians
+    for median in bp['medians']:
+        median.set(color ='#FFC20A',
+                   linewidth = 3)
 
-	# changing style of fliers
-	for flier in bp['fliers']:
-	    flier.set(marker ='D',
-	              color ='#e7298a',
-	              alpha = 0.5)
+    # changing style of fliers
+    for flier in bp['fliers']:
+        flier.set(marker ='D',
+                  color ='#e7298a',
+                  alpha = 0.5)
 
-	plt.show() 
+    plt.show() 
 
 
 
 
 
 def generate_data(domain):
-	# To generate data, run the following two lines (doesn't auto save data yet)
-	get_probability_results(domain)
+    # To generate data, run the following two lines (doesn't auto save data yet)
+    get_probability_results(domain)
 
 if __name__ == "__main__":
 
-	#domain = input("Choose either the marine (type 'm') or infant (type 'i') domain: ")
+    #domain = input("Choose either the marine (type 'm') or infant (type 'i') domain: ")
 
-	#generate_data('i')
+    #generate_data('m') this will add a len 100 list of % increase in reward values to mdp_to_bt/box_and_whisker_?_data folder, and it already has one in it
+    # Will need to switch from appending
+    
+    #Comment out simplification in main
 
-	#Comment out simplification in main
-
-	plot_all2('m')
+    plot_all2('m')
 
 

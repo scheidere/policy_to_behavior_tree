@@ -24,17 +24,26 @@ from python_qt_binding.QtWidgets import QWidget, QVBoxLayout, QSizePolicy
 from behavior_tree import behavior_tree as bt
 from behavior_tree import behavior_tree_graphviz as gv
 
-#import graphviz
 import cv2
 from threading import Lock
-import sympy
-#import sys
-#import pprint
-#pprint.pprint(sys.path)
-#sys.path.append('/home/parallels/.local/lib/python3.8/site-packages')
-#pprint.pprint(sys.path)
-from xdot.xdot_qt import DotWidget
+try:
+    from rqt_behavior_tree.xdot.xdot_qt import DotWidget
+    rospy.loginfo("Successfully imported DotWidget.")
+except ImportError as e:
+    rospy.logerr(f"Failed to import DotWidget: {e}")
 ##from xdot.ui.window import DotWidget #parallels
+
+#import sys
+
+try:
+    # Try to initialize DotWidget and check if it is created successfully
+    xdot_widget = DotWidget()
+    if xdot_widget is not None:
+        print("DotWidget initialized successfully!\n") # This does occur
+    else:
+        print("DotWidget is None!\n")
+except Exception as e:
+    print(f"Failed to initialize DotWidget: {e}\n")
 
 class BehaviorTreePlugin(Plugin):
     def __init__(self, context):
@@ -68,6 +77,10 @@ class BehaviorTreePlugin(Plugin):
         self.image_label = qt.QLabel('asdfadsf')
         #self.graph_layout.addWidget(self.image_label)
         self.xdot_widget = DotWidget()
+        if self.xdot_widget:
+            print("xdot_widget exists\n") # This does occur
+        else:
+            print("oh no\n")
         self.graph_layout.addWidget(self.xdot_widget)
         self.top_layout.addWidget(self.graph_widget)
         self.graph_widget.setStyleSheet("background-color: rgb(255, 255, 255);")
@@ -165,7 +178,8 @@ class BehaviorTreePlugin(Plugin):
         funcs = []
         
         self.functions_mutex.acquire()
-        for node_label, function in self.functions.iteritems():
+        #for node_label, function in self.functions.iteritems(): # python 2
+        for node_label, function in self.functions.items(): # python 3
             funcs.append(function)
         self.functions_mutex.release()
 
@@ -274,9 +288,32 @@ class BehaviorTreePlugin(Plugin):
                     failure_button.clicked.connect(get_publish_function(condition_widget, failure_button, [success_button, no_message_button], node, Bool, False))
                     no_message_button.clicked.connect(get_publish_function(condition_widget, no_message_button, [success_button, failure_button], node, Bool, 'NO MESSAGE'))
             
+    # # Test
+    # def behavior_tree_graphviz_callback(self, msg):
+
+    #     # simple_dot_data = "digraph G { A -> B; }"
+    #     # self.xdot_widget.set_dotcode(simple_dot_data)
+
+    #     if self.xdot_widget:
+    #         print("xdot_widget not None in behavior_tree_graphviz_callback")
+    #         try:
+    #             self.xdot_widget.set_dotcode(msg.data)
+    #             print("Successfully set dotcode")
+    #         except AttributeError as e:
+    #             print(f"Error setting dotcode: {e}")
+    #     else:
+    #         print("xdot_widget is None in behavior_tree_graphviz_callback")
 
     def behavior_tree_graphviz_callback(self, msg):
+
+        # if xdot_widget is not None:
+        #     print("xdot_widget not None in behavior_tree_graphviz_callback") # works
+
         if msg.data != self.prev_graphviz:
+            if xdot_widget is not None:
+                print("xdot_widget not None in behavior_tree_graphviz_callback 222222\n") # works
+            else:
+                self.xdot_widget = DotWidget()
             self.xdot_widget.set_dotcode(msg.data)
         self.prev_graphviz = msg.data
         '''

@@ -87,7 +87,7 @@ class Fallback(ControlFlowNode):
         self.is_active = active
 
 class Sequence(ControlFlowNode):
-    label = u'\u2192' # arrow
+    label = '->' #u'\u2192' # arrow
     
     def __init__(self):
         ControlFlowNode.__init__(self)
@@ -206,8 +206,8 @@ class Condition(ExecutionNode):
         else:
             self.is_newly_active = False
 
-        if self.get_status_age() > self.max_wait_time:
-            self.set_status(ReturnStatus.FAILURE)
+        # if self.get_status_age() > self.max_wait_time:
+        #     self.set_status(ReturnStatus.FAILURE)
 
         # ACTION ACTIVITY/STATUS COPY - TO BE DELETED
         # if self.is_active == False and active == True:# and self.status == ReturnStatus.FAILURE:
@@ -280,8 +280,8 @@ class Action(ExecutionNode):
         else:
             self.is_newly_active = False
         # if we haven't received a message within the timeout period, set the status to failed
-        if self.get_status_age() > self.max_wait_time:
-            self.set_status(ReturnStatus.FAILURE)
+        # if self.get_status_age() > self.max_wait_time:
+        #     self.set_status(ReturnStatus.FAILURE)
         
         self.is_active = active
 
@@ -653,15 +653,25 @@ class BehaviorTree:
             # Make sure that if there are more than one of the same action, if any are active, then active should be published
             unique_action_nodes = {}
             for node in self.nodes:
+                print("node: ", node, node.label)
+                print("is active?", node.is_active)
+                #input('.')
                 if isinstance(node, Action):
+                    #print("unique_action_nodes ", unique_action_nodes.keys(), "\n")
+                    #print("action node: ", node.label, ", ", node.is_active, ", ", node.is_newly_active, "\n")
+                    #print("active ids ", self.active_ids)
                     if node.label not in list(unique_action_nodes.keys()) or node.is_active:
                         #if node.is_active:
                         unique_action_nodes[node.label] = node
+                        if node.label not in self.active_ids.keys():
+                                #print("Adding node label to active ids ", node.label)
+                                self.active_ids[node.label] = 0
                         if node.is_newly_active:
                             self.active_ids[node.label] += 1
                     #else:
                     #    unique_action_nodes[node.label] = node
-                        
+            
+            #print("active ids 2 ", self.active_ids)         
             for label, node in unique_action_nodes.items():
                 #active_msg = Bool()
                 #active_msg.data = node.is_active
@@ -680,15 +690,25 @@ class BehaviorTree:
             unique_condition_nodes = {}
             for node in self.nodes:
                 if isinstance(node, Condition):
+                    print("Node is condition ", node.label)
+                    if node.label not in list(unique_condition_nodes.keys()):
+                        print("Node label not in unique_condition_nodes dict")
+                    if node.is_active:
+                        print("Node is active from .is_active")
+                        #input("Found active")
                     if node.label not in list(unique_condition_nodes.keys()) or node.is_active:
                         #if node.is_active:
                         unique_condition_nodes[node.label] = node
+                        if node.label not in self.active_condition_ids.keys():
+                                self.active_condition_ids[node.label] = 0
                         if node.is_newly_active:
                             self.active_condition_ids[node.label] += 1
                     #else:
                     #    unique_action_nodes[node.label] = node
-                        
+
+            print("unique_condition_nodes items (label, node): ")
             for label, node in unique_condition_nodes.items():
+                print(label, node)
                 #active_msg = Bool()
                 #active_msg.data = node.is_active
                 #node.publisher.publish(active_msg)
@@ -756,6 +776,8 @@ class BehaviorTree:
 
     def defineActionNodes(self):
 
+        #print("in defineActionNodes")
+
         self.action_nodes = dict()
 
         if not self.nodes:
@@ -770,6 +792,11 @@ class BehaviorTree:
 
                     # Add it to the dictionary
                     self.action_nodes[n.label].append(n)
+
+        # print("action node values: \n")
+        # print(self.action_nodes.keys())
+        # print(self.action_nodes.values())
+        # input('defineActionNodes end')
 
 
     def defineConditionNodes(self):
@@ -796,6 +823,11 @@ class BehaviorTree:
         # Pulled from bt_interface in MCDAGS work
 
         active_actions = []
+
+        print("in getActiveActions")
+        print("action node values: \n")
+        print(self.action_nodes.keys())
+        print(self.action_nodes.values())
         
         for n in list(self.action_nodes.values()):
             is_active = False
@@ -811,17 +843,33 @@ class BehaviorTree:
         # returns list of all actions that are active currently as a list of strings (i.e. names)
         # Pulled from bt_interface in MCDAGS work
 
+        print("In active conditions")
         active_conditions = []
-        
+
+        print("bt.condition_nodes.values, active?: ")
         for n in list(self.condition_nodes.values()):
+            
             is_active = False
             for node in n:
                 if node.is_active:
                     is_active = True
+            print(is_active, n[0].label)
             if is_active:
                 active_conditions.append(n[0].label)
 
+        #input("holding for getActiveConditions")
+
         return active_conditions
+
+
+    def getConditionStatuses(self):
+
+        for node_instance_list in list(self.condition_nodes.values()):
+
+            print("Node label: ", node_instance_list[0].label)
+            print(node_instance_list)
+            for node in node_instance_list:
+                print(node.status.status)
 
     def changeConditionStatus(self): 
 
@@ -853,16 +901,6 @@ class BehaviorTree:
             condition_node = self.condition_nodes[key]
         #first_condition = self.condition_nodes[0]
         #print('first condition', first_condition.label , first_condition)
-
-    def countActiveConditions(self):
-        
-        '''
-        Count average number of active conditions per action
-        '''
-
-        # Check which actions are active
-        active_actions = self.getActiveActions()
-        print(('The active actions are: ', active_actions))
 
 
 if __name__ == '__main__':

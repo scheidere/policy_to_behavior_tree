@@ -81,15 +81,15 @@ def getStateList(domain,problem):
 
     single_state = []
     for i in range(len(domain.predicates)):
-        print(('Predicate is %s' % str(domain.predicates[i])))
+        #print(('Predicate is %s' % str(domain.predicates[i])))
         for variable_type in domain.types:
-            print(('variable type ', variable_type))
+            #print(('variable type ', variable_type))
             if variable_type in str(domain.predicates[i]):
-                print(('This predicate has variable type %s' % variable_type))
-                print(('problem.objects[variable_type]', problem.objects[variable_type]))
+                #print(('This predicate has variable type %s' % variable_type))
+                #print(('problem.objects[variable_type]', problem.objects[variable_type]))
                 for value in problem.objects[variable_type]:
 
-                    print(('problem object ', value))
+                    #print(('problem object ', value))
 
                     state_sub_list = [str(domain.predicates[i].name),value,1]
                     single_state.append(state_sub_list)
@@ -108,17 +108,23 @@ def getStateList(domain,problem):
 
         states.append(full_state)
 
-    # print('states ', states)
-    # print(len(states))
-    # input('its')
+    #print("single_state: ", single_state, len(single_state))
+    #print('states ', states)
+    #print(len(states))
+    #input('its')
+
+
 
     # Remove invalid states per constraints in domain
     if domain.constraints:
         states = removeInvalidStates(states,domain)
 
+    #print(len(states))
+    #input('after')
 
-    for i in range(len(states)):
-        print((i, '', states[i],'\n'))
+
+    # for i in range(len(states)):
+    #     print((i, '', states[i],'\n'))
     #input('wait states')
 
     #input('OUT GET STATE LIST')
@@ -129,7 +135,7 @@ def removeInvalidStates(state_list,domain):
 
     # This would need to have more constraint types added to be entirely complete
 
-    print(('BEFORE ', state_list))
+    #print(('BEFORE ', state_list))
 
     valid_states_list = []
     removal_indices = [] # Indices of all invalid states
@@ -306,7 +312,7 @@ def getPrecondArgValues(precond, combo_dict):
         else:
             vals.append(combo_dict[arg])
 
-    print(('VALS', vals))
+    #print(('VALS', vals))
 
     return vals
 
@@ -333,9 +339,9 @@ def preconditionSatisfied(start_state,action,combo_dict=None,test=False):
     # If action params, assumes no constants (for now)
     #if combo_dict:
 
-    print(('HMMMMMM', type(action.precond)))
-    if combo_dict:  
-        print(('combo_dict', combo_dict))
+    # print(('HMMMMMM', type(action.precond)))
+    # if combo_dict:  
+    #     print(('combo_dict', combo_dict))
 
     #print('type', action.precond.type)
     # if action.precond.type == Literal:
@@ -347,7 +353,7 @@ def preconditionSatisfied(start_state,action,combo_dict=None,test=False):
     else:
         precond_lst = action.precond
 
-    print(('PRECOND LST', precond_lst))
+    #print(('PRECOND LST', precond_lst))
     #input('wut')
 
     for i in range(len(precond_lst)):
@@ -366,10 +372,10 @@ def preconditionSatisfied(start_state,action,combo_dict=None,test=False):
 
             if combo_dict and not has_constant: # Combo_dict only
                 precond_args = precond._predicate.args
-                print(('no constants', precond_args))
+                #print(('no constants', precond_args))
             else: # Constants and combo_dict or constants only, but current precond term uses constant
                 precond_args = precond_vals
-                print(('both',))
+                #print(('both',))
 
             # else: # Constants ony
             #     # precond_args = []
@@ -691,7 +697,7 @@ def outcome(start_state, action, param_values = None, test=False):
 
     # param_values same as combo_dict
 
-    print('entering new outcome function')
+    #print('entering new outcome function')
     probflag = None
 
     precond_satisfied = True
@@ -705,13 +711,15 @@ def outcome(start_state, action, param_values = None, test=False):
 
     #test (remove these lines after you can access the else below)
     action_effects = action.effects[0] # Indexed to remove duplicate outer list
-    #print('Action effect: ', action_effects)
+    print("State: ", start_state)
+    print("Action: ", action)
+    print('Action effect: ', action_effects)
     #input('Waiting')
 
 
     if not preconditionSatisfied(start_state,action, combo_dict=param_values):
 
-        print('Precondition not satisfied...')
+        #input('Precondition not satisfied...')
 
         outcome_sublist = [unchanged_state_terms,1.0,0]
         outcome_list.append(outcome_sublist)
@@ -768,12 +776,12 @@ def outcome(start_state, action, param_values = None, test=False):
                 # print('2 ', outcome_sublist)
                 outcome_list.append(outcome_sublist)
 
-        print(('prob check list', probs))
+        #print(('prob check list', probs))
         #if sum(probs) != 1:
         if sum(probs) < .999999 or sum(probs) > 1.000001:
             print(('error found with probs above, sum is not 1: ', sum(probs)))
             eval(input('wait'))
-        print(('outcome list', outcome_list))
+        #print(('outcome list', outcome_list))
         if len(outcome_list) != len(probs):
             print('FOUND ERROR')
             eval(input('wait'))
@@ -794,11 +802,11 @@ def getOutcomeSublist(literals, prob, reward, start_state, param_values, is_prob
 
     # literals are the predicates (either with params in param_values or with constants) that define outcome
 
-    print(('agh lit', literals))
+    #print(('agh lit', literals))
 
     #print('LOOOOOOOOOOK prob ', prob)
 
-    print('In getOutcomeSublist')
+    #print('In getOutcomeSublist')
 
     if not literals: # No state changes, just prob and reward
         end_state = copy.deepcopy(start_state)
@@ -820,14 +828,14 @@ def getOutcomeSublist(literals, prob, reward, start_state, param_values, is_prob
         params = predicate._args
         values = []
 
-        print(('PARAMS', params))
+        #print(('PARAMS', params))
 
-        if param_values:
-            print(('p vals test', param_values, list(param_values.values())))
+        # if param_values:
+        #     print(('p vals test', param_values, list(param_values.values())))
 
         for param in params:
 
-            print(('param', param))
+            #print(('param', param))
 
             if param_values:
                 # First, consider cases where no constants involved
@@ -839,7 +847,7 @@ def getOutcomeSublist(literals, prob, reward, start_state, param_values, is_prob
                 values.append(param._value)
 
 
-        print(('values ', values))
+        #print(('values ', values))
     
         # Search for relevant terms in start state, those that will be affected
         for i in range(len(start_state)):
@@ -849,7 +857,7 @@ def getOutcomeSublist(literals, prob, reward, start_state, param_values, is_prob
             # Find main term that will change due to effect of taking action in start state
             if term[0] == predicate_name and term[1:-1] == values:
 
-                print(('match!!!', term, predicate_name, values))
+                #print(('match!!!', term, predicate_name, values))
                 #print('unchanged_state_terms',unchanged_state_terms)
 
                 unchanged_state_terms.remove(term)
@@ -885,16 +893,16 @@ def clearOutcomeConflicts(new_term, start_state, unchanged_state_terms):
     # If new_term[-1] is 1, then term used to be [predicate name, args, 0]
     # If new_term[-1] is 0, then .. [predicate name, args, 1] (Tougher case)
 
-    print('In clearOutcomeConflicts')
-    print(('unchanged_state_terms', unchanged_state_terms))
+    #print('In clearOutcomeConflicts')
+    #print(('unchanged_state_terms', unchanged_state_terms))
 
     new_terms = [new_term]
 
-    print(('NNNEEWWWW TEERRMMM', new_term))
+    #print(('NNNEEWWWW TEERRMMM', new_term))
 
     for i in range(len(start_state)):
         term = start_state[i]
-        print(('term',term))
+        #print(('term',term))
 
         # Find term that could conflict with change (excluding the one that was explicitly changed itself)
         if term[0] == new_term[0] and term[1:-1] != new_term[1:-1]:
@@ -912,7 +920,7 @@ def clearOutcomeConflicts(new_term, start_state, unchanged_state_terms):
                 # One case is that all would be zero, which is a logical failure
                 pass
 
-    print(('new_terms', new_terms))
+    #print(('new_terms', new_terms))
     #input('look at new terms')
 
 
@@ -1036,7 +1044,7 @@ def getActions(domain):
 
 def getPandR(domain,problem):
 
-    print("In getPandR")
+    #print("In getPandR")
     #input('wait')
 
     combo_dict = None
@@ -1065,15 +1073,15 @@ def getPandR(domain,problem):
 
         # Get valid action/param combos
         actions = getActionsWithParamsList(domain,problem) # old var name: actions_with_params
-        print('actions: ', actions)
+        #print('actions: ', actions)
         #input('yo1')
         print('actions: ')
         for action in actions:
             print(action[0]._name, action[1])
         #input('yo2')
 
-        for a in actions:
-            print(a)
+        # for a in actions:
+        #     print(a)
 
         #input("YOU ARE HERE")
 
@@ -1093,6 +1101,9 @@ def getPandR(domain,problem):
 
         if problem != None and action_term[1]!={}:
             action, combo_dict = action_term # action term is [action, params]
+            print("action: ", action)
+            print("combo_dict: ", combo_dict)
+            #input(".")
         elif problem == None:
             action = action_term
         else:
@@ -1109,26 +1120,31 @@ def getPandR(domain,problem):
         for i in range(len(states)):
             start_state = states[i]
 
-            print('+++++++++++++++++++')
-            print(('action ',action))
-            if combo_dict:
-                print(('params ', combo_dict))
-            else:
-                print('no params')
-            print(('start state ', start_state))
+            # print('+++++++++++++++++++')
+            # print(('action ',action))
+            # if combo_dict:
+            #     print(('params ', combo_dict))
+            # else:
+            #     print('no params')
+            # print(('start state ', start_state))
 
             # Get list of [end state, prob, reward] terms, given action and start state
             # Also return only the actions_with_params that satisfy preconds
             if combo_dict:
-                #print('combo_dict')
+                print('combo_dict')
                 outcome_list, precond_satisfied = outcome(start_state,action,param_values=combo_dict)
             else: # no parameters
-                #print('no params')
+                print('no params')
                 outcome_list, precond_satisfied = outcome(start_state,action)
 
+            print("outcome_list: ", outcome_list)
+            print("precond_satisfied: ", precond_satisfied)
+            print(i)
+            #input('.')
+
             # Update NxN matrices, p and r according to outcome
-            print(('outcome_list ', outcome_list))
-            print('==============================')
+            # print(('outcome_list ', outcome_list))
+            # print('==============================')
             #input('wait')
             all_js = [] #debugging
             j_duplicate_tracker = {} # Init tracker that sorts outcome_sublists together, by their associated j (same outcome state)
@@ -1145,7 +1161,7 @@ def getPandR(domain,problem):
                 else:
                     j_duplicate_tracker[j].append(outcome_sublist)
 
-            #print('j track', j_duplicate_tracker)
+            print('j track', j_duplicate_tracker)
             p_sum_check = []
             r_sum_check = []
             # Make sure to count all outcome_sublists, which may have the same outcome state, indexed by j
@@ -1165,8 +1181,8 @@ def getPandR(domain,problem):
                 r[j,i] = r_sum
                 p_sum_check.append(p_sum)
                 r_sum_check.append(r_sum)
-            print('p sum', sum(p_sum_check))
-            print('r', r_sum_check)
+            #print('p sum', sum(p_sum_check))
+            #print('r', r_sum_check)
             #input("um")
 
             if sum(p_sum_check) != 1:
@@ -1196,8 +1212,8 @@ def getPandR(domain,problem):
     # Convert list of matrices to 3d numpy array
     P = np.dstack(P).transpose()
     R = np.dstack(R).transpose()
-    print(P.shape, R.shape)
-    print("P ", P)
+    #print(P.shape, R.shape)
+    #print("P ", P)
     check_sums(P) # error when obstructed added to problem in addition to toward and away
     # actions = []
     # for action in domain.operators:
@@ -1333,17 +1349,35 @@ def checkPolicyPreconditions(policy, states, actions_with_params):
 
 def saveReadablePolicy(policy, states, actions_with_params):
 
-    # Save readable and basic "state: action" policy form to file f
-    f = open("/home/scheidee/Desktop/AURO_results/raw_policy.txt", "w+")
-    fa = open("/home/scheidee/Desktop/AURO_results/raw_policy_actions.txt", "w+")
+    print("in saveReadablePolicy")
 
+    # Save readable and basic "state: action" policy form to file f
+    f = open("//home/emily/Desktop/more_AURO_results/raw_policy.txt", "w+")
+    fa = open("/home/emily/Desktop/more_AURO_results/raw_policy_actions.txt", "w+")
+
+    count = 0
     for i in range(len(policy)):
+
+        print("State count: %d\n"%(i+1))
+        print("State: %s\n" %str(states[i]))
+        action = actions_with_params[policy[i]][0]
+        #input(action.name)
+        print("Action: %s\n" %str(action.name))
 
         f.write("State count: %d\n"%(i+1))
         f.write("State: %s\n" %str(states[i]))
         action = actions_with_params[policy[i]][0]
+        #input(action.name)
         f.write("Action: %s\n" %str(action.name))
         fa.write("%s\n" %str(action.name))
+        count += 1
+
+    print("count")
+    #input(count)
+
+    #f.close()
+    #fa.close()
+    #input("yodle")
 
 
 
@@ -1381,8 +1415,15 @@ def getAverageRewardInSameWorld():
     d_avg_reward = get_average_reward(num_runs, mdp_problem, d_policy)
     print(('\nAverage reward over %d trials for deterministic policy: %f' % (num_runs, d_avg_reward)))
 
+def parse():
+    usage = 'python3 main.py <DOMAIN> <INSTANCE>'
+    description = 'pypddl-parser is a PDDL parser built on top of ply.'
+    parser = argparse.ArgumentParser(usage=usage, description=description)
 
+    parser.add_argument('domain',  type=str, help='path to PDDL domain file')
+    parser.add_argument('problem', type=str, help='path to PDDL problem file')
 
+    return parser.parse_args()
 
 if __name__ == '__main__':
 

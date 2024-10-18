@@ -1,0 +1,18 @@
+(define (problem vacuum-problem)
+    
+    (:domain vacuum)
+
+    (:objects
+        left right - location
+    )
+
+    (:init
+
+        (at left)
+        (is-dirty right)
+        (is-dirty left)
+    )
+
+    (:goal (and (at right))) ; this is not used
+    
+)
