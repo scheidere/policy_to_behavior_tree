@@ -35,7 +35,7 @@ def main(domain, problem, config):
 
     start_time = time.time()
 
-    test = True
+    test = False
     save_raw_policy_bt = True
 
     # Method components
@@ -48,15 +48,15 @@ def main(domain, problem, config):
     start_time_ppddl_to_matrices = time.time()
     # Convert to MDP, i.e. generate transition probability matrix P and reward matrix R
     P, R, states, actions_with_params = getPandR(domain,problem)
-    print("States: ")
-    for state in states:
-        print(state)
+    if test:
+        print("States: ")
+        for state in states:
+            print(state)
 
-    print("Actions with params: ")
-    for a in actions_with_params:
-        print(a[0].name)
+        print("Actions with params: ")
+        for a in actions_with_params:
+            print(a[0].name)
 
-    input("plz")
     with open('/home/emily/Desktop/more_AURO_results/getPandR_outputs.p', 'wb') as f:
         pickle.dump((P, R, states, actions_with_params), f)
     ppddl_to_matrices_runtime = time.time() - start_time_ppddl_to_matrices

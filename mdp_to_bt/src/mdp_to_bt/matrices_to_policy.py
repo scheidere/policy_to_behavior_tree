@@ -58,13 +58,11 @@ def solve(solver,P,R):
         val_it.run()
         policy = val_it.policy
         print('\nPolicy: ', val_it.policy)
-        input("haayyyy")
     elif solver == 'q':
         q_learn = mdptoolbox.mdp.QLearning(P, R, 0.96)
         q_learn.run()
         policy = q_learn.policy
         print('\nPolicy: ', q_learn.policy)
-        input("haayyyy")
     else:
         print("That is not a valid solver...")
 

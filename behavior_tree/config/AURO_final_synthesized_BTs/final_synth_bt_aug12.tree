@@ -1,24 +1,27 @@
 ?
 	->
-		(is-dirty{left})
+		(at-drop-off{x})
+		(has-object{x})
 		<!>
-			(at{left})
+			(found-mine{x})
 		<!>
-			(is-dirty{right})
-		[move-left]
+			(found-target-to-report{x})
+		[drop-off]
 	->
-		(is-dirty{right})
-		<!>
-			(at{right})
-		<!>
-			(is-dirty{left})
-		[move-right]
+		(found-mine{x})
+		[disarm]
 	->
-		(is-dirty{left})
+		(found-target-to-report{x})
 		<!>
-			(at{right})
-		[clean-left]
+			(in-comms-range{x})
+		[go-to-comms]
 	->
-		(is-dirty{right})
-		[clean-right]
-	[stay-still]
+		(has-object{x})
+		<!>
+			(found-target-to-report{x})
+		[go-to-drop-off]
+	->
+		<!>
+			(found-target-to-report{x})
+		[explore]
+	[report]
